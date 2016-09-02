@@ -276,6 +276,13 @@ function openBug() {
     }, 1000);
 };
 
+function exit() {
+    Sound.click();
+    $("#internet").hide();
+    GameManager.resume(!0);
+};
+
+// Allows posting on the Social Network website
 function postFlutterMessage() {
     //  var fLikes = $('').();
 
@@ -311,12 +318,6 @@ function postFlutterMessage() {
             opacity: '1'
         }, "slow");
     }
-};
-
-function exit() {
-    Sound.click();
-    $("#internet").hide();
-    GameManager.resume(!0);
 };
 
 // Adds internet button to context menu
@@ -426,22 +427,3 @@ var internetMod_exampleEmail2 = function() {
 }
 internetMod_exampleEmail2();
 })();
-
-/*
-$("#emailMessages > li").click(function(e) {
-    var show = $(this).show();
-    $('.active').removeClass('active');
-    $(this).addClass('active');
-
-    $('#emailMain').hide().eq(show).fadeIn();
-});
-
-// TEST TEST TEST
-function addFans(fans) {
-    GameManager.company.fans += fans;
-}
-
-function addHype(hype) {
-    GameManager.company.adjustHype(hype);
-}
-*/
