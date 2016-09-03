@@ -213,9 +213,43 @@ UI._showContextMenu = showMenuItem;
 // Creates the template for adding an email message
 (function() {
     console.log("Internet emails have intialized!");
-    var emailList = [];
+    internetMod.emailList = [];
+	internetMod.emailListToAdd = [];
+	
+	internetMod.startNewGame = function(){
+		internetMod.reset();
+	}
+	
+	internetMod.load = function(){
+		internetMod.reset();
+	}
+	
+	internetMod.reset = function(){
+		internetMod.emailList = [];
+		$("#emailMSGList").html("");
+	}
+	
+	internetMod.emailModTick = function() {
+	for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
+		var email = internetMod.emailListToAdd[i];
+		var date = email.date.split('/');
+			if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
+				internetMod.emailList.push(email);
+				internetMod.AddEmailToHTMLPage(email);
+			}
+		}
+	}
+	
+	GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
+	GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+	GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
+	
 
     internetMod.AddEmail = function(email) {
+		internetMod.emailListToAdd.push(email);
+	}
+	
+    internetMod.AddEmailToHTMLPage = function(email) {
         var emailMessageList = $("#emailMSGList");
         emailMessageList.append('<li id="' + email.LISTid + '" class="priListItem"> <div class="rndPrItem"><img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png">' +
             '<div id="nameE">' + email.from + '</div>' +
@@ -237,23 +271,6 @@ UI._showContextMenu = showMenuItem;
             '<table id="trashEmail"> <tr> <td id="trashTD" ondblclick="deleteEmail()">Trash Email</td> </tr> </table>' +
             '</div>');
 
-
-
-        /*
-                var emailListToAdd = []
-
-                GDT.on(GDT.eventKeys.gameplay.weekProceeded, emailModTick);
-
-                var emailModTick = function() {
-                    for (var i = 0; i < emailListToAdd.length; i++) {
-                        var email = emailListToAdd[i];
-                        if (GameManager.company.currentWeek == email.date) {
-                            emailList.push(email);
-                        }
-                    }
-                }
-        */
-
         // Allows for switch between emails
         $("#" + email.EMAILid + "").hide();
 
@@ -261,9 +278,6 @@ UI._showContextMenu = showMenuItem;
             $("#" + email.EMAILid + "").show();
             $("#" + email.EMAILid + "").siblings().hide();
         });
-
-
-        emailList.push(email);
     }
 
 
