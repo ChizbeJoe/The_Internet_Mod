@@ -161,7 +161,7 @@ function postFlutterMessage() {
 
     if (text.length > 0) {
         Sound.playSoundOnce("tack", 0.2)
-        $('#message').css("border", "1px solid #00cc00");
+        $('#message').css('border', '1px solid #00cc00');
         $('#conversation').append("<li class='flutterPost'><div class='message-text'>" +
             "<div class='messageTop'>" +
             "<img class='postPic' src='http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png'></img>" +
@@ -169,25 +169,26 @@ function postFlutterMessage() {
             "<div id='postReception'> <div class='postReceptionHeader'>" +
             "<span style='margin-left: 20px; font-size: 12pt;'>Likes</span>" +
             "<span style='margin-left: 20px; font-size: 12pt;'>Dislikes</span></div>" +
-            "<div id='dislikes' class='dislikes'>349</div>" +
-            "<div id='likes'>4981</div> </div> </div>" +
+            "<div id='postDislikes' class='dislikes'>349</div>" +
+            "<div id='postLikes' class='likes'>4981</div>" +
+            "</div></div>" +
             "<div class='messageBottom'>" + text + "</div></div></li>");
         // $('#message').val('');
         $('.widget-conversation').scrollTop($('ul li').last().position().top + $('ul li').last().height());
     } else {
-        $('#message').css("border", "1px solid #eb9f9f");
+        $('#message').css('border', '1px solid #eb9f9f');
         $('#message').animate({
             opacity: '0.1'
-        }, "slow");
+        }, 'slow');
         $('#message').animate({
             opacity: '1'
-        }, "slow");
+        }, 'slow');
         $('#message').animate({
             opacity: '0.1'
-        }, "slow");
+        }, 'slow');
         $('#message').animate({
             opacity: '1'
-        }, "slow");
+        }, 'slow');
     }
 };
 
