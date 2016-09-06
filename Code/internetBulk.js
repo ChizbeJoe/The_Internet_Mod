@@ -247,6 +247,7 @@ UI._showContextMenu = showMenuItem;
             if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
+                countNotifs();
             }
         }
     }
