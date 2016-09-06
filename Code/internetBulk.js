@@ -51,6 +51,7 @@ CreateWindow = function() {
         '<div id="bugSITE"> Sorry <br> Not Available </div>' +
         // Loading Div
         '<div id="loaders"></div> </div></div>' +
+       // Email notifications
         '<div id="internetNotifs">' +
         '<div id="iNotifs" class="iNotifs"></div>' +
         '</div>');
@@ -58,7 +59,7 @@ CreateWindow = function() {
 }
 
 function countNotifs() {
-var notifCount = ("#emailMSGList").children().length;
+var notifCount = $("#emailMSGList").children().length;
 
   $("#iNotifs").empty();
   $("#iNotifs").append(notifCount);
