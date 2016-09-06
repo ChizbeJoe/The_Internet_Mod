@@ -64,11 +64,6 @@ var notifCount = ("#emailMSGList").children().length;
   $("#iNotifs").append(notifCount);
 }
 
-var countNotifINTER = setInterval(countNotifs(), 5000);
-
-GDT.on(GDT.eventKeys.saves.loading, countNotifINTER);
-GDT.on(GDT.eventKeys.saves.newGame, countNotifINTER);
-
 // Appends the internet window
 GDT.on(GDT.eventKeys.saves.newGame, CreateWindow());
 
