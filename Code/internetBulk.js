@@ -50,12 +50,27 @@ CreateWindow = function() {
         // Bug Site
         '<div id="bugSITE"> Sorry <br> Not Available </div>' +
         // Loading Div
-        '<div id="loaders"></div> </div></div> ');
+        '<div id="loaders"></div> </div></div>' +
+        '<div id="internetNotifs">' +
+        '<div id="iNotifs" class="iNotifs"></div>' +
+        '</div>');
     $("#internet").hide();
 }
 
+function countNotifs() {
+var notifCount = ("#emailMSGList").children().length;
+
+  $("#iNotifs").empty();
+  $("#iNotifs").append(notifCount);
+}
+
+var countNotifINTER = setInterval(countNotifs(), 5000);
+
+GDT.on(GDT.eventKeys.saves.loading, countNotifINTER);
+GDT.on(GDT.eventKeys.saves.newGame, countNotifINTER);
+
 // Appends the internet window
-CreateWindow();
+GDT.on(GDT.eventKeys.saves.newGame, CreateWindow());
 
 // Shows the internet window
 ShowWindow = function() {
@@ -214,42 +229,43 @@ UI._showContextMenu = showMenuItem;
 (function() {
     console.log("Internet emails have intialized!");
     internetMod.emailList = [];
-	internetMod.emailListToAdd = [];
-	
-	internetMod.startNewGame = function(){
-		internetMod.reset();
-	}
-	
-	internetMod.load = function(){
-		internetMod.reset();
-	}
-	
-	internetMod.reset = function(){
-		internetMod.emailList = [];
-		$("#emailMSGList").html("");
-	}
-	
-	internetMod.emailModTick = function() {
-	for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
-		var email = internetMod.emailListToAdd[i];
-		var date = email.date.split('/');
-			if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
-				internetMod.emailList.push(email);
-				internetMod.AddEmailToHTMLPage(email);
-			}
-		}
-	}
-	
-	GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
-	GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
-	GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
-	
+    internetMod.emailListToAdd = [];
+
+    internetMod.startNewGame = function() {
+        internetMod.reset();
+    }
+
+    internetMod.load = function() {
+        internetMod.reset();
+    }
+
+    internetMod.reset = function() {
+        internetMod.emailList = [];
+        $("#emailMSGList").html("");
+    }
+
+    internetMod.emailModTick = function() {
+        for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
+            var email = internetMod.emailListToAdd[i];
+            var date = email.date.split('/');
+            if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
+                internetMod.emailList.push(email);
+                internetMod.AddEmailToHTMLPage(email);
+            }
+        }
+    }
+
+    GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
+    GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+    GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
+
 
     internetMod.AddEmail = function(email) {
-		internetMod.emailListToAdd.push(email);
-	}
-	
+        internetMod.emailListToAdd.push(email);
+    }
+
     internetMod.AddEmailToHTMLPage = function(email) {
+
         var emailMessageList = $("#emailMSGList");
         emailMessageList.append('<li id="' + email.LISTid + '" class="priListItem"> <div class="rndPrItem"><img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png">' +
             '<div id="nameE">' + email.from + '</div>' +
@@ -257,6 +273,9 @@ UI._showContextMenu = showMenuItem;
             '<div id="subjectE">' + email.subject + '</div>' +
             '<div id="messageE">' + email.message + '</div> </li>');
 
+        //  function option1_clicked() {
+        //    email.option1_ifSelected;
+        //  }
 
         var emailOpened = $("#emailMain");
         emailOpened.append('<div id="' + email.EMAILid + '" class="emailInfo">' +
@@ -266,10 +285,17 @@ UI._showContextMenu = showMenuItem;
             '<div class="emailSubj">Subject: ' + email.subject + ' </div> <hr>' +
             '<p class="emailENTRY">' + email.message + '</p> <hr>' +
             '<table id="emailOptions" cellspacing="20px"> <tr>' +
-            '<td id="emailOption1" class="emailOption" onclick="' + email.option1_ifSelected + '">' + email.option1 + '</td>' +
-            '<td id="emailOption2" class="emailOption" onclick="' + email.option2_ifSelected + '">' + email.option2 + '</td> </tr> </table>' +
+            '<td id="emailOption1" class="emailOption" onclick="option1_clicked()">' + email.option1 + '</td>' +
+            '<td id="emailOption2" class="emailOption">' + email.option2 + '</td> </tr> </table>' +
             '<table id="trashEmail"> <tr> <td id="trashTD" ondblclick="deleteEmail()">Trash Email</td> </tr> </table>' +
             '</div>');
+
+
+        /*
+                    $("#" + email.EMAILid + " #emailOption2").click(function() {
+                        email.option2;
+                    });
+        */
 
         // Allows for switch between emails
         $("#" + email.EMAILid + "").hide();
@@ -280,20 +306,20 @@ UI._showContextMenu = showMenuItem;
         });
     }
 
-
     // Example internet email message
     var internetMod_exampleEmail = function() {
         internetMod.AddEmail({
             LISTid: "list_001", // must be unique
             EMAILid: "email_001", // must be unique
             category: "Media", // must be internetCompany, Media, Fans, or Companies
-            date: "1/1/3",
+            date: "1/1/2",
             from: "Jimmy Dean",
             address: "jdean@zmail.com",
             subject: "A Short Interview",
             message: "Hello! It's Jimmy dean, reporter for Zoom Magazine. Would you be interested in doing a short interview that would reap BIG rewards? I'm telling ya, you and fans will love you for it. Think about it.",
             option1: "Sure!",
-            option2: "No",
+            option1_ifSelected: "company.adjustCash(100000, 'Option 1 Was Selected')",
+            option2: "No"
         });
     }
     internetMod_exampleEmail();
@@ -303,7 +329,7 @@ UI._showContextMenu = showMenuItem;
             LISTid: "list_002", // must be unique
             EMAILid: "email_002", // must be unique
             category: "Media", // must be internetCompany, Media, Fans, or Companies
-            date: "1/1/2",
+            date: "1/1/4",
             from: "Zachary Florence",
             address: "jdean@zmail.com",
             subject: "TEST BLAHw",
