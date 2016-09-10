@@ -1,17 +1,25 @@
-var internetMod = {};
-
-var internetLogo = [GDT.getRelativePath() + '/../../Icon/internetLogo.png']
-
+/*
 GDT.addEvent({
-	id: "welcomeMessage",
-	date: "1/1/2",
-	getNotification: function(company){
-	    return new Notification({
-	        header: "The Internet Mod",
-	        text: "Many thanks for using The Internet Mod! Please be aware that the mod is still a work-in-progress and has a long way to go. If you have any questions, visit the GHG Forum thread: https://forum.greenheartgames.com/t/an-unfinished-project-take-a-look/21222",
-	        image : internetLogo,
-			buttonText: ":)",
+    id: "init_internet_Email",
+    date: "1/1/2",
+    getNotification: function(company) {
+        return new Notification({
+            header: "Email Service",
+            text: 'There is a new service available called "Email" that allows users to communicate on a computer. {n}Technology is truly pushing the limits, and Email certainly expands on global interaction.',
+            buttonText: "OK"
+        })
+    },
+    complete: function(decision) {
+        var company = GameManager.company;
+        if (decision === 0) {
+            company.activeNotifications.addRangeAt(0, new Notification("Email Service".localize("heading"), "Email will be implemented in a week or two.".localize()));
+            company.notifications.push(new Notification({
+                header: "Internet Service",
+                text: "New internet service available: Email",
+                weeksUntilFired: 1
+            }));
 
-	    })
-	}
-})
+        }
+    }
+});
+*/
