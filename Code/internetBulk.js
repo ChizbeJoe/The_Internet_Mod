@@ -29,7 +29,7 @@ function emailNotifOPEN() {
 }
 
 /* Internet Window HTML
-internetMod.originalWindow_Email = function() {
+originalWindow_Email = function() {
     $("body").append('<div id="internet">' +
         '<table class="navBar"> <tr id="tabBar">' +
         '<td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i></td>' +
@@ -64,6 +64,7 @@ internetMod.originalWindow_Email = function() {
 // Bug Site
 function createBugWebsite() {
     $('#content').append('<div id="bugSITE"> Sorry <br> Not Available </div>');
+    $('#tabBar').append('<td id="bug" class="tab" onclick="openBug()">Bug Center</td>');
 }
 
 // Social Site
@@ -88,15 +89,17 @@ function createSocialWebsite() {
         '<div class="widget-form">' +
         '<textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation">' +
         '<ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
+   $('#tabBar').append('<td id="social" class="tab" onclick="openSocial()">Social Network</td>');
 }
 
 //NOT SURE YET Website
 function createXYZWebsite() {
     $('#content').append('<div id="forumSITE">Sorry <br> Not Available</div>');
+    $('#tabBar').append('<td id="forum" class="tab" onclick="openForum()">Forum</td>');
 }
 
 // Email Notifications
-function countNotifs() {
+internetMod.countNotifs = function() {
     var notifCount = $("#emailMSGList").children().length;
 
     $("#iNotifs").empty();
@@ -120,7 +123,7 @@ $("#iNotifs").bind("DOMSubtreeModified", function() {
 
 
 // Shows the internet window
-ShowWindow = function() {
+internetMod.ShowWindow = function() {
     $("#internet").show();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -256,7 +259,7 @@ function postFlutterMessage() {
 
 // Adds internet button to context menu
 /*
-internetMod.addInternetToMenu = function() {
+addInternetToMenu = function() {
     var showMenuUI = UI._showContextMenu;
     var showMenuItem = function(type, menuItems, x, y) {
         menuItems.push({
@@ -276,7 +279,7 @@ internetMod.addInternetToMenu = function() {
 
 //Email website ------------------------------------------------------------------------------------------------------
 // Creates the template for adding an email message
-(function internetMod_Email_init() {
+(internetMod.Email_init = function() {
     console.log("Internet emails have intialized!");
     internetMod.emailList = [];
     internetMod.emailListToAdd = [];
@@ -301,7 +304,7 @@ internetMod.addInternetToMenu = function() {
             if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
-                countNotifs();
+                internetMod.countNotifs();
             }
         }
     }
@@ -351,17 +354,19 @@ internetMod.addInternetToMenu = function() {
             $("#checkmark_" + email.id + "").show();
             $("#optionDisplay_" + email.id + "").show();
             $("#response1_" + email.id + "").show();
+            // use .typewrite() when in later versions with new features
             email.option1_ifSelected;
         });
 
         $("#Option2_" + email.id + "").on("click", function() {
-          $("#emailOptions_" + email.id + "").addClass("disableElement");
-          $("#List_" + email.id + "").addClass("emailResponded");
-          $("#Option2_" + email.id + "").addClass("optionDisplay");
-          $("#checkmark_" + email.id + "").show();
-          $("#optionDisplay_" + email.id + "").show();
-          $("#response2_" + email.id + "").show();
-          email.option2_ifSelected;
+            $("#emailOptions_" + email.id + "").addClass("disableElement");
+            $("#List_" + email.id + "").addClass("emailResponded");
+            $("#Option2_" + email.id + "").addClass("optionDisplay");
+            $("#checkmark_" + email.id + "").show();
+            $("#optionDisplay_" + email.id + "").show();
+            $("#response2_" + email.id + "").show();
+            // use .typewrite({ stuff: foo }) when in later versions with new features
+            email.option2_ifSelected;
         });
 
         $("#trashEmail_" + email.id + "").dblclick(function() {
@@ -398,17 +403,17 @@ internetMod.addInternetToMenu = function() {
 
     var internetMod_exampleEmail2 = function() {
         internetMod.AddEmail({
-          id: "emailTest", // must be unique
-          category: "Media", // must be internetCompany, Media, Fans, or Companies
-          date: "1/1/3",
-          from: "Jimmy Dean",
-          address: "jdean@zmail.com",
-          subject: "Welcome to Email!",
-          message: "Test email! Test! Test! TEST!!",
-          option1: "Sure",
-          option1_ifSelected: 'addMoney(1000, "Floo")',
-          option2: "No",
-          option2_ifSelected: 'addMoney(-1000, "FLAH")'
+            id: "emailTest", // must be unique
+            category: "Media", // must be internetCompany, Media, Fans, or Companies
+            date: "1/1/3",
+            from: "Jimmy Dean",
+            address: "jdean@zmail.com",
+            subject: "Welcome to Email!",
+            message: "Test email! Test! Test! TEST!!",
+            option1: "Sure",
+            option1_ifSelected: 'addMoney(1000, "Floo")',
+            option2: "No",
+            option2_ifSelected: 'addMoney(-1000, "FLAH")'
         });
     }
     internetMod_exampleEmail2();
@@ -419,17 +424,17 @@ GDT.addEvent({
     id: "internetCreationEmail",
     date: "1/1/2",
     getNotification: function(company) {
-     Sound.playSoundOnce("research", 0.2);
+        Sound.playSoundOnce("research", 0.2);
         return new Notification({
             header: "Email Service",
             text: 'There is a new service available called "Email" that allows users to communicate on a computer. People are raving about the new capabilites that expand on global interaction. {n}New internet service available: Email',
             // image: "",
             buttonText: "OK",
 
-            sourceId : "internetCreationEmail"
+            sourceId: "internetCreationEmail"
         });
     },
-    complete: function() {
+    complete: function intialInternetWindow_Email() {
         $("body").append('<div id="internet">' +
             '<table class="navBar"> <tr id="tabBar">' +
             '<td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i></td>' +
@@ -459,19 +464,19 @@ GDT.addEvent({
             '</div>');
         $("#internet").hide();
 
-    var showMenuUI = UI._showContextMenu;
-    var showMenuItem = function(type, menuItems, x, y) {
-        menuItems.push({
-            label: "Internet...".localize("menu item"),
-            action: function() {
-                Sound.click();
-                ShowWindow();
-                GameManager.resume(false);
-            }
-        })
-        showMenuUI(type, menuItems, x, y);
-    }
+        var showMenuUI = UI._showContextMenu;
+        var showMenuItem = function(type, menuItems, x, y) {
+            menuItems.push({
+                label: "Internet...".localize("menu item"),
+                action: function() {
+                    Sound.click();
+                    internetMod.ShowWindow();
+                    GameManager.resume(false);
+                }
+            })
+            showMenuUI(type, menuItems, x, y);
+        }
 
-    UI._showContextMenu = showMenuItem;
-}
+        UI._showContextMenu = showMenuItem;
+    }
 });
