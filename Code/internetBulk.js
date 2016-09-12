@@ -1,20 +1,20 @@
 var internetMod = {};
 
 // Thanks kristof!
-function addMoney(money, text) {
+internetMod.addMoney = function(money, text) {
     GameManager.company.adjustCash(money, "" + text + "");
 }
 
-function addResearchPoints() {
+internetMod.addResearchPoints = function() {
     GameManager.company.researchPoints += 100;
     VisualsManager.researchPoints.updatePoints(GameManager.company.researchPoints);
 }
 
-function addFans(fans) {
+internetMod.addFans = function(fans) {
     GameManager.company.fans += fans;
 }
 
-function addHype(hype) {
+internetMod.addHype = function(hype) {
     GameManager.company.adjustHype(hype);
 }
 // kristof1104 is the best ---------------------------------------------------------------------------------------------------
@@ -344,24 +344,34 @@ internetMod.addInternetToMenu = function() {
             '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>' +
             '</div>');
 
-        $("#Option1_" + email.id + "").on("click", function() {
-            $("#emailOptions_" + email.id + "").addClass("disableElement");
-            $("#List_" + email.id + "").addClass("emailResponded");
+        $("#Option1_" + email.id + "").on("click", function(event) {
+			$("#List_" + email.id + "").addClass("emailResponded");
             $("#Option1_" + email.id + "").addClass("optionDisplay");
             $("#checkmark_" + email.id + "").show();
             $("#optionDisplay_" + email.id + "").show();
             $("#response1_" + email.id + "").show();
-            email.option1_ifSelected;
-        });
+			
+			//Because you are setting pointer-events: none; The update code for refreshing the UIisn't updated 
+			$("#emailOptions_" + email.id + "").addClass("disableElement");
+			//Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
+			$("#List_" + email.id + "").toggle().toggle();
+			
+            email.option1_ifSelected && email.option1_ifSelected();
+		});	
 
-        $("#Option2_" + email.id + "").on("click", function() {
-          $("#emailOptions_" + email.id + "").addClass("disableElement");
+        $("#Option2_" + email.id + "").on("click", function(event) {
           $("#List_" + email.id + "").addClass("emailResponded");
           $("#Option2_" + email.id + "").addClass("optionDisplay");
           $("#checkmark_" + email.id + "").show();
           $("#optionDisplay_" + email.id + "").show();
           $("#response2_" + email.id + "").show();
-          email.option2_ifSelected;
+		  
+		  //Because you are setting pointer-events: none; The update code for refreshing the UIisn't updated 
+		  $("#emailOptions_" + email.id + "").addClass("disableElement");
+		  //Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
+		  $("#List_" + email.id + "").toggle().toggle();
+			
+		  email.option2_ifSelected && email.option2_ifSelected();
         });
 
         $("#trashEmail_" + email.id + "").dblclick(function() {
@@ -389,9 +399,9 @@ internetMod.addInternetToMenu = function() {
             subject: "Welcome to Email!",
             message: "Hello, and welcome to Email! <br> Huzzah!",
             option1: "Sure",
-            option1_ifSelected: 'addMoney(1000, "Bloo")',
+            option1_ifSelected: function () {internetMod.addMoney(1000, "Bloo");},
             option2: "No",
-            option2_ifSelected: 'addMoney(-1000, "BLAH")'
+            option2_ifSelected: function () {internetMod.addMoney(-1000, "BLAH");}
         });
     }
     internetMod_tutorialEmail();
@@ -406,9 +416,9 @@ internetMod.addInternetToMenu = function() {
           subject: "Welcome to Email!",
           message: "Test email! Test! Test! TEST!!",
           option1: "Sure",
-          option1_ifSelected: 'addMoney(1000, "Floo")',
+          option1_ifSelected: function () {internetMod.addMoney(1000, "Floo");},
           option2: "No",
-          option2_ifSelected: 'addMoney(-1000, "FLAH")'
+          option2_ifSelected: function () {internetMod.addMoney(-1000, "FLAH");}
         });
     }
     internetMod_exampleEmail2();
