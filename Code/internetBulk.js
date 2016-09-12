@@ -352,13 +352,17 @@ internetMod.addInternetToMenu = function() {
             $("#response1_" + email.id + "").show();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             // use .typewrite() when in later versions with new features
+=======
+>>>>>>> parent of 1576065... stuff
 =======
 >>>>>>> parent of 1576065... stuff
             email.option1_ifSelected;
         });
 
         $("#Option2_" + email.id + "").on("click", function() {
+<<<<<<< HEAD
 <<<<<<< HEAD
             $("#emailOptions_" + email.id + "").addClass("disableElement");
             $("#List_" + email.id + "").addClass("emailResponded");
@@ -382,11 +386,15 @@ internetMod.addInternetToMenu = function() {
 =======
           $("#emailOptions_" + email.id + "").addClass("disableElement");
 >>>>>>> parent of 1576065... stuff
+=======
+          $("#emailOptions_" + email.id + "").addClass("disableElement");
+>>>>>>> parent of 1576065... stuff
           $("#List_" + email.id + "").addClass("emailResponded");
           $("#Option2_" + email.id + "").addClass("optionDisplay");
           $("#checkmark_" + email.id + "").show();
           $("#optionDisplay_" + email.id + "").show();
           $("#response2_" + email.id + "").show();
+<<<<<<< HEAD
 <<<<<<< HEAD
 		  
 		  //Because you are setting pointer-events: none; The update code for refreshing the UIisn't updated 
@@ -396,6 +404,9 @@ internetMod.addInternetToMenu = function() {
 			
 		  email.option2_ifSelected && email.option2_ifSelected();
 >>>>>>> origin/master
+=======
+          email.option2_ifSelected;
+>>>>>>> parent of 1576065... stuff
 =======
           email.option2_ifSelected;
 >>>>>>> parent of 1576065... stuff
@@ -437,6 +448,7 @@ internetMod.addInternetToMenu = function() {
         internetMod.AddEmail({
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             id: "emailTest", // must be unique
             category: "Media", // must be internetCompany, Media, Fans, or Companies
             date: "1/1/3",
@@ -451,6 +463,8 @@ internetMod.addInternetToMenu = function() {
 =======
 =======
 >>>>>>> parent of 1576065... stuff
+=======
+>>>>>>> parent of 1576065... stuff
           id: "emailTest", // must be unique
           category: "Media", // must be internetCompany, Media, Fans, or Companies
           date: "1/1/3",
@@ -460,10 +474,16 @@ internetMod.addInternetToMenu = function() {
           message: "Test email! Test! Test! TEST!!",
           option1: "Sure",
 <<<<<<< HEAD
+<<<<<<< HEAD
           option1_ifSelected: function () {internetMod.addMoney(1000, "Floo");},
           option2: "No",
           option2_ifSelected: function () {internetMod.addMoney(-1000, "FLAH");}
 >>>>>>> origin/master
+=======
+          option1_ifSelected: 'addMoney(1000, "Floo")',
+          option2: "No",
+          option2_ifSelected: 'addMoney(-1000, "FLAH")'
+>>>>>>> parent of 1576065... stuff
 =======
           option1_ifSelected: 'addMoney(1000, "Floo")',
           option2: "No",
