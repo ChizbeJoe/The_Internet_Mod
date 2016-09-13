@@ -1,5 +1,5 @@
 /*
-TO-DO List (Note Done is "-". Done is "+"):
+TO-DO List (Not Done is "-". Done is "+"):
 - Make functions in mod scope
 - Make Internet Mod data save to a specfic save file (probably need to use dataStore or something)
 - Maybe have news and trends be on a website
