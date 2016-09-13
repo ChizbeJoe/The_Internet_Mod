@@ -1,3 +1,17 @@
+/*
+TO-DO List (Note Done is "-". Done is "+"):
+- Make functions in mod scope
+- Make Internet Mod data save to a specfic save file (probably need to use dataStore or something)
+- Maybe have news and trends be on a website
+- Start Bug Website
+- Finish Social Website
+- Dynamic internet window design (changes over time)
+- Create more emails:
+  -- Allow more in-depth email respones (right now, they are basically just events)
+  -- Use typewrite({ delay: foo }) for email responses (l:12150)
+  -- More stuff I don't feel like typing out
+*/
+
 var internetMod = {};
 
 // Thanks kristof!
@@ -15,14 +29,11 @@ internetMod.addFans = function(fans) {
 }
 
 internetMod.addHype = function(hype) {
-    GameManager.company.adjustHype(hype);
-}
-// kristof1104 is the best ---------------------------------------------------------------------------------------------------
+        GameManager.company.adjustHype(hype);
+    }
+    // kristof1104 is the best ---------------------------------------------------------------------------------------------------
 
-
-
-
-function emailNotifOPEN() {
+internetMod.emailNotifOPEN = function() {
     $("#internet").show();
     $("#emailSITE").show();
     GameManager.pause(true);
@@ -62,12 +73,18 @@ internetMod.originalWindow_Email = function() {
 */
 
 // Bug Site
-function createBugWebsite() {
+internetMod.createBugWebsite = function() {
+    $('#navBar').removeClass('justEmail');
+    $('#navBar').addClass('plusBug');
+    $('#tabBar').append('<td id="bug" class="tab" onclick="internetMod.openBug()">Bug Center</td>');
     $('#content').append('<div id="bugSITE"> Sorry <br> Not Available </div>');
 }
 
 // Social Site
-function createSocialWebsite() {
+internetMod.createSocialWebsite = function() {
+    $('#navBar').removeClass('plusBug');
+    $('#navBar').addClass('plusSocial');
+    $('#tabBar').append('<td id="social" class="tab" onclick="internetMod.openSocial()">Social Network</td>');
     $('#content').append('<div id="socialSITE">' +
         '<div id="socialNav">' +
         '<div id="home" class="flutterBanner">FLUTTER</div>' +
@@ -86,21 +103,23 @@ function createSocialWebsite() {
         '<div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div>' +
         '<div class="widget">' +
         '<div class="widget-form">' +
-        '<textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation">' +
+        '<textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="internetMod.postFlutterMessage()">Post</div> </div> <div class="widget-conversation">' +
         '<ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
 }
 
 //NOT SURE YET Website
-function createXYZWebsite() {
+internetMod.createXYZWebsite = function() {
+    $('#navBar').removeClass('plusSocial');
+    $('#navBar').addClass('plusXYZ');
+    $('#tabBar').append('<td id="forum" class="tab" onclick="internetMod.openXYZ()">Forum</td>');
     $('#content').append('<div id="forumSITE">Sorry <br> Not Available</div>');
 }
 
 // Email Notifications
-function countNotifs() {
-    var notifCount = $("#emailMSGList").children().length;
+internetMod.countNotifs = function(notifNumber) {
+    var notifCount = $("#emailMSGList").find('.forGenl').length + notifNumber;
 
-    $("#iNotifs").empty();
-    $("#iNotifs").append(notifCount);
+    $("#iNotifs").empty().append(notifCount);
 }
 
 // not yet working
@@ -120,7 +139,7 @@ $("#iNotifs").bind("DOMSubtreeModified", function() {
 
 
 // Shows the internet window
-ShowWindow = function() {
+internetMod.ShowWindow = function() {
     $("#internet").show();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -131,7 +150,7 @@ ShowWindow = function() {
 
 // Internet tabs -----------------------------------------------------------------------------------------------------------
 // Refreshes a page (Currenly not working 100% correctly)
-function refresh() {
+internetMod.refresh = function() {
     Sound.click();
     $("#loaders").append('REFRESHING...');
     $("#loaders").show();
@@ -144,7 +163,7 @@ function refresh() {
 };
 
 // Opens the Email website
-function openEmail() {
+internetMod.openEmail = function() {
     Sound.click();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -160,7 +179,7 @@ function openEmail() {
 };
 
 // Open a website that I haven't made up my mind about :P
-function openForum() {
+internetMod.openXYZ = function() {
     Sound.click();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -176,7 +195,7 @@ function openForum() {
 };
 
 // Opens the Social Network website
-function openSocial() {
+internetMod.openSocial = function() {
     Sound.click();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -192,7 +211,7 @@ function openSocial() {
 };
 
 // Opens the Bug Center website
-function openBug() {
+internetMod.openBug = function() {
     Sound.click();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
@@ -208,7 +227,7 @@ function openBug() {
 };
 
 // Closes (hides) the entire div
-function exit() {
+internetMod.exit = function() {
     Sound.click();
     $("#internet").hide();
     GameManager.resume(!0);
@@ -216,7 +235,7 @@ function exit() {
 
 // Social Netowrk ------------------------------------------------------------------------------------------------------
 // Allows posting on the Social Network website
-function postFlutterMessage() {
+internetMod.postFlutterMessage = function() {
     //  var fLikes = $('').();
 
     var text = $('#message').val();
@@ -269,14 +288,13 @@ internetMod.addInternetToMenu = function() {
         })
         showMenuUI(type, menuItems, x, y);
     }
-
     UI._showContextMenu = showMenuItem;
 }
 */
 
 //Email website ------------------------------------------------------------------------------------------------------
 // Creates the template for adding an email message
-(function internetMod_Email_init() {
+(internetMod.initEmail = function() {
     console.log("Internet emails have intialized!");
     internetMod.emailList = [];
     internetMod.emailListToAdd = [];
@@ -294,6 +312,29 @@ internetMod.addInternetToMenu = function() {
         $("#emailMSGList").html("");
     }
 
+    internetMod.checkForReply = function(email) {
+        if ($('#emailOptions_' + email.id + '').hasClass('disableElement') && $("#Email_" + email.id + "-2").hasClass('forGen')) {
+            console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            $('#trashEmail_' + email.id + '').remove();
+            $("#Email_" + email.id + "-2").removeClass('forGen');
+            $("#Email_" + email.id + "-2").append('<hr>' +
+                '<div id="subjectE">Response 2:</div>' +
+                '<p class="emailENTRY">' + email.message2 + '</p> <hr>' +
+                '<table id="emailOptions_' + email.id + '-2" class="emailOptions" cellspacing="20px"> <tr>' +
+                '<td id="Option1_' + email.id + '-2" class="emailOption forGenl">' + email.m2_option1 + '</td>' +
+                '<td id="Option2_' + email.id + '-2" class="emailOption forGenl">' + email.m2_option2 + '</td> </tr> </table>' +
+                '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
+            internetMod.countNotifs(1);
+        }
+    if ($('#emailOptions_' + email.id + '').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-2').hasClass('disableElement')) {
+        $('#checkmark_' + email.id + '').hide();
+        $('#haveMSG_' + email.id + '').show();
+        $('#List_' + email.id + '').addClass('haveMSGborder');
+    } else {
+        $('#haveMSG_' + email.id + '').hide();
+    }
+  }
+
     internetMod.emailModTick = function() {
         for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
             var email = internetMod.emailListToAdd[i];
@@ -301,10 +342,12 @@ internetMod.addInternetToMenu = function() {
             if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
-                countNotifs();
+                internetMod.countNotifs(0);
             }
         }
+        internetMod.checkForReply(email);
     }
+
 
     GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
     GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
@@ -318,12 +361,13 @@ internetMod.addInternetToMenu = function() {
     internetMod.AddEmailToHTMLPage = function(email) {
 
         var emailMessageList = $("#emailMSGList");
-        emailMessageList.append('<li id="List_' + email.id + '" class="priListItem"> <div class="rndPrItem"><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
+        emailMessageList.append('<li id="List_' + email.id + '" class="forGenl priListItem"> <div class="rndPrItem"><div id="haveMSG_' + email.id + '" class="haveMSG">!</div><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
             '<div id="nameE">' + email.from + '</div>' +
             '<div id="usernameE">' + email.address + '</div><hr style="margin-top: 0px;">' +
             '<div id="subjectE">' + email.subject + '</div>' +
             '<div id="messageE">' + email.message + '</div>' +
-            '<div id="optionDisplay_' + email.id + '" class="optionDisplay" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div> </li>');
+            //'<div id="optionDisplay_' + email.id + '" class="optionDisplay" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div>' +
+            '</li>');
 
         /*
                 '' + email.id + '_' + email.option1 + '' = function() {
@@ -334,7 +378,7 @@ internetMod.addInternetToMenu = function() {
         var emailOpened = $("#emailMain");
         emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo">' +
             'Category: ' + email.category + ' <br>' +
-            'From: ' + email.from + ' <br>' +
+            'From: ' + email.from + ' (' + email.address + ')<br>' +
             'Date: ' + email.date + ' <br> <br>' +
             '<div class="emailSubj">Subject: ' + email.subject + ' </div> <hr>' +
             '<p class="emailENTRY">' + email.message + '</p> <hr>' +
@@ -342,156 +386,113 @@ internetMod.addInternetToMenu = function() {
             '<td id="Option1_' + email.id + '" class="emailOption">' + email.option1 + '</td>' +
             '<td id="Option2_' + email.id + '" class="emailOption">' + email.option2 + '</td> </tr> </table>' +
             '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>' +
+            '</div>' +
+            // Message 2
+            '<div id="Email_' + email.id + '-2" class="emailInfo forGen">' +
             '</div>');
 
-        $("#Option1_" + email.id + "").on("click", function(event) {
-			$("#List_" + email.id + "").addClass("emailResponded");
-            $("#Option1_" + email.id + "").addClass("optionDisplay");
-            $("#checkmark_" + email.id + "").show();
-            $("#optionDisplay_" + email.id + "").show();
-            $("#response1_" + email.id + "").show();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            // use .typewrite() when in later versions with new features
-=======
->>>>>>> parent of 1576065... stuff
-=======
->>>>>>> parent of 1576065... stuff
-            email.option1_ifSelected;
-        });
+        internetMod.optionDefaults = function() {
+            $('#List_' + email.id + '').removeClass('haveMSGborder');
+            $('#List_' + email.id + '').removeClass('forGenl');
+            $('#List_' + email.id + '').addClass('emailResponded');
+            $('#checkmark_' + email.id + '').show();
+            internetMod.countNotifs(0);
+            //      $('#optionDisplay_' + email.id + '').show();
+            //Because you are setting pointer-events: none; The update code for refreshing the UIisn't update;
+            //Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
+            $('#List_' + email.id + '').toggle().toggle();
+        }
 
-        $("#Option2_" + email.id + "").on("click", function() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            $("#emailOptions_" + email.id + "").addClass("disableElement");
-            $("#List_" + email.id + "").addClass("emailResponded");
-            $("#Option2_" + email.id + "").addClass("optionDisplay");
-            $("#checkmark_" + email.id + "").show();
-            $("#optionDisplay_" + email.id + "").show();
-            $("#response2_" + email.id + "").show();
-            // use .typewrite({ stuff: foo }) when in later versions with new features
-            email.option2_ifSelected;
-=======
-			
-			//Because you are setting pointer-events: none; The update code for refreshing the UIisn't updated 
-			$("#emailOptions_" + email.id + "").addClass("disableElement");
-			//Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
-			$("#List_" + email.id + "").toggle().toggle();
-			
+        // Option Stuff (probably will optimize this later and make it shorter)
+        $('#Option1_' + email.id + '').on('click', function(event) {
+            //        $('#response1_' + email.id + '').show();
+            $(this).addClass('optionDisplay');
+            $('#emailOptions_' + email.id + '').addClass('disableElement');
+            $('#haveMSG_' + email.id + '').hide();
+
+            internetMod.optionDefaults();
+
             email.option1_ifSelected && email.option1_ifSelected();
-		});	
-
-        $("#Option2_" + email.id + "").on("click", function(event) {
-=======
-          $("#emailOptions_" + email.id + "").addClass("disableElement");
->>>>>>> parent of 1576065... stuff
-=======
-          $("#emailOptions_" + email.id + "").addClass("disableElement");
->>>>>>> parent of 1576065... stuff
-          $("#List_" + email.id + "").addClass("emailResponded");
-          $("#Option2_" + email.id + "").addClass("optionDisplay");
-          $("#checkmark_" + email.id + "").show();
-          $("#optionDisplay_" + email.id + "").show();
-          $("#response2_" + email.id + "").show();
-<<<<<<< HEAD
-<<<<<<< HEAD
-		  
-		  //Because you are setting pointer-events: none; The update code for refreshing the UIisn't updated 
-		  $("#emailOptions_" + email.id + "").addClass("disableElement");
-		  //Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
-		  $("#List_" + email.id + "").toggle().toggle();
-			
-		  email.option2_ifSelected && email.option2_ifSelected();
->>>>>>> origin/master
-=======
-          email.option2_ifSelected;
->>>>>>> parent of 1576065... stuff
-=======
-          email.option2_ifSelected;
->>>>>>> parent of 1576065... stuff
         });
 
-        $("#trashEmail_" + email.id + "").dblclick(function() {
-            $('#Email_' + email.id + '').remove();
+        $('#Option2_' + email.id + '').on('click', function(event) {
+            //      $('#response2_' + email.id + '').show();
+            $(this).addClass('optionDisplay');
+            $('#emailOptions_' + email.id + '').addClass('disableElement');
+            $('#haveMSG_' + email.id + '').hide();
+
+            internetMod.optionDefaults();
+
+            email.option2_ifSelected && email.option2_ifSelected();
+        });
+
+        $('#Option1_' + email.id + '-2').on('click', function(event) {
+            $(this).addClass('optionDisplay');
+            $('#emailOptions_' + email.id + '-2').addClass('disableElement').removeClass('forGenl');
+            $('#haveMSG_' + email.id + '').hide();
+
+            internetMod.optionDefaults();
+
+            email.m2_option1_ifSelected && email.m2_option1_ifSelected();
+        });
+
+        $('#Option2_' + email.id + '-2').on('click', function(event) {
+            $(this).addClass('optionDisplay');
+            $('#emailOptions_' + email.id + '-2').addClass('disableElement').removeClass('forGenl');
+            $('#haveMSG_' + email.id + '').hide();
+
+            internetMod.optionDefaults();
+
+            email.m2_option2_ifSelected && email.m2_option2_ifSelected();
+        });
+        //----------------------------------------------------------------------
+
+        $('#trashEmail_' + email.id + '').dblclick(function() {
+            $('#emailMain').children().remove();
             $('#List_' + email.id + '').remove();
         });
 
         // Allows for switch between emails
-        $("#Email_" + email.id + "").hide();
+        $('#Email_' + email.id + '').hide();
 
-        $("#List_" + email.id + "").click(function() {
-            $("#Email_" + email.id + "").show();
-            $("#Email_" + email.id + "").siblings().hide();
+        $('#List_' + email.id + '').click(function() {
+            $('#Email_' + email.id + '').siblings().hide();
+            $('#Email_' + email.id + '').show();
+            $('#Email_' + email.id + '-2').show();
         });
     }
 
     // Example internet email message
     var internetMod_tutorialEmail = function() {
         internetMod.AddEmail({
-            id: "introduction_internetMod", // must be unique
-            category: "Media", // must be internetCompany, Media, Fans, or Companies
-            date: "1/1/3",
-            from: "Jimmy Dean",
-            address: "jdean@zmail.com",
-            subject: "Welcome to Email!",
-            message: "Hello, and welcome to Email! <br> Huzzah!",
-            option1: "Sure",
-            option1_ifSelected: function () {internetMod.addMoney(1000, "Bloo");},
-            option2: "No",
-            option2_ifSelected: function () {internetMod.addMoney(-1000, "BLAH");}
+            id: 'welcomeEmail', // must be unique
+            category: 'Media', // must be internetCompany, Media, Fans, or Companies
+            date: '1/1/3',
+            from: 'Jimmy Dean',
+            address: 'jdean@zmail.com',
+            subject: 'Welcome to Email!',
+            message: 'Hello, and welcome to Email! Huzzah!', // Like in html, use <br> to make a line break
+            option1: 'Sure',
+            option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Bloo');
+            },
+            option2: 'No',
+            option2_ifSelected: function() {
+                internetMod.addMoney(-1000, 'BLAH');
+            },
+            // Email received based on option
+            message2: 'Well well well, what if I pay 10K?',
+            m2_option1: 'Fine',
+            m2_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Kloo');
+            },
+            m2_option2: 'Still no',
+            m2_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'KLAH');
+            }
         });
     }
     internetMod_tutorialEmail();
-
-    var internetMod_exampleEmail2 = function() {
-        internetMod.AddEmail({
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            id: "emailTest", // must be unique
-            category: "Media", // must be internetCompany, Media, Fans, or Companies
-            date: "1/1/3",
-            from: "Jimmy Dean",
-            address: "jdean@zmail.com",
-            subject: "Welcome to Email!",
-            message: "Test email! Test! Test! TEST!!",
-            option1: "Sure",
-            option1_ifSelected: 'addMoney(1000, "Floo")',
-            option2: "No",
-            option2_ifSelected: 'addMoney(-1000, "FLAH")'
-=======
-=======
->>>>>>> parent of 1576065... stuff
-=======
->>>>>>> parent of 1576065... stuff
-          id: "emailTest", // must be unique
-          category: "Media", // must be internetCompany, Media, Fans, or Companies
-          date: "1/1/3",
-          from: "Jimmy Dean",
-          address: "jdean@zmail.com",
-          subject: "Welcome to Email!",
-          message: "Test email! Test! Test! TEST!!",
-          option1: "Sure",
-<<<<<<< HEAD
-<<<<<<< HEAD
-          option1_ifSelected: function () {internetMod.addMoney(1000, "Floo");},
-          option2: "No",
-          option2_ifSelected: function () {internetMod.addMoney(-1000, "FLAH");}
->>>>>>> origin/master
-=======
-          option1_ifSelected: 'addMoney(1000, "Floo")',
-          option2: "No",
-          option2_ifSelected: 'addMoney(-1000, "FLAH")'
->>>>>>> parent of 1576065... stuff
-=======
-          option1_ifSelected: 'addMoney(1000, "Floo")',
-          option2: "No",
-          option2_ifSelected: 'addMoney(-1000, "FLAH")'
->>>>>>> parent of 1576065... stuff
-        });
-    }
-    internetMod_exampleEmail2();
 })();
 
 
@@ -499,25 +500,23 @@ GDT.addEvent({
     id: "internetCreationEmail",
     date: "1/1/2",
     getNotification: function(company) {
-     Sound.playSoundOnce("research", 0.2);
+        Sound.playSoundOnce("research", 0.2);
         return new Notification({
             header: "Email Service",
             text: 'There is a new service available called "Email" that allows users to communicate on a computer. People are raving about the new capabilites that expand on global interaction. {n}New internet service available: Email',
             // image: "",
             buttonText: "OK",
 
-            sourceId : "internetCreationEmail"
+            sourceId: "internetCreationEmail"
         });
     },
     complete: function() {
+        // Implements Email Window
         $("body").append('<div id="internet">' +
-            '<table class="navBar"> <tr id="tabBar">' +
-            '<td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i></td>' +
-            '<td id="email" class="tab" onclick="openEmail()">Email</td>' +
-            '<td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td>' +
-            '<td id="social" class="tab" onclick="openSocial()">Social Network</td>' +
-            '<td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td>' +
-            '<td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table>' +
+            '<table class="navBar justEmail"> <tr id="tabBar">' +
+            '<td id="refresh" onclick="internetMod.refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i></td>' +
+            '<td id="email" class="tab" onclick="internetMod.openEmail()">Email</td>' +
+            '<td id="exit" class="tabX" onclick="internetMod.exit()"> </td> </tr> </table>' +
             '<div id="content" class="content">' +
             //Email Website
             '<div id="emailSITE">' +
@@ -534,24 +533,25 @@ GDT.addEvent({
             // Loading Div
             '<div id="loaders"></div> </div></div>' +
             // Email Notifications
-            '<div id="internetNotifs" onclick="emailNotifOPEN()">' +
-            '<div id="iNotifs" class="iNotifs"></div>' +
+            '<div id="internetNotifs" onclick="internetMod.emailNotifOPEN()">' +
+            '<img class="iNotifs" src="./mods/The_Internet_Mod/img/mail-Icon.png"><div id="iNotifs">0</div></img></div>' +
             '</div>');
         $("#internet").hide();
 
-    var showMenuUI = UI._showContextMenu;
-    var showMenuItem = function(type, menuItems, x, y) {
-        menuItems.push({
-            label: "Internet...".localize("menu item"),
-            action: function() {
-                Sound.click();
-                ShowWindow();
-                GameManager.resume(false);
-            }
-        })
-        showMenuUI(type, menuItems, x, y);
-    }
+        // Implements Context Menu Button
+        var showMenuUI = UI._showContextMenu;
+        var showMenuItem = function(type, menuItems, x, y) {
+            menuItems.push({
+                label: "Internet...".localize("menu item"),
+                action: function() {
+                    Sound.click();
+                    internetMod.ShowWindow();
+                    GameManager.resume(false);
+                }
+            })
+            showMenuUI(type, menuItems, x, y);
+        }
 
-    UI._showContextMenu = showMenuItem;
-}
+        UI._showContextMenu = showMenuItem;
+    }
 });
