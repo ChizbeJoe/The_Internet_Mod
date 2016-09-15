@@ -316,19 +316,25 @@ internetMod.addInternetToMenu = function() {
     }
 
     internetMod.checkForReply = function(email) {
-        if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && $("#Email_" + email.id + "-2").hasClass('forGen')) {
-            console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            $('#trashEmail_' + email.id + '').remove();
-            $("#Email_" + email.id + "-2").removeClass('forGen');
-            $("#Email_" + email.id + "-2").append('<hr>' +
-                '<div id="subjectE">Response 2:</div>' +
-                '<p id="emailENTRY" class="emailENTRY"></p> <hr>' +
-                '<table id="emailOptions_' + email.id + '-2" class="emailOptions" cellspacing="20px"> <tr>' +
-                '<td id="Option1_' + email.id + '-2" class="emailOption forGenl"></td>' +
-                '<td id="Option2_' + email.id + '-2" class="emailOption forGenl"></td> </tr> </table>' +
-                '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
-            internetMod.countNotifs(1);
+        internetMod.addResponse = function(emailNumber, emailMessage, emailVersionOption1, emailVersionOption2) {
+            if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && $('#otherResponses_' + email.id + '').hasClass('forGen')) {
+                console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                $('#trashEmail_' + email.id + '').remove();
+                $('#otherResponses_' + email.id + '').removeClass('forGen');
+                $('#otherResponses_' + email.id + '').append('<div id="Email_' + email.id + '-' + emailNumber + '" class="emailInfo forGen">' +
+                    '<hr>' +
+                    '<div id="subjectE">Response ' + emailNumber + ':</div>' +
+                    '<p id="emailENTRY" class="emailENTRY">' + emailMessage + '</p> <hr>' +
+                    '<table id="emailOptions_' + email.id + '-' + emailNumber + '" class="emailOptions" cellspacing="20px"> <tr>' +
+                    '<td id="Option1_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption1 + '</td>' +
+                    '<td id="Option2_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption2 + '</td> </tr> </table>' +
+                    '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
+                $('#otherResponses_' + email.id + '').show();
+                internetMod.countNotifs(1);
+            }
         }
+
+        // Notifies user when/if he or she has a new message
         if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-2').hasClass('disableElement')) {
             $('#checkmark_' + email.id + '').hide();
             $('#haveMSG_' + email.id + '').show();
@@ -337,18 +343,18 @@ internetMod.addInternetToMenu = function() {
             $('#haveMSG_' + email.id + '').hide();
         }
 
-        if ($('#Option1_' + email.id + '-1').hasClass('forGen')  && !$('#Option2_' + email.id + '-1').hasClass('forGen')) {
-          $('#Option1_' + email.id + '-1').removeClass('forGen');
-          $('#Email_' + email.id + '-2 #emailENTRY').append('' + email.v1_message2 + '');
-          $('#Option1_' + email.id + '-2').append('' + email.v1_m2_option1 + '');
-          $('#Option2_' + email.id + '-2').append('' + email.v1_m2_option2 + '');
+        // Displays version 1 of email (might condense this as well)
+        if ($('#Option1_' + email.id + '-1').hasClass('forGen') && !$('#Option2_' + email.id + '-1').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option1_' + email.id + '-1').removeClass('forGen');
+            internetMod.addResponse(2, email.v1_message2, email.v1_m2_option1, email.v1_m2_option2);
         }
 
-        if ($('#Option2_' + email.id + '-1').hasClass('forGen')  && !$('#Option1_' + email.id + '-1').hasClass('forGen')) {
-          $('#Option2_' + email.id + '-1').removeClass('forGen');
-          $('#Email_' + email.id + '-2 #emailENTRY').append('' + email.v2_message2 + '');
-          $('#Option1_' + email.id + '-2').append('' + email.v2_m2_option1 + '');
-          $('#Option2_' + email.id + '-2').append('' + email.v2_m2_option2 + '');
+        // Displays version 2 of email (might condense this as well)
+        if ($('#Option2_' + email.id + '-1').hasClass('forGen') && !$('#Option1_' + email.id + '-1').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option2_' + email.id + '-1').removeClass('forGen');
+            internetMod.addResponse(2, email.v2_message2, email.v2_m2_option1, email.v2_m2_option2);
         }
 
         $('#Option1_' + email.id + '-2').on('click', function(event) {
@@ -429,8 +435,10 @@ internetMod.addInternetToMenu = function() {
             '<td id="Option2_' + email.id + '-1" class="emailOption">' + email.option2 + '</td> </tr> </table>' +
             '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>' +
             '</div>' +
+            '<div id="otherResponses_' + email.id + '" class="forGen">' +
             // Message 2
-            '<div id="Email_' + email.id + '-2" class="emailInfo forGen">' +
+            //    '<div id="Email_' + email.id + '-2" class="emailInfo forGen">' +
+            '</div>' +
             '</div>');
 
         internetMod.optionDefaults = function(emailNumber, option) {
