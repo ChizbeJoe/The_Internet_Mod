@@ -249,11 +249,12 @@
     height: 600px;
     padding: 10px;
     overflow-y: scroll;
+    padding-bottom: 5px;
 }
 
 .emailInfo {
     font-family: "Century Gothic";
-    color: grey;
+    color: #808080;
 }
 
 .emailSubj {
