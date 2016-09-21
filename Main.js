@@ -18,8 +18,6 @@ var internetMod = {};
 
 
     GDT.loadJs([
-        'Code/welcomeMessage.js',
-        'Code/testingStuff.js',
         'Code/internetBulk.js',
     ], ready, error);
 

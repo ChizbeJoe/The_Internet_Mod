@@ -302,17 +302,17 @@ internetMod.addInternetToMenu = function() {
     internetMod.emailList = [];
     internetMod.emailListToAdd = [];
 
+    internetMod.reset = function() {
+        internetMod.emailList = [];
+        $("#emailMSGList").html("");
+    }
+
     internetMod.startNewGame = function() {
         internetMod.reset();
     }
 
     internetMod.load = function() {
         internetMod.reset();
-    }
-
-    internetMod.reset = function() {
-        internetMod.emailList = [];
-        $("#emailMSGList").html("");
     }
 
     internetMod.checkForReply = function(email) {
@@ -332,42 +332,125 @@ internetMod.addInternetToMenu = function() {
                 $('#otherResponses_' + email.id + '').show();
                 internetMod.countNotifs(1);
             }
-        }
 
-        // Notifies user when/if he or she has a new message
-        if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-2').hasClass('disableElement')) {
-            $('#checkmark_' + email.id + '').hide();
-            $('#haveMSG_' + email.id + '').show();
-            $('#List_' + email.id + '').addClass('haveMSGborder');
-        } else {
-            $('#haveMSG_' + email.id + '').hide();
+            // Notifies user when/if he or she has a new message
+            if ($('#emailOptions_' + email.id + '-' + emailNumber - 1 + '').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-' + emailNumber + '').hasClass('disableElement')) {
+                $('#checkmark_' + email.id + '').hide();
+                $('#haveMSG_' + email.id + '').show();
+                $('#List_' + email.id + '').addClass('haveMSGborder');
+            } else {
+                $('#haveMSG_' + email.id + '').hide();
+            }
+
         }
 
         // Displays version 1 of email (might condense this as well)
         if ($('#Option1_' + email.id + '-1').hasClass('forGen') && !$('#Option2_' + email.id + '-1').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option1_' + email.id + '-1').removeClass('forGen');
-            internetMod.addResponse(2, email.v1_message2, email.v1_m2_option1, email.v1_m2_option2);
+            internetMod.addResponse(2, email.v1_message2, email.v1_message2_option1, email.v1_message2_option2);
         }
 
         // Displays version 2 of email (might condense this as well)
         if ($('#Option2_' + email.id + '-1').hasClass('forGen') && !$('#Option1_' + email.id + '-1').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option2_' + email.id + '-1').removeClass('forGen');
-            internetMod.addResponse(2, email.v2_message2, email.v2_m2_option1, email.v2_m2_option2);
+            internetMod.addResponse(2, email.v2_message2, email.v2_message2_option1, email.v1_message2_option2);
         }
 
         $('#Option1_' + email.id + '-2').on('click', function(event) {
             internetMod.optionDefaults(2, 'Option1');
 
-            email.v1_m2_option1_ifSelected && email.v1_m2_option1_ifSelected();
+            email.v1_message2_option1_ifSelected && email.v1_message2_option1_ifSelected();
         });
 
         $('#Option2_' + email.id + '-2').on('click', function(event) {
             internetMod.optionDefaults(2, 'Option2');
 
-            email.v1_m2_option2_ifSelected && email.v1_m2_option2_ifSelected();
+            email.v1_message2_option2_ifSelected && email.v1_message2_option2_ifSelected();
         });
+
+        // Thrid message
+        // Displays version 1 of email (might condense this as well)
+        if ($('#Option1_' + email.id + '-2').hasClass('forGen') && !$('#Option2_' + email.id + '-2').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option1_' + email.id + '-2').removeClass('forGen');
+            internetMod.addResponse(3, email.v1_message3, email.v1_message3_option1, email.v1_message3_option2);
+        }
+
+        // Displays version 2 of email (might condense this as well)
+        if ($('#Option2_' + email.id + '-2').hasClass('forGen') && !$('#Option1_' + email.id + '-2').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option2_' + email.id + '-2').removeClass('forGen');
+            internetMod.addResponse(3, email.v2_message3, email.v2_message3_option1, email.v1_message3_option2);
+        }
+
+        $('#Option1_' + email.id + '-3').on('click', function(event) {
+            internetMod.optionDefaults(3, 'Option1');
+
+            email.v1_message3_option1_ifSelected && email.v1_message3_option1_ifSelected();
+        });
+
+        $('#Option2_' + email.id + '-3').on('click', function(event) {
+            internetMod.optionDefaults(3, 'Option2');
+
+            email.v1_message3_option2_ifSelected && email.v1_message3_option2_ifSelected();
+        });
+
+        // Fourth message
+        // Displays version 1 of email (might condense this as well)
+        if ($('#Option1_' + email.id + '-3').hasClass('forGen') && !$('#Option2_' + email.id + '-3').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option1_' + email.id + '-3').removeClass('forGen');
+            internetMod.addResponse(4, email.v1_message4, email.v1_message4_option1, email.v1_message4_option2);
+        }
+
+        // Displays version 2 of email (might condense this as well)
+        if ($('#Option2_' + email.id + '-3').hasClass('forGen') && !$('#Option1_' + email.id + '-3').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option2_' + email.id + '-3').removeClass('forGen');
+            internetMod.addResponse(4, email.v2_message4, email.v2_message4_option1, email.v1_message4_option2);
+        }
+
+        $('#Option1_' + email.id + '-4').on('click', function(event) {
+            internetMod.optionDefaults(4, 'Option1');
+
+            email.v1_message4_option1_ifSelected && email.v1_message4_option1_ifSelected();
+        });
+
+        $('#Option2_' + email.id + '-4').on('click', function(event) {
+            internetMod.optionDefaults(4, 'Option2');
+
+            email.v1_message4_option2_ifSelected && email.v1_message4_option2_ifSelected();
+        });
+
+        // Fifth message
+        // Displays version 1 of email (might condense this as well)
+        if ($('#Option1_' + email.id + '-4').hasClass('forGen') && !$('#Option2_' + email.id + '-4').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option1_' + email.id + '-4').removeClass('forGen');
+            internetMod.addResponse(5, email.v1_message5, email.v1_message5_option1, email.v1_message5_option2);
+        }
+
+        // Displays version 2 of email (might condense this as well)
+        if ($('#Option2_' + email.id + '-4').hasClass('forGen') && !$('#Option1_' + email.id + '-4').hasClass('forGen')) {
+            $('#otherResponses_' + email.id + '').addClass('forGen');
+            $('#Option2_' + email.id + '-4').removeClass('forGen');
+            internetMod.addResponse(5, email.v2_message5, email.v2_message5_option1, email.v1_message5_option2);
+        }
+
+        $('#Option1_' + email.id + '-5').on('click', function(event) {
+            internetMod.optionDefaults(5, 'Option1');
+
+            email.v1_message5_option1_ifSelected && email.v1_message5_option1_ifSelected();
+        });
+
+        $('#Option2_' + email.id + '-5').on('click', function(event) {
+            internetMod.optionDefaults(5, 'Option2');
+
+            email.v1_message5_option2_ifSelected && email.v1_message5_option2_ifSelected();
+        });
+        // --------------------------------------------------------------------------------------------------------------------------------
 
         $('#trashEmail_' + email.id + '').dblclick(function() {
             $('#emailMain').children().remove();
@@ -379,23 +462,22 @@ internetMod.addInternetToMenu = function() {
         for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
             var email = internetMod.emailListToAdd[i];
             var date = email.date.split('/');
-            if (GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
+            if (email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);
+                $('#emailDate').append('' + GameManager.company.currentWeek +'');
+                Sound.playSoundOnce("bugDecrease", 0.2);
+            } else if (email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
+                internetMod.emailList.push(email);
+                internetMod.AddEmailToHTMLPage(email);
+                internetMod.countNotifs(0);
+                $('#emailDate').append('' + email.date +'');
                 Sound.playSoundOnce("bugDecrease", 0.2);
             }
-            /* Trigger thingy
-            if (email.itrigger && email.itrigger()) {
-              internetMod.emailList.push(email);
-              internetMod.AddEmailToHTMLPage(email);
-              internetMod.countNotifs(0);
-            }
-            */
+            internetMod.checkForReply(email);
         }
-        internetMod.checkForReply(email);
     }
-
 
     GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
     GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
@@ -424,10 +506,12 @@ internetMod.addInternetToMenu = function() {
         */
 
         var emailOpened = $("#emailMain");
-        emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo">' +
+        emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo forGen">' +
             'Category: ' + email.category + ' <br>' +
             'From: ' + email.from + ' (' + email.address + ')<br>' +
-            'Date: ' + email.date + ' <br> <br>' +
+            'Date: <span id="#emailDate"></span>' +
+            '<br>' +
+            '<br>' +
             '<div class="emailSubj">Subject: ' + email.subject + ' </div> <hr>' +
             '<p class="emailENTRY">' + email.message + '</p> <hr>' +
             '<table id="emailOptions_' + email.id + '-1" class="emailOptions" cellspacing="20px"> <tr>' +
@@ -493,12 +577,12 @@ internetMod.addInternetToMenu = function() {
     // Example internet email message
     var internetMod_tutorialEmail = function() {
         internetMod.AddEmail({
-            id: 'welcomeEmail', // must be unique
-            /* itrigger: function(company) {
-              GameManager.company.currentLevel == 1;
-            }, */
+            id: 'testEmail', // must be unique
+            trigger: function(email) {
+              return GameManager.company.currentLevel == 1;
+            },
             category: 'Media', // must be internetCompany, Media, Fans, or Companies
-            date: '1/1/3',
+            date: '', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
             from: 'Jimmy Dean',
             address: 'jdean@zmail.com',
             subject: 'Welcome to Email!',
@@ -512,24 +596,88 @@ internetMod.addInternetToMenu = function() {
                 internetMod.addMoney(-1000, 'BLAH');
             },
             // Email received based on option
-            // Possible Outcome 1
-            v1_message2: 'Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
-            v1_m2_option1: 'Fine',
-            v1_m2_option1_ifSelected: function() {
+            // Message 2
+            // Possible Outcome 1 (v1 = version1, v2 = version2. There has to be two versions since there are two options for each response)
+            v1_message2: 'Message 2 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
+            v1_message2_option1: 'Fine',
+            v1_message2_option1_ifSelected: function() {
                 internetMod.addMoney(1000, 'Kloo');
             },
-            v1_m2_option2: 'Still no',
-            v1_m2_option2_ifSelected: function() {
+            v1_message2_option2: 'Still no',
+            v1_message2_option2_ifSelected: function() {
                 internetMod.addMoney(1000, 'KLAH');
             },
             // Possible Outcome 2
-            v2_message2: 'Version NUMBER TWOOOOOOOO',
-            v2_m2_option1: 'Fine',
-            v2_m2_option1_ifSelected: function() {
+            v2_message2: 'Message 2 Version NUMBER TWOOOOOOOO',
+            v2_message2_option1: 'Fine',
+            v2_message2_option1_ifSelected: function() {
                 internetMod.addMoney(1000, 'Zloo');
             },
-            v2_m2_option2: 'Still no',
-            v2_m2_option2_ifSelected: function() {
+            v2_message2_option2: 'Still no',
+            v2_message2_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zlah');
+            },
+            // Message 3
+            // Possible Outcome 1
+            v1_message3: 'Message 3 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
+            v1_message3_option1: 'Fine',
+            v1_message3_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Kloo');
+            },
+            v1_message3_option2: 'Still no',
+            v1_message3_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'KLAH');
+            },
+            // Possible Outcome 2
+            v2_message3: 'Message 3 Version NUMBER TWOOOOOOOO',
+            v2_message3_option1: 'Fine',
+            v2_message3_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zloo');
+            },
+            v2_message3_option2: 'Still no',
+            v2_message3_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zlah');
+            },
+            // Message 4
+            // Possible Outcome 1
+            v1_message4: 'Message 4 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
+            v1_message4_option1: 'Fine',
+            v1_message4_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Kloo');
+            },
+            v1_message4_option2: 'Still no',
+            v1_message4_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'KLAH');
+            },
+            // Possible Outcome 2
+            v2_message4: 'Message 4 Version NUMBER TWOOOOOOOO',
+            v2_message4_option1: 'Fine',
+            v2_message4_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zloo');
+            },
+            v2_message4_option2: 'Still no',
+            v2_message4_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zlah');
+            },
+            // Message 5
+            // Possible Outcome 1
+            v1_message5: 'Message 5 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
+            v1_message5_option1: 'Fine',
+            v1_message5_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Kloo');
+            },
+            v1_message5_option2: 'Still no',
+            v1_message5_option2_ifSelected: function() {
+                internetMod.addMoney(1000, 'KLAH');
+            },
+            // Possible Outcome 2
+            v2_message5: 'Message 5 Version NUMBER TWOOOOOOOO',
+            v2_message5_option1: 'Fine',
+            v2_message5_option1_ifSelected: function() {
+                internetMod.addMoney(1000, 'Zloo');
+            },
+            v2_message5_option2: 'Still no',
+            v2_message5_option2_ifSelected: function() {
                 internetMod.addMoney(1000, 'Zlah');
             }
         });
