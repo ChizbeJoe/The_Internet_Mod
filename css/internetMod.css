@@ -3,7 +3,7 @@
 }
 
 .disableElement {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 #internetNotifs {
@@ -52,7 +52,7 @@
 .iNotifs {
     width: 55px;
     height: 55px;
-  /*  background: linear-gradient(to bottom, #8dd4fd 0%, #5cbdf2 40%, #0599ef 100%); */
+    /*  background: linear-gradient(to bottom, #8dd4fd 0%, #5cbdf2 40%, #0599ef 100%); */
     border-radius: 50%;
     margin: -15px;
 }
@@ -99,19 +99,19 @@
 }
 
 .justEmail {
-  width: 35%;
+    width: 35%;
 }
 
 .plusBug {
-  width: 55%;
+    width: 55%;
 }
 
 .plusSocial {
-  width: 75%;
+    width: 75%;
 }
 
 .plusXYZ {
-  width: 100%;
+    width: 100%;
 }
 
 #tabBar {
@@ -125,6 +125,8 @@
     padding: 10px;
     cursor: pointer;
     width: 15%;
+    height: 20px;
+    overflow: hidden;
     transition: 0.2s ease-in-out;
 }
 
@@ -160,7 +162,7 @@
 }
 
 #refresh {
-    width: 4%;
+    width: 3%;
     transition: 0.1s ease-in-out;
     background: rgba(255, 255, 255, 0.94);
     border-radius: 10px 10px 0px 0px;
@@ -176,6 +178,13 @@
 #refresh:active {
     background: #FFFFFF;
     box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.refresh {
+    width: 30px;
+    height: auto;
+    position: absolute;
+    margin: -13px 1px;
 }
 
 
@@ -410,26 +419,27 @@ ul.priList li:active {
 }
 
 .haveMSG {
-  width: 20px;
-  float: right;
-  color: #FF4500;
-  font-weight: bold;
-  font-size: 18pt;
+    width: 20px;
+    float: right;
+    color: #FF4500;
+    font-weight: bold;
+    font-size: 18pt;
 }
 
 .haveMSGborder {
-  border: solid 1px #FF4500;
+    border: solid 1px #FF4500;
 }
 
 .optionDisplay {
-  background: linear-gradient(to right, rgba(172,215,244,1) 0%,rgba(25,146,221,1) 100%); /*CHANGE THIS BACKGROUND*/
+    background: linear-gradient(to right, rgba(172, 215, 244, 1) 0%, rgba(25, 146, 221, 1) 100%);
+    /*CHANGE THIS BACKGROUND*/
 }
 
 .optionActual {
-  padding-left: 5px;
-  padding-bottom: 5px;
-  font-family: 'Open Sans';
-  font-size: 9pt;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    font-family: 'Open Sans';
+    font-size: 9pt;
 }
 
 .checkmark_Email {

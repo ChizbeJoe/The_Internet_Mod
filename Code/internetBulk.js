@@ -1,5 +1,6 @@
 /*
 TO-DO List (Not Done is "-". Done is "+"):
+- Clean up and organize code
 + Make functions in mod scope
 - Make Internet Mod data save to a specfic save file (probably need to use dataStore or something)
 - Maybe have news and trends be on a website
@@ -15,6 +16,43 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
+
+function Timer(callback, delay) {
+    var timerId, start, remaining = delay;
+
+    this.Pause = function() {
+        window.clearTimeout(timerId);
+        remaining -= new Date() - start;
+    };
+
+    this.Resume = function() {
+        start = new Date();
+        window.clearTimeout(timerId);
+        timerId = window.setTimeout(callback, remaining);
+    };
+
+    this.Resume();
+}
+
+// Implements Context Menu Button
+internetMod.addOptionToContextMenu = function() {
+    var showMenuUI = UI._showContextMenu;
+    var showMenuItem = function(type, menuItems, x, y) {
+        menuItems.push({
+            label: "Internet...".localize("menu item"),
+            action: function() {
+                Sound.click();
+                internetMod.ShowWindow();
+                GameManager.resume(false);
+                // addReplyBulk.Pause();
+            }
+        })
+        showMenuUI(type, menuItems, x, y);
+    }
+
+    UI._showContextMenu = showMenuItem;
+}
+
 
 // Thanks kristof!
 internetMod.addMoney = function(money, text) {
@@ -40,6 +78,7 @@ internetMod.emailNotifOPEN = function() {
     $("#internet").show();
     $("#emailSITE").show();
     GameManager.pause(true);
+    // addReplyBulk.Pause();
 }
 
 /* Internet Window HTML
@@ -87,35 +126,16 @@ internetMod.createBugWebsite = function() {
 internetMod.createSocialWebsite = function() {
     $('#navBar').removeClass('plusBug');
     $('#navBar').addClass('plusSocial');
-    $('#tabBar').append('<td id="social" class="tab" onclick="internetMod.openSocial()">Social Network</td>');
-    $('#content').append('<div id="socialSITE">' +
-        '<div id="socialNav">' +
-        '<div id="home" class="flutterBanner">FLUTTER</div>' +
-        '<!-- Insert icons when compiling and organizing -->' +
-        '<div id="navButts">' +
-        '<div id="home" class="butt">HOME</div>' +
-        '<div id="notifications" class="butt">NOTIFS</div>' +
-        '<div id="trends" class="butt">TRENDS</div>' +
-        '<div id="profile" class="butt">PROFILE</div> </div> </div>' +
-        '<div id="socialContent">' +
-        '<div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"></img><div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div>' +
-        '<div class="profileStats">' +
-        '<div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div>' +
-        '<div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div>' +
-        '<div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div>' +
-        '<div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div>' +
-        '<div class="widget">' +
-        '<div class="widget-form">' +
-        '<textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="internetMod.postFlutterMessage()">Post</div> </div> <div class="widget-conversation">' +
-        '<ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
+    $('#social').show();
+    $('#socialSITE').show()
 }
 
 //NOT SURE YET Website
 internetMod.createXYZWebsite = function() {
     $('#navBar').removeClass('plusSocial');
     $('#navBar').addClass('plusXYZ');
-    $('#tabBar').append('<td id="forum" class="tab" onclick="internetMod.openXYZ()">Forum</td>');
-    $('#content').append('<div id="forumSITE">Sorry <br> Not Available</div>');
+    $('#forum').show();
+    $('#forumSITE').show();
 }
 
 // Email Notifications
@@ -128,15 +148,17 @@ internetMod.countNotifs = function(notifNumber) {
 // not yet working
 $("#iNotifs").bind("DOMSubtreeModified", function() {
     $("#iNotifs").animate({
-        margin: '-10px',
-        width: '40px',
-        height: '40px'
-    }, 500, function(e) {
+        margin: '-45px 28px',
+        width: '30px',
+        height: '30px',
+        fontSize: '18pt'
+    }, 200, function(e) {
         $("#iNotifs").animate({
-            margin: '-5px',
-            width: '30px',
-            height: '30px'
-        }, 500)
+            margin: '-45px 28px',
+            width: '20px',
+            height: '20px',
+            fontSize: '12pt'
+        }, 200)
     });
 });
 
@@ -157,11 +179,11 @@ internetMod.refresh = function() {
     Sound.click();
     $("#loaders").append('REFRESHING...');
     $("#loaders").show();
-    GameManager.resume(!0);
+    GameManager.resume(true);
     setTimeout(function() {
         $("#loaders").hide();
         $("#loaders").empty();
-        GameManager.pause(!0);
+        GameManager.pause(true);
     }, 1500);
 };
 
@@ -233,7 +255,8 @@ internetMod.openBug = function() {
 internetMod.exit = function() {
     Sound.click();
     $("#internet").hide();
-    GameManager.resume(!0);
+    GameManager.resume(true);
+    // addReplyBulk.Resume();
 };
 
 // Social Netowrk ------------------------------------------------------------------------------------------------------
@@ -299,6 +322,7 @@ internetMod.addInternetToMenu = function() {
 // Creates the template for adding an email message
 (internetMod.initEmail = function() {
     console.log("Internet emails have intialized!");
+    internetMod.UIInitialized = false;
     internetMod.emailList = [];
     internetMod.emailListToAdd = [];
 
@@ -319,18 +343,28 @@ internetMod.addInternetToMenu = function() {
         internetMod.addResponse = function(emailNumber, emailMessage, emailVersionOption1, emailVersionOption2) {
             if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && $('#otherResponses_' + email.id + '').hasClass('forGen')) {
                 console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                $('#trashEmail_' + email.id + '').remove();
-                $('#otherResponses_' + email.id + '').removeClass('forGen');
-                $('#otherResponses_' + email.id + '').append('<div id="Email_' + email.id + '-' + emailNumber + '" class="emailInfo forGen">' +
-                    '<hr>' +
-                    '<div id="subjectE">Response ' + emailNumber + ':</div>' +
-                    '<p id="emailENTRY" class="emailENTRY">' + emailMessage + '</p> <hr>' +
-                    '<table id="emailOptions_' + email.id + '-' + emailNumber + '" class="emailOptions" cellspacing="20px"> <tr>' +
-                    '<td id="Option1_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption1 + '</td>' +
-                    '<td id="Option2_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption2 + '</td> </tr> </table>' +
-                    '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
-                $('#otherResponses_' + email.id + '').show();
-                internetMod.countNotifs(1);
+                var addReplyBulk = new Timer(function() {
+                    $('#trashEmail_' + email.id + '').remove();
+                    $('#otherResponses_' + email.id + '').removeClass('forGen');
+                    $('#otherResponses_' + email.id + '').append('<div id="Email_' + email.id + '-' + emailNumber + '" class="emailInfo forGen">' +
+                        '<hr>' +
+                        '<div id="subjectE">Response ' + emailNumber + ':</div>' +
+                        '<p id="emailENTRY" class="emailENTRY">' + emailMessage + '</p> <hr>' +
+                        '<table id="emailOptions_' + email.id + '-' + emailNumber + '" class="emailOptions" cellspacing="20px"> <tr>' +
+                        '<td id="Option1_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption1 + '</td>' +
+                        '<td id="Option2_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption2 + '</td> </tr> </table>' +
+                        '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
+                    $('#otherResponses_' + email.id + '').show();
+                    internetMod.countNotifs(1);
+                }, 1 + 2 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
+            }
+
+            if (GameManager.pause(true) || GameManager.pause(!0)) {
+                addReplyBulk.Pause();
+                rdmEmailTimer.Pause();
+            } else if (GameManager.resume(true) || GameManager.resume(!0)) {
+                addReplyBulk.Resume();
+                rdmEmailTimer.Resume();
             }
 
             // Notifies user when/if he or she has a new message
@@ -458,21 +492,32 @@ internetMod.addInternetToMenu = function() {
         });
     }
 
+
+    // Email Mod Tick that checks for emails every week
     internetMod.emailModTick = function() {
+        if (internetMod.UIInitialized == false) return;
         for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
             var email = internetMod.emailListToAdd[i];
             var date = email.date.split('/');
-            if (email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
+            if (email.isRandomEvent = true || !0 && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
+              var rdmEmailTimer = new Timer(function() {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);
-                $('#emailDate').append('' + GameManager.company.currentWeek +'');
+                $('#emailDate').append('' + GameManager.company.currentWeek + '');
+                Sound.playSoundOnce("bugDecrease", 0.2);
+              }, 2 + 1 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
+            } else if (email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
+                internetMod.emailList.push(email);
+                internetMod.AddEmailToHTMLPage(email);
+                internetMod.countNotifs(0);
+                $('#emailDate').append('' + GameManager.company.currentWeek + '');
                 Sound.playSoundOnce("bugDecrease", 0.2);
             } else if (email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);
-                $('#emailDate').append('' + email.date +'');
+                $('#emailDate').append('' + email.date + '');
                 Sound.playSoundOnce("bugDecrease", 0.2);
             }
             internetMod.checkForReply(email);
@@ -489,7 +534,6 @@ internetMod.addInternetToMenu = function() {
     }
 
     internetMod.AddEmailToHTMLPage = function(email) {
-
         var emailMessageList = $("#emailMSGList");
         emailMessageList.append('<li id="List_' + email.id + '" class="forGenl priListItem"> <div class="rndPrItem"><div id="haveMSG_' + email.id + '" class="haveMSG">!</div><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
             '<div id="nameE">' + email.from + '</div>' +
@@ -499,14 +543,8 @@ internetMod.addInternetToMenu = function() {
             //'<div id="optionDisplay_' + email.id + '" class="optionDisplay" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div>' +
             '</li>');
 
-        /*
-                '' + email.id + '_' + email.option1 + '' = function() {
-                    email.option1_ifSelected;
-                }
-        */
-
         var emailOpened = $("#emailMain");
-        emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo forGen">' +
+        emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo">' +
             'Category: ' + email.category + ' <br>' +
             'From: ' + email.from + ' (' + email.address + ')<br>' +
             'Date: <span id="#emailDate"></span>' +
@@ -537,8 +575,6 @@ internetMod.addInternetToMenu = function() {
             Sound.click();
             internetMod.countNotifs(0);
             //      $('#optionDisplay_' + email.id + '').show();
-            //Because you are setting pointer-events: none; The update code for refreshing the UIisn't update;
-            //Call this to force a repaint. Suggest to use a button and put the disabled attribute on it. This way this workaround is not needed.
             $('#List_' + email.id + '').toggle().toggle();
         }
 
@@ -569,7 +605,7 @@ internetMod.addInternetToMenu = function() {
         $('#List_' + email.id + '').click(function() {
             $('#Email_' + email.id + '').siblings().hide();
             $('#Email_' + email.id + '').show();
-            $('#Email_' + email.id + '-2').show();
+            $('#otherResponses_' + email.id + '').show();
             Sound.playSoundOnce("reviewTack", 0.2);
         });
     }
@@ -578,8 +614,9 @@ internetMod.addInternetToMenu = function() {
     var internetMod_tutorialEmail = function() {
         internetMod.AddEmail({
             id: 'testEmail', // must be unique
+            isRandomEvent: true,
             trigger: function(email) {
-              return GameManager.company.currentLevel == 1;
+                return GameManager.company.currentLevel == 1;
             },
             category: 'Media', // must be internetCompany, Media, Fans, or Companies
             date: '', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
@@ -701,47 +738,10 @@ GDT.addEvent({
         });
     },
     complete: function() {
-        // Implements Email Window
-        $("body").append('<div id="internet">' +
-            '<table class="navBar justEmail"> <tr id="tabBar">' +
-            '<td id="refresh" onclick="internetMod.refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i></td>' +
-            '<td id="email" class="tab" onclick="internetMod.openEmail()">Email</td>' +
-            '<td id="exit" class="tabX" onclick="internetMod.exit()"> </td> </tr> </table>' +
-            '<div id="content" class="content">' +
-            //Email Website
-            '<div id="emailSITE">' +
-            '<div class="overview">' +
-            '<div id="notifs">All Messages</div>' +
-            '<hr>' +
-            '<ul id="emailMSGList" class="priList"></ul></div>' +
-            '<div class="viewport">' +
-            '<table class="inNav">' +
-            '<tr>' +
-            '<td>Company Name</td> <td>Media</td> <td>Companies</td> <td>Fans</td>' +
-            '</tr> </table>' +
-            '<div id="emailMain" class="emailMain"></div> </div> </div>' +
-            // Loading Div
-            '<div id="loaders"></div> </div></div>' +
-            // Email Notifications
-            '<div id="internetNotifs" onclick="internetMod.emailNotifOPEN()">' +
-            '<img class="iNotifs" src="./mods/The_Internet_Mod/img/mail-Icon.png"><div id="iNotifs">0</div></img></div>' +
-            '</div>');
-        $("#internet").hide();
+        internetMod.UIInitialized = true;
+        $("#internetNotifs").show();
 
-        // Implements Context Menu Button
-        var showMenuUI = UI._showContextMenu;
-        var showMenuItem = function(type, menuItems, x, y) {
-            menuItems.push({
-                label: "Internet...".localize("menu item"),
-                action: function() {
-                    Sound.click();
-                    internetMod.ShowWindow();
-                    GameManager.resume(false);
-                }
-            })
-            showMenuUI(type, menuItems, x, y);
-        }
-
-        UI._showContextMenu = showMenuItem;
+        // I am going to change how I implement this, but for now, I will let it be
+        internetMod.addOptionToContextMenu();
     }
 });
