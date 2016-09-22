@@ -506,13 +506,13 @@ internetMod.addInternetToMenu = function() {
                 $('#emailDate').append('' + GameManager.company.currentWeek + '');
                 Sound.playSoundOnce("bugDecrease", 0.2);
               }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
-            } else if (email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
+            } else if (email.isRandomEvent == false && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);
                 $('#emailDate').append('' + GameManager.company.currentWeek + '');
                 Sound.playSoundOnce("bugDecrease", 0.2);
-            } else if (email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
+            } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);

@@ -85,7 +85,6 @@ var internetMod = {};
         console.log("The Internet Mod has failed to load");
     };
 
-
     GDT.loadJs([
         'Code/internetBulk.js',
     ], ready, error);
