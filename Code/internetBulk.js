@@ -16,6 +16,7 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
+var dataStore = GDT.getDataStore("InternetMod");
 
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
@@ -361,10 +362,8 @@ internetMod.addInternetToMenu = function() {
 
             if (GameManager.pause(true) || GameManager.pause(!0)) {
                 addReplyBulk.Pause();
-                rdmEmailTimer.Pause();
             } else if (GameManager.resume(true) || GameManager.resume(!0)) {
                 addReplyBulk.Resume();
-                rdmEmailTimer.Resume();
             }
 
             // Notifies user when/if he or she has a new message
@@ -499,14 +498,14 @@ internetMod.addInternetToMenu = function() {
         for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
             var email = internetMod.emailListToAdd[i];
             var date = email.date.split('/');
-            if (email.isRandomEvent = true || !0 && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
+            if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
               var rdmEmailTimer = new Timer(function() {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
                 internetMod.countNotifs(0);
                 $('#emailDate').append('' + GameManager.company.currentWeek + '');
                 Sound.playSoundOnce("bugDecrease", 0.2);
-              }, 2 + 1 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
+              }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
             } else if (email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
                 internetMod.emailList.push(email);
                 internetMod.AddEmailToHTMLPage(email);
@@ -522,6 +521,12 @@ internetMod.addInternetToMenu = function() {
             }
             internetMod.checkForReply(email);
         }
+    }
+
+    if (GameManager.pause(true) || GameManager.pause(!0)) {
+        rdmEmailTimer.Pause();
+    } else if (GameManager.resume(true) || GameManager.resume(!0)) {
+        rdmEmailTimer.Resume();
     }
 
     GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
@@ -618,7 +623,7 @@ internetMod.addInternetToMenu = function() {
             trigger: function(email) {
                 return GameManager.company.currentLevel == 1;
             },
-            category: 'Media', // must be internetCompany, Media, Fans, or Companies
+            category: 'Media', // must be playerCompany, Media, Fans, or Companies
             date: '', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
             from: 'Jimmy Dean',
             address: 'jdean@zmail.com',
