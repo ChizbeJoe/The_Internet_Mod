@@ -16,7 +16,6 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
-var dataStore = GDT.getDataStore("InternetMod");
 
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
@@ -36,10 +35,9 @@ function Timer(callback, delay) {
 }
 
 // Implements Context Menu Button
-internetMod.addOptionToContextMenu = function() {
-    var showMenuUI = UI._showContextMenu;
+var showMenuUI = UI._showContextMenu;
     var showMenuItem = function(type, menuItems, x, y) {
-        menuItems.push({
+		var item = {
             label: "Internet...".localize("menu item"),
             action: function() {
                 Sound.click();
@@ -47,13 +45,16 @@ internetMod.addOptionToContextMenu = function() {
                 GameManager.resume(false);
                 // addReplyBulk.Pause();
             }
-        })
+        };
+		
+		if(internetMod.UIInitialized){
+			menuItems.push(item);
+		}
+		
         showMenuUI(type, menuItems, x, y);
     }
 
     UI._showContextMenu = showMenuItem;
-}
-
 
 // Thanks kristof!
 internetMod.addMoney = function(money, text) {
@@ -71,8 +72,8 @@ internetMod.addFans = function(fans) {
 
 internetMod.addHype = function(hype) {
         GameManager.company.adjustHype(hype);
-    }
-    // kristof1104 is the best ---------------------------------------------------------------------------------------------------
+}
+// kristof1104 is the best --------------------------------------------------------------------------------------------------- (Thx :-) )
 
 internetMod.emailNotifOPEN = function() {
     $("#loaders").hide();
@@ -336,9 +337,35 @@ internetMod.addInternetToMenu = function() {
         internetMod.reset();
     }
 
-    internetMod.load = function() {
-        internetMod.reset();
+    internetMod.load = function(e) {
+        var data = e.data;
+		var internetModData = data['internetModData'];
+		if (!internetModData) {
+			internetMod.startNewGame();
+		}else if(internetModData["added_emails"]){
+			internetMod.emailList = internetModData["added_emails"].map(
+				function (o) {
+						return internetMod.emailListToAdd.first(function(item){return item.id == o.id});
+				}
+			);
+			internetMod.UIInitialized = internetModData["UIInitialized"];
+			if(internetMod.UIInitialized) internetMod.showUI();
+		}
     }
+	
+	internetMod.save = function(e){
+		var data = e.data;
+		var internetModData = data['internetModData'];
+		if (!internetModData) {
+			internetModData = data.internetModData = {};
+		}
+		internetModData["added_emails"] = internetMod.emailList.map(function (n) {return {id:n.id};});
+		internetModData["UIInitialized"] = internetMod.UIInitialized;
+	}	
+	
+	internetMod.showUI = function(){
+		$("#internetNotifs").show();
+	}
 
     internetMod.checkForReply = function(email) {
         internetMod.addResponse = function(emailNumber, emailMessage, emailVersionOption1, emailVersionOption2) {
@@ -491,6 +518,9 @@ internetMod.addInternetToMenu = function() {
         });
     }
 
+	internetMod.isEmailAdded = function(email){
+		return internetMod.emailList.first(function(item){return item.id == email.id}) !== null;
+	} 
 
     // Email Mod Tick that checks for emails every week
     internetMod.emailModTick = function() {
@@ -498,27 +528,29 @@ internetMod.addInternetToMenu = function() {
         for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
             var email = internetMod.emailListToAdd[i];
             var date = email.date.split('/');
-            if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
-              var rdmEmailTimer = new Timer(function() {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + GameManager.company.currentWeek + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-              }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
-            } else if (email.isRandomEvent == false && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + GameManager.company.currentWeek + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-            } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + email.date + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-            }
+			if(internetMod.isEmailAdded(email) == false){
+				if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company)) {
+				  var rdmEmailTimer = new Timer(function() {
+					internetMod.emailList.push(email);
+					internetMod.AddEmailToHTMLPage(email);
+					internetMod.countNotifs(0);
+					$('#emailDate').append('' + GameManager.company.currentWeek + '');
+					Sound.playSoundOnce("bugDecrease", 0.2);
+				  }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
+				} else if (email.isRandomEvent == false && email.trigger && email.trigger(GameManager.company)) {
+					internetMod.emailList.push(email);
+					internetMod.AddEmailToHTMLPage(email);
+					internetMod.countNotifs(0);
+					$('#emailDate').append('' + GameManager.company.currentWeek + '');
+					Sound.playSoundOnce("bugDecrease", 0.2);
+				} else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
+					internetMod.emailList.push(email);
+					internetMod.AddEmailToHTMLPage(email);
+					internetMod.countNotifs(0);
+					$('#emailDate').append('' + email.date + '');
+					Sound.playSoundOnce("bugDecrease", 0.2);
+				}
+			}
             internetMod.checkForReply(email);
         }
     }
@@ -531,6 +563,7 @@ internetMod.addInternetToMenu = function() {
 
     GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
     GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+    GDT.on(GDT.eventKeys.saves.saving, internetMod.save);
     GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
 
 
@@ -744,9 +777,6 @@ GDT.addEvent({
     },
     complete: function() {
         internetMod.UIInitialized = true;
-        $("#internetNotifs").show();
-
-        // I am going to change how I implement this, but for now, I will let it be
-        internetMod.addOptionToContextMenu();
+		internetMod.showUI();
     }
 });
