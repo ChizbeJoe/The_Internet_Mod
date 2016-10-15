@@ -2,6 +2,10 @@
     display: none;
 }
 
+.showElement {
+    display: block;
+}
+
 .disableElement {
     pointer-events: none;
 }
@@ -273,6 +277,7 @@
 
 .emailENTRY {
     font-family: "Times New Roman", Times, serif;
+    font-size: 13pt;
     color: #000000;
 }
 
@@ -430,7 +435,7 @@ ul.priList li:active {
     border: solid 1px #FF4500;
 }
 
-.optionDisplay {
+.optionSelected {
     background: linear-gradient(to right, rgba(172, 215, 244, 1) 0%, rgba(25, 146, 221, 1) 100%);
     /*CHANGE THIS BACKGROUND*/
 }
@@ -757,6 +762,12 @@ li.flutterPost {
     font-family: 'Lato';
 }
 
+#postDate {
+  font-size: 10pt !important;
+  font-weight: normal !important;
+  letter-spacing: 1px;
+}
+
 .postUsername {
     font-family: 'Lato';
 }
@@ -815,17 +826,215 @@ li.flutterPost {
     border-top: 1px solid rgba(50, 54, 70, 0.08);
 }
 
+.postNewMSG {
+  float: left;
+  width: calc(100% - 10px);
+  height: 60px;
+  padding: 3px;
+  background: linear-gradient(to right, rgba(243,243,243,1) 0%,rgba(218,218,218,1) 100%);
+  border: 1px solid #f4f5f9;
+  border-radius: 6px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  font-size: 24pt;
+  font-family: 'Open Sans';
+  text-align: center;
+  line-height: 170%;
+}
+
+#newMsgUI {
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 956px;
+  height: 660px;
+  position: absolute;
+  border-radius: 0px 0px 10px 10px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#newMsgBulk {
+   margin: 55px 175px;
+}
+
+#msgPreviewBulk {
+  font-family: 'Open Sans';
+  text-align: center;
+}
+
+#msgPreviewHeader {
+  width: 250px;
+  height: 40px;
+  float: left;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+  border-radius: 5px 5px 0px 0px;
+  font-size: 16pt;
+  text-align: center;
+  cursor: default;
+  font-weight: bold;
+}
+
+.msgIt {
+  width: 155px;
+  height: 30px;
+  background: linear-gradient(to bottom, #5df187 0%,#0cb83a 100%);
+  line-height: 180%;
+  border-radius: 3px;
+  margin-left: 20px;
+  margin-top: 5px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  float: left;
+  font-weight: 600;
+  transition: 0.2s ease-in-out;
+}
+
+.msgIt:hover {
+  width: 155px;
+  height: 40px;
+  line-height: 180%;
+  border-radius: 3px 3px 0px 0px;
+  margin-left: 20px;
+  margin-top: 0px;
+  font-weight: bold;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  float: left;
+}
+
+#msgPostIt {
+  background: linear-gradient(to bottom, #5df187 0%,#0cb83a 100%);
+}
+
+#msgTrashIt {
+  background: linear-gradient(to bottom, rgba(250,117,102,1) 0%,rgba(249,55,55,1) 100%);
+}
+
+#newMsgOptions {
+  width: 595px;
+  max-height: 440px;
+  padding: 0px 0px 5px 10px;
+  float: right;
+  margin-top: 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+  border-radius: 6px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  display: block;
+}
+
+.msgOption {
+  height: 40px;
+  width: 574px;
+  margin-top: 10px;
+  padding-left: 10px;
+  line-height: 240%;
+  font-family: 'Open Sans';
+  font-weight: 600;
+  border: 1px solid #000000;
+  list-style-position: inside;
+  list-style-type: none;
+  cursor: pointer;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(227,227,231,1) 100%);
+  border-radius: 5px;
+  transition: 0.2s ease-in-out;
+}
+
+.msgOption:hover {
+  width: 554px;
+  margin-left: -20px;
+  padding-left: 50px;
+  font-weight: bold;
+}
+
+.announceChild {
+  width: 550px;
+  height: 30px;
+  margin-left: 15px;
+  margin-top: 1px;
+  padding-left: 10px;
+  line-height: 200%;
+  font-family: 'Open Sans';
+  font-size: 12pt;
+  border: 1px solid #000000;
+  list-style-position: inside;
+  list-style-type: none;
+  cursor: pointer;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(227,227,231,1) 100%);
+  border-radius: 0px;
+}
+
+.announceChild2 {
+  width: 525px;
+  height: 30px;
+  margin-left: 40px;
+  margin-top: 1px;
+  padding-left: 10px;
+  line-height: 200%;
+  font-family: 'Open Sans';
+  font-size: 12pt;
+  border: 1px solid #000000;
+  list-style-position: inside;
+  list-style-type: none;
+  cursor: pointer;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(227,227,231,1) 100%);
+  border-radius: 0px;
+}
+
+.announceChild3 {
+  width: 515px;
+  min-height: 30px;
+  margin-left: 40px;
+  padding: 10px;
+  line-height: 200%;
+  font-family: 'Open Sans';
+  font-size: 12pt;
+  border: 1px solid #000000;
+  list-style-position: inside;
+  list-style-type: none;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(227,227,231,1) 100%);
+  border-radius: 0px 0px 5px 5px;
+}
+
+.msgGameOption {
+  width: 150px;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(222,222,222,1) 100%);
+  border: 1px solid #000000;
+  border-radius: 5px;
+  margin: 5px;
+  text-align: center;
+  font-size: 12pt;
+  cursor: pointer;
+}
+
+.msgGameOption:hover {
+  font-weight: bold;
+}
+
+.msgOptionSelected {
+  background: linear-gradient(to bottom, rgba(220,246,250,1) 0%,rgba(169,225,239,1) 100%);
+}
+
+.msgOptionChild {
+
+}
+
 .postBox {
-    float: left;
-    width: calc(100% - 60px);
-    height: 70px;
-    padding: 3px;
-    background-color: #f4f5f9;
-    border: 1px solid #f4f5f9;
-    border-radius: 6px;
-    outline: none;
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
-    cursor: text;
+  float: left;
+  width: 600px;
+  height: 70px;
+  padding: 3px;
+  background-color: #f4f5f9;
+  border: 1px solid #f4f5f9;
+  border-radius: 0px 6px 6px 6px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.50);
+  cursor: text;
+  word-wrap: break-word;
 }
 
 #postButton {

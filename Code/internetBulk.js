@@ -1,9 +1,11 @@
+
 /*
 TO-DO List (Not Done is "-". Done is "+"):
 - Clean up and organize code
 + Make functions in mod scope
 - Make Internet Mod data save to a specfic save file (probably need to use dataStore or something)
 - Maybe have news and trends be on a website
+- Start News Website
 - Start Bug Website
 - Finish Social Website
 - Dynamic internet window design (changes over time)
@@ -16,7 +18,6 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
-var dataStore = GDT.getDataStore("InternetMod");
 
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
@@ -36,24 +37,26 @@ function Timer(callback, delay) {
 }
 
 // Implements Context Menu Button
-internetMod.addOptionToContextMenu = function() {
-    var showMenuUI = UI._showContextMenu;
-    var showMenuItem = function(type, menuItems, x, y) {
-        menuItems.push({
-            label: "Internet...".localize("menu item"),
-            action: function() {
-                Sound.click();
-                internetMod.ShowWindow();
-                GameManager.resume(false);
-                // addReplyBulk.Pause();
-            }
-        })
-        showMenuUI(type, menuItems, x, y);
+var showMenuUI = UI._showContextMenu;
+var showMenuItem = function(type, menuItems, x, y) {
+    var item = {
+        label: "Internet...".localize("menu item"),
+        action: function() {
+            Sound.click();
+            internetMod.ShowWindow();
+            GameManager.resume(false);
+            // addReplyBulk.Pause();
+        }
+    };
+
+    if (internetMod.UIInitialized) {
+        menuItems.push(item);
     }
 
-    UI._showContextMenu = showMenuItem;
+    showMenuUI(type, menuItems, x, y);
 }
 
+UI._showContextMenu = showMenuItem;
 
 // Thanks kristof!
 internetMod.addMoney = function(money, text) {
@@ -72,7 +75,7 @@ internetMod.addFans = function(fans) {
 internetMod.addHype = function(hype) {
         GameManager.company.adjustHype(hype);
     }
-    // kristof1104 is the best ---------------------------------------------------------------------------------------------------
+    // kristof1104 is the best --------------------------------------------------------------------------------------------------- (Thx :-) )
 
 internetMod.emailNotifOPEN = function() {
     $("#loaders").hide();
@@ -143,7 +146,7 @@ internetMod.createXYZWebsite = function() {
 internetMod.countNotifs = function(notifNumber) {
     var notifCount = $("#emailMSGList").find('.forGenl').length + notifNumber;
 
-    $("#iNotifs").empty().append(notifCount);
+    $("#iNotifs").html(notifCount);
 }
 
 // not yet working
@@ -178,7 +181,7 @@ internetMod.ShowWindow = function() {
 // Refreshes a page (Currenly not working 100% correctly)
 internetMod.refresh = function() {
     Sound.click();
-    $("#loaders").append('REFRESHING...');
+    $("#loaders").html('REFRESHING...');
     $("#loaders").show();
     GameManager.resume(true);
     setTimeout(function() {
@@ -195,7 +198,7 @@ internetMod.openEmail = function() {
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
-    $("#loaders").append('LOADING...');
+    $("#loaders").html('LOADING...');
     $("#loaders").show();
     setTimeout(function() {
         $("#loaders").hide();
@@ -211,7 +214,7 @@ internetMod.openXYZ = function() {
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
-    $("#loaders").append('LOADING...');
+    $("#loaders").html('LOADING...');
     $("#loaders").show();
     setTimeout(function() {
         $("#loaders").hide();
@@ -227,7 +230,7 @@ internetMod.openSocial = function() {
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
-    $("#loaders").append('LOADING...');
+    $("#loaders").html('LOADING...');
     $("#loaders").show();
     setTimeout(function() {
         $("#loaders").hide();
@@ -243,7 +246,7 @@ internetMod.openBug = function() {
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
-    $("#loaders").append('LOADING...');
+    $("#loaders").html('LOADING...');
     $("#loaders").show();
     setTimeout(function() {
         $("#loaders").hide();
@@ -260,45 +263,178 @@ internetMod.exit = function() {
     // addReplyBulk.Resume();
 };
 
-// Social Netowrk ------------------------------------------------------------------------------------------------------
-// Allows posting on the Social Network website
-internetMod.postFlutterMessage = function() {
-    //  var fLikes = $('').();
 
-    var text = $('#message').val();
-
-    if (text.length > 0) {
-        Sound.playSoundOnce("tack", 0.2);
-        $('#message').css('border', '1px solid #00cc00');
-        $('#conversation').append("<li class='flutterPost'><div class='message-text'>" +
-            "<div class='messageTop'>" +
-            "<img class='postPic' src='http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png'></img>" +
-            "<div class='postInfo'> <div class='postName'>John Smith (You)</div> <div class='postUsername'>@jsmith12</div></div>" +
-            "<div id='postReception'> <div class='postReceptionHeader'>" +
-            "<span style='margin-left: 20px; font-size: 12pt;'>Likes</span>" +
-            "<span style='margin-left: 20px; font-size: 12pt;'>Dislikes</span></div>" +
-            "<div id='postDislikes' class='dislikes'>349</div>" +
-            "<div id='postLikes' class='likes'>4981</div>" +
-            "</div></div>" +
-            "<div class='messageBottom'>" + text + "</div></div></li>");
-        // $('#message').val('');
-        $('.widget-conversation').scrollTop($('ul li').last().position().top + $('ul li').last().height());
-    } else {
-        $('#message').css('border', '1px solid #eb9f9f');
-        $('#message').animate({
-            opacity: '0.1'
-        }, 'slow');
-        $('#message').animate({
-            opacity: '1'
-        }, 'slow');
-        $('#message').animate({
-            opacity: '0.1'
-        }, 'slow');
-        $('#message').animate({
-            opacity: '1'
-        }, 'slow');
+// Social Network ------------------------------------------------------------------------------------------------------
+(function() {
+    // Allows for a timeline on social media
+    internetMod.yearChecker = function() {
+        var d = GameManager.company.getDate(GameManager.company.currentWeek);
+        var a = d.year - 1; // I do minus one because I want it to be the header of the previous year
+        var g = a.toString();
+        if (d.year !== 1 && d.month == 1 && d.week == 1) {
+            $('#conversation').prepend('Year ' + g + ''); // eventually add style to this
+        }
     }
-};
+
+    internetMod.UI_showNewMSG = function() {
+        $('#newMsgUI').fadeIn(100);
+        internetMod.gameAnnouncement();
+    }
+
+    internetMod.clickTest = function() {
+        UI._showNotification(new Notification("{GameDefinition}"));
+    }
+
+    $('.announceChild').hide();
+    $('.announceChild2').hide();
+    $('.announceChild3').hide();
+
+    internetMod.clearMessageBox = function() {
+        $('#msgPrt1').empty();
+        $('#msgPrt2').empty();
+        $('#msgPrt3').empty();
+    }
+
+    internetMod.msgOption_Announce = function() {
+        if (!$('#announce').hasClass('msgOptionSelected') && !$('#announce').hasClass('disableElement')) {
+            $('#announce').addClass('msgOptionSelected').addClass('disableElement');
+            $(this).siblings().removeClass('msgOptionSelected').removeClass('disableElement');
+            $('.announceChild').slideToggle(200);
+        } else {
+            $('#announce').removeClass('msgOptionSelected');
+            $('.announceChild').slideToggle(200);
+            $('.announceChild').removeClass('msgOptionSelected');
+            $('.announceChild2').slideToggle(200);
+            $('.announceChild2').removeClass('msgOptionSelected')
+            internetMod.clearMessageBox();
+        }
+
+        if ($('#announce').hasClass('msgOptionSelected') && $('.announceChild').hasClass('msgOptionSelected')) {
+            $('.announceChild2').slideToggle(200);
+        }
+    }
+
+    $('.announceChild').click(function() {
+        var msgPart1 = $(this).html().replace('"', '').replace('"', '');
+        $(this).addClass('msgOptionSelected');
+        $(this).siblings('.announceChild').removeClass('msgOptionSelected');
+        $('#msgPrt1').text('' + msgPart1 + '');
+        if (!$(this).hasClass('msgOptionSelected') && $('.announceChild2').show()) {
+            $('.announceChild2').slideToggle(200);
+        } else {
+            $('.announceChild2').show();
+        }
+    });
+
+    $('.announceChild2').click(function() {
+        //  var msgPart2 = (this).innerHTML.replace('"', '').replace('"', '');
+        $(this).siblings('.announceChild2').removeClass('msgOptionSelected');
+        $(this).addClass('msgOptionSelected');
+        if ($(this).text() == 'Game') {
+            // I just wanted to vary the messages a bit. I'd like to use this for other parts of the message
+            if (Math.random() > 0.5) {
+                $('#msgPrt2').text('game');
+            } else {
+                $('#msgPrt2').text('video game');
+            }
+        }
+
+        if (!$(this).hasClass('msgOptionSelected') && $('.announceChild3').show()) {
+            $('.announceChild3').slideToggle(200);
+        } else {
+            $('.announceChild3').show();
+        }
+
+    });
+
+    // Closes/Resets the new message window on pressing Trash button
+    internetMod.clearFlutterMessage = function() {
+        $('#newMsgUI').hide();
+        $('.msgOption').removeClass('msgOptionSelected').removeClass('disableElement');
+        $('.announceChild').removeClass('msgOptionSelected').removeClass('disableElement').hide();
+        $('.announceChild2').removeClass('msgOptionSelected').removeClass('disableElement').hide();
+        $('#newMsgPreview').css('border', '1px solid #f4f5f9');
+        internetMod.clearMessageBox();
+    }
+
+    // Allows posting on the Social Network website
+    internetMod.postFlutterMessage = function() {
+        var d = GameManager.company.getDate(GameManager.company.currentWeek);
+        var MsgText = $('#newMSGString').text();
+        var MsgLikes = internetMod.flutterFans;
+
+        if (MsgText.length > 5) {
+            Sound.playSoundOnce("tack", 0.2);
+            $('#conversation').prepend("<li class='flutterPost'><div class='message-text'>" +
+                "<div class='messageTop'>" +
+                "<img class='postPic' src='./mods/The_Internet_Mod/Img/profileIcon_Email.png'></img>" +
+                "<div class='postInfo'> <div class='postName'>John Smith (You)<span id='postDate'> - " + d.year + "/" + d.month + "/" + d.week + "</span></div> <div class='postUsername'>@jsmith12</div></div>" +
+                "<div id='postReception'> <div class='postReceptionHeader'>" +
+                "<span style='margin-left: 20px; font-size: 12pt;'>Likes</span>" +
+                "<span style='margin-left: 20px; font-size: 12pt;'>Dislikes</span></div>" +
+                "<div id='postDislikes' class='dislikes'>0</div>" +
+                "<div id='postLikes' class='likes'>0</div>" +
+                "</div></div>" +
+                "<div class='messageBottom'>" + MsgText + "</div></div></li>");
+            //    $('.widget-conversation').scrollTop($('ul li').last().position().top + $('ul li').last().height());
+
+            // Closes/Resets the new message window on post
+            internetMod.clearFlutterMessage();
+        } else {
+            $('#newMsgPreview').css('border', '1px solid #eb9f9f');
+            $('#newMsgPreview').animate({
+                opacity: '0.7'
+            }, 'slow');
+            $('#newMsgPreview').animate({
+                opacity: '1'
+            }, 'slow');
+            $('#newMsgPreview').animate({
+                opacity: '0.7'
+            }, 'slow');
+            $('#newMsgPreview').animate({
+                opacity: '1'
+            }, 'slow');
+        }
+    };
+
+// Thanks Competitor Mod :)
+var iTemplate = $("#gameDefinitionContentTemplate").clone();
+    internetMod.gameAnnouncement = function() {
+      var iTemplate = $("#gameDefinitionContentTemplate").clone();
+      iTemplate.find("#gameSizeGroup").remove();
+      iTemplate.find("#targetRating").remove();
+      iTemplate.find(".comboHint").remove();
+      $('.announceChild3').html(iTemplate);
+    }
+
+    internetMod.pickGenreClick = function(a) {
+        Sound.click();
+        var c = GameManager.company.currentGame;
+        c && c.flags.lockedSettings && c.flags.lockedSettings.genre ? iTemplate.find("#pickGenreButton").parent(".centeredButtonWrapper").effect("shake", {
+            times: 2,
+            distance: 5
+        }, 50) : a ? UI._selectGenre(a.innerText) : PlatformShim.execUnsafeLocalFunction(function() {
+            var a = iTemplate;
+            a.find(".overlayTitle").text("Pick Genre".localize("heading"));
+            var b = iTemplate.find(".listContainer");
+            b.empty();
+            for (var c = General.getAvailableGenres(GameManager.company), k = iTemplate.find("#pickSecondGenreButton").get(0).innerText, l = !1, h = 0; h < c.length; h++)
+                if (k != c[h].name) {
+                    var m = $('<div class="selectorButton" onclick="internetMod.pickGenreClick(this)">{{name}}</div>'.replace("{{name}}", c[h].name));
+                    m.css("margin-left", 210);
+                    l || (m.css("margin-top", 90), l = !0);
+                    m.addClass("whiteButton");
+                    iTemplate.append(m)
+                }
+            a.find(".selectionOverlayContainer").fadeIn("fast")
+        })
+    };
+
+    iTemplate.find("#pickGenreButton").clickExcl(function() {
+        internetMod.pickGenreClick()
+    });
+
+})();
 
 // Adds internet button to context menu
 /*
@@ -320,8 +456,7 @@ internetMod.addInternetToMenu = function() {
 */
 
 //Email website ------------------------------------------------------------------------------------------------------
-// Creates the template for adding an email message
-(internetMod.initEmail = function() {
+(function() {
     console.log("Internet emails have intialized!");
     internetMod.UIInitialized = false;
     internetMod.emailList = [];
@@ -336,12 +471,49 @@ internetMod.addInternetToMenu = function() {
         internetMod.reset();
     }
 
-    internetMod.load = function() {
-        internetMod.reset();
+    internetMod.load = function(e) {
+        var data = e.data;
+        var internetModData = data['internetModData'];
+        if (!internetModData) {
+            internetMod.startNewGame();
+        } else if (internetModData["added_emails"]) {
+            internetMod.emailList = internetModData["added_emails"].map(
+                function(o) {
+                    return internetMod.emailListToAdd.first(function(item) {
+                        return item.id == o.id
+                    });
+                }
+            );
+            internetMod.UIInitialized = internetModData["UIInitialized"];
+            if (internetMod.UIInitialized) internetMod.showUI();
+        }
+    }
+
+    internetMod.save = function(e) {
+        var data = e.data;
+        var internetModData = data['internetModData'];
+        if (!internetModData) {
+            internetModData = data.internetModData = {};
+        }
+        internetModData["added_emails"] = internetMod.emailList.map(function(n) {
+            return {
+                id: n.id
+            };
+        });
+        internetModData["UIInitialized"] = internetMod.UIInitialized;
+    }
+
+    internetMod.showUI = function() {
+        $("#internetNotifs").show();
+        $('#iCompanyName').html('' + GameManager.company.name + '');
     }
 
     internetMod.checkForReply = function(email) {
         internetMod.addResponse = function(emailNumber, emailMessage, emailVersionOption1, emailVersionOption2) {
+            var d = GameManager.company.getDate(GameManager.company.currentWeek);
+            var iA = emailNumber - 1;
+            var iB = iA.toString();
+
             if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && $('#otherResponses_' + email.id + '').hasClass('forGen')) {
                 console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 var addReplyBulk = new Timer(function() {
@@ -349,7 +521,7 @@ internetMod.addInternetToMenu = function() {
                     $('#otherResponses_' + email.id + '').removeClass('forGen');
                     $('#otherResponses_' + email.id + '').append('<div id="Email_' + email.id + '-' + emailNumber + '" class="emailInfo forGen">' +
                         '<hr>' +
-                        '<div id="subjectE">Response ' + emailNumber + ':</div>' +
+                        '<div id="subjectE">Response ' + emailNumber + ' (' + d.year + '/' + d.month + '/' + d.week + '):</div>' +
                         '<p id="emailENTRY" class="emailENTRY">' + emailMessage + '</p> <hr>' +
                         '<table id="emailOptions_' + email.id + '-' + emailNumber + '" class="emailOptions" cellspacing="20px"> <tr>' +
                         '<td id="Option1_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption1 + '</td>' +
@@ -358,21 +530,79 @@ internetMod.addInternetToMenu = function() {
                     $('#otherResponses_' + email.id + '').show();
                     internetMod.countNotifs(1);
                 }, 1 + 2 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
-            }
 
-            if (GameManager.pause(true) || GameManager.pause(!0)) {
-                addReplyBulk.Pause();
-            } else if (GameManager.resume(true) || GameManager.resume(!0)) {
-                addReplyBulk.Resume();
+                internetMod.optionDefaults = function(emailNumber, option) {
+                    $('#List_' + email.id + '').removeClass('haveMSGborder');
+                    $('#List_' + email.id + '').removeClass('forGenl');
+                    $('#List_' + email.id + '').addClass('emailResponded');
+                    $('#' + option + '_' + email.id + '-' + emailNumber + '').addClass('optionSelected');
+                    $('#' + option + '_' + email.id + '-' + emailNumber + '').addClass('forGen');
+                    $('#emailOptions_' + email.id + '-' + emailNumber + '').addClass('disableElement');
+                    $('#haveMSG_' + email.id + '').hide();
+                    $('#checkmark_' + email.id + '').show();
+                    Sound.click();
+                    internetMod.countNotifs(0);
+                    //      $('#optionSelected_' + email.id + '').show();
+                    $('#List_' + email.id + '').toggle().toggle();
+                }
+
+
+
+                $('#Option1_' + email.id + '-2').on('click', function(event) {
+                    internetMod.optionDefaults(2, 'Option1');
+
+                    email.v1_message2_option1_ifSelected && email.v1_message2_option1_ifSelected();
+                });
+
+                $('#Option2_' + email.id + '-2').on('click', function(event) {
+                    internetMod.optionDefaults(2, 'Option2');
+
+                    email.v1_message2_option2_ifSelected && email.v1_message2_option2_ifSelected();
+                });
+
+                $('#Option1_' + email.id + '-3').on('click', function(event) {
+                    internetMod.optionDefaults('3', 'Option1');
+
+                    email.v1_message3_option1_ifSelected && email.v1_message3_option1_ifSelected();
+                });
+
+                $('#Option2_' + email.id + '-3').on('click', function(event) {
+                    internetMod.optionDefaults('3', 'Option2');
+
+                    email.v1_message3_option2_ifSelected && email.v1_message3_option2_ifSelected();
+                });
+                $('#Option1_' + email.id + '-4').on('click', function(event) {
+                    internetMod.optionDefaults('4', 'Option1');
+
+                    email.v1_message4_option1_ifSelected && email.v1_message4_option1_ifSelected();
+                });
+
+                $('#Option2_' + email.id + '-4').on('click', function(event) {
+                    internetMod.optionDefaults('4', 'Option2');
+
+                    email.v1_message4_option2_ifSelected && email.v1_message4_option2_ifSelected();
+                });
+                $('#Option1_' + email.id + '-5').on('click', function(event) {
+                    internetMod.optionDefaults('5', 'Option1');
+
+                    email.v1_message5_option1_ifSelected && email.v1_message5_option1_ifSelected();
+                });
+
+                $('#Option2_' + email.id + '-5').on('click', function(event) {
+                    internetMod.optionDefaults('5', 'Option2');
+
+                    email.v1_message5_option2_ifSelected && email.v1_message5_option2_ifSelected();
+                });
             }
 
             // Notifies user when/if he or she has a new message
-            if ($('#emailOptions_' + email.id + '-' + emailNumber - 1 + '').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-' + emailNumber + '').hasClass('disableElement')) {
+            if ($('#emailOptions_' + email.id + '-' + iB + '').hasClass('disableElement') && !$('#emailOptions_' + email.id + '-' + emailNumber + '').hasClass('disableElement')) {
                 $('#checkmark_' + email.id + '').hide();
                 $('#haveMSG_' + email.id + '').show();
                 $('#List_' + email.id + '').addClass('haveMSGborder');
             } else {
                 $('#haveMSG_' + email.id + '').hide();
+                $('#List_' + email.id + '').removeClass('haveMSGborder');
             }
 
         }
@@ -391,18 +621,6 @@ internetMod.addInternetToMenu = function() {
             internetMod.addResponse(2, email.v2_message2, email.v2_message2_option1, email.v1_message2_option2);
         }
 
-        $('#Option1_' + email.id + '-2').on('click', function(event) {
-            internetMod.optionDefaults(2, 'Option1');
-
-            email.v1_message2_option1_ifSelected && email.v1_message2_option1_ifSelected();
-        });
-
-        $('#Option2_' + email.id + '-2').on('click', function(event) {
-            internetMod.optionDefaults(2, 'Option2');
-
-            email.v1_message2_option2_ifSelected && email.v1_message2_option2_ifSelected();
-        });
-
         // Thrid message
         // Displays version 1 of email (might condense this as well)
         if ($('#Option1_' + email.id + '-2').hasClass('forGen') && !$('#Option2_' + email.id + '-2').hasClass('forGen')) {
@@ -417,18 +635,6 @@ internetMod.addInternetToMenu = function() {
             $('#Option2_' + email.id + '-2').removeClass('forGen');
             internetMod.addResponse(3, email.v2_message3, email.v2_message3_option1, email.v1_message3_option2);
         }
-
-        $('#Option1_' + email.id + '-3').on('click', function(event) {
-            internetMod.optionDefaults(3, 'Option1');
-
-            email.v1_message3_option1_ifSelected && email.v1_message3_option1_ifSelected();
-        });
-
-        $('#Option2_' + email.id + '-3').on('click', function(event) {
-            internetMod.optionDefaults(3, 'Option2');
-
-            email.v1_message3_option2_ifSelected && email.v1_message3_option2_ifSelected();
-        });
 
         // Fourth message
         // Displays version 1 of email (might condense this as well)
@@ -445,18 +651,6 @@ internetMod.addInternetToMenu = function() {
             internetMod.addResponse(4, email.v2_message4, email.v2_message4_option1, email.v1_message4_option2);
         }
 
-        $('#Option1_' + email.id + '-4').on('click', function(event) {
-            internetMod.optionDefaults(4, 'Option1');
-
-            email.v1_message4_option1_ifSelected && email.v1_message4_option1_ifSelected();
-        });
-
-        $('#Option2_' + email.id + '-4').on('click', function(event) {
-            internetMod.optionDefaults(4, 'Option2');
-
-            email.v1_message4_option2_ifSelected && email.v1_message4_option2_ifSelected();
-        });
-
         // Fifth message
         // Displays version 1 of email (might condense this as well)
         if ($('#Option1_' + email.id + '-4').hasClass('forGen') && !$('#Option2_' + email.id + '-4').hasClass('forGen')) {
@@ -471,19 +665,8 @@ internetMod.addInternetToMenu = function() {
             $('#Option2_' + email.id + '-4').removeClass('forGen');
             internetMod.addResponse(5, email.v2_message5, email.v2_message5_option1, email.v1_message5_option2);
         }
-
-        $('#Option1_' + email.id + '-5').on('click', function(event) {
-            internetMod.optionDefaults(5, 'Option1');
-
-            email.v1_message5_option1_ifSelected && email.v1_message5_option1_ifSelected();
-        });
-
-        $('#Option2_' + email.id + '-5').on('click', function(event) {
-            internetMod.optionDefaults(5, 'Option2');
-
-            email.v1_message5_option2_ifSelected && email.v1_message5_option2_ifSelected();
-        });
         // --------------------------------------------------------------------------------------------------------------------------------
+
 
         $('#trashEmail_' + email.id + '').dblclick(function() {
             $('#emailMain').children().remove();
@@ -491,68 +674,170 @@ internetMod.addInternetToMenu = function() {
         });
     }
 
-
-    // Email Mod Tick that checks for emails every week
-    internetMod.emailModTick = function() {
-        if (internetMod.UIInitialized == false) return;
-        for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
-            var email = internetMod.emailListToAdd[i];
-            var date = email.date.split('/');
-            if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
-              var rdmEmailTimer = new Timer(function() {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + GameManager.company.currentWeek + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-              }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
-            } else if (email.isRandomEvent == false && email.trigger && email.trigger(GameManager.company) && internetMod.emailList.indexOf(email) == -1) {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + GameManager.company.currentWeek + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-            } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2])) && internetMod.emailList.indexOf(email) == -1) {
-                internetMod.emailList.push(email);
-                internetMod.AddEmailToHTMLPage(email);
-                internetMod.countNotifs(0);
-                $('#emailDate').append('' + email.date + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-            }
-            internetMod.checkForReply(email);
-        }
+    internetMod.isEmailAdded = function(email) {
+        return internetMod.emailList.first(function(item) {
+            return item.id == email.id
+        }) !== null;
     }
 
-    if (GameManager.pause(true) || GameManager.pause(!0)) {
-        rdmEmailTimer.Pause();
-    } else if (GameManager.resume(true) || GameManager.resume(!0)) {
-        rdmEmailTimer.Resume();
+    internetMod.emailPushDefaults = function(email) {
+        internetMod.emailList.push(email);
+        internetMod.AddEmailToHTMLPage(email);
+        internetMod.countNotifs(0);
     }
 
-    GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.emailModTick);
     GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+    GDT.on(GDT.eventKeys.saves.saving, internetMod.save);
     GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
 
 
     internetMod.AddEmail = function(email) {
         internetMod.emailListToAdd.push(email);
+        //            email.option1Selected = false;
+        //          email.option2Selected = false;
     }
 
+    /*
+            var Email = function(email) {
+                this.id = email.id;
+                this.category = email.category;
+                this.date = email.date;
+                this.from = email.from;
+                this.address = email.address;
+                this.subject = email.subject;
+                this.message = email.message;
+                this.option1 = email.option1;
+                this.option1_ifSelected = email.option1_ifSelected;
+                this.option2 = email.option2;
+                this.option2_ifSelected = email.option2_ifSelected;
+                this.v1_message2 = email.v1_message2;
+                this.v1_message2_option1 = email.v1_message2_option1;
+                this.v1_message2_option2 = email.v1_message2_option2;
+                this.v1_message2_option1_ifSelected = email.v1_message2_option1_ifSelected;
+                this.v1_message2_option2_ifSelected = email.v1_message2_option2_ifSelected;
+                this.v2_message2 = email.v2_message2;
+                this.v2_message2_option1 = email.v2_message2_option1;
+                this.v2_message2_option2 = email.v2_message2_option2;
+                this.v2_message2_option1_ifSelected = email.v2_message2_option1_ifSelected;
+                this.v2_message2_option2_ifSelected = email.v2_message2_option2_ifSelected;
+
+                this.save = function() {
+                    var data = {};
+                    data["id"] = this.id;
+                    data["category"] = this.category;
+                    data["date"] = this.date;
+                    data["from"] = this.from;
+                    data["address"] = this.address;
+                    data["subject"] = this.subject;
+                    data["message"] = this.message;
+                    data["option1"] = this.option1;
+                    data["option1_ifSelected"] = this.option1_ifSelected;
+                    data["option2"] = this.option2;
+                    data["option2_ifSelected"] = this.option2_ifSelected;
+                    data["v1_message3"] = this.v1_message2;
+                    data["v1_option1"] = this.v1_message2_option1;
+                    data["v1_option1_ifSelected"] = this.v1_message2_option1_ifSelected;
+                    data["v1_option2"] = this.v1_option2;
+                    data["v1_option2_ifSelected"] = this.v1_message2_option2_ifSelected;
+                    return data;
+                }
+
+                internetModData["added_emails"] = internetMod.emailList.map(function (n) {return new Email(n).save()});
+
+                this.load = function() {
+                  // Message 1
+                  if (this.message1_option1Selected = true && !$('#Option1_' + email.id + '-1').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-1').addClass('optionSelected');
+                  }
+                  if (this.message1_option2Selected = true && !$('#Option2_' + email.id + '-1').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-1').addClass('optionSelected');
+                  }
+                  // Message 2 | Version 1
+                  if (this.v1_message2_option1Selected = true && !$('#Option1_' + email.id + '-2').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-2').addClass('optionSelected');
+                  }
+                  if (this.v1_message2_option2Selected = true && !$('#Option2_' + email.id + '-2').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-2').addClass('optionSelected');
+                  }
+                  // Message 2 | Version 2
+                  if (this.v2_message2_option1Selected = true && !$('#Option1_' + email.id + '-2').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-2').addClass('optionSelected');
+                  }
+                  if (this.v2_message2_option2Selected = true && !$('#Option2_' + email.id + '-2').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-2').addClass('optionSelected');
+                  }
+                  // Message 3 | Version 1
+                  if (this.v1_message3_option1Selected = true && !$('#Option1_' + email.id + '-3').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-3').addClass('optionSelected');
+                  }
+                  if (this.v1_message3_option2Selected = true && !$('#Option2_' + email.id + '-3').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-3').addClass('optionSelected');
+                  }
+                  // Message 3 | Version 2
+                  if (this.v2_message3_option1Selected = true && !$('#Option1_' + email.id + '-3').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-3').addClass('optionSelected');
+                  }
+                  if (this.v2_message3_option2Selected = true && !$('#Option2_' + email.id + '-3').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-3').addClass('optionSelected');
+                  }
+                  // Message 4 | Version 1
+                  if (this.v1_message4_option1Selected = true && !$('#Option1_' + email.id + '-4').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-4').addClass('optionSelected');
+                  }
+                  if (this.v1_message4_option2Selected = true && !$('#Option2_' + email.id + '-4').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-4').addClass('optionSelected');
+                  }
+                  // Message 4 | Version 2
+                  if (this.v2_message4_option1Selected = true && !$('#Option1_' + email.id + '-4').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-4').addClass('optionSelected');
+                  }
+                  if (this.v2_message4_option2Selected = true && !$('#Option2_' + email.id + '-4').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-4').addClass('optionSelected');
+                  }
+                  // Message 4 | Version 1
+                  if (this.v1_message5_option1Selected = true && !$('#Option1_' + email.id + '-5').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-5').addClass('optionSelected');
+                  }
+                  if (this.v1_message5_option2Selected = true && !$('#Option2_' + email.id + '-5').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-5').addClass('optionSelected');
+                  }
+                  // Message 4 | Version 2
+                  if (this.v2_message4_option1Selected = true && !$('#Option1_' + email.id + '-5').hasClass('optionSelected')) {
+                    $('#Option1_' + email.id + '-5').addClass('optionSelected');
+                  }
+                  if (this.v2_message4_option2Selected = true && !$('#Option2_' + email.id + '-5').hasClass('optionSelected')) {
+                    $('#Option2_' + email.id + '-5').addClass('optionSelected');
+                  }
+                }
+              }
+              */
+
+    //  $(document).mouseup(function(e) {
+    if (GameManager.resume(true) || GameManager.resume(!0)) {
+        rdmEmailTimer.Resume();
+        addReplyBulk.Resume();
+    }
+    if (GameManager.pause(true) || GameManager.pause(!0)) {
+        rdmEmailTimer.Pause();
+        addReplyBulk.Pause();
+    }
+    //  });
+
     internetMod.AddEmailToHTMLPage = function(email) {
-        var emailMessageList = $("#emailMSGList");
+        var emailMessageList = $('#emailMSGList');
         emailMessageList.append('<li id="List_' + email.id + '" class="forGenl priListItem"> <div class="rndPrItem"><div id="haveMSG_' + email.id + '" class="haveMSG">!</div><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
             '<div id="nameE">' + email.from + '</div>' +
             '<div id="usernameE">' + email.address + '</div><hr style="margin-top: 0px;">' +
             '<div id="subjectE">' + email.subject + '</div>' +
             '<div id="messageE">' + email.message + '</div>' +
-            //'<div id="optionDisplay_' + email.id + '" class="optionDisplay" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div>' +
+            //'<div id="optionSelected_' + email.id + '" class="optionSelected" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div>' +
             '</li>');
 
-        var emailOpened = $("#emailMain");
-        emailOpened.append('<div id="Email_' + email.id + '" class="emailInfo">' +
+        var emailViewingArea = $('#emailMain');
+        emailViewingArea.append('<div id="Email_' + email.id + '" class="emailInfo">' +
             'Category: ' + email.category + ' <br>' +
             'From: ' + email.from + ' (' + email.address + ')<br>' +
-            'Date: <span id="#emailDate"></span>' +
+            'Date: <span id="emailDate"></span>' +
             '<br>' +
             '<br>' +
             '<div class="emailSubj">Subject: ' + email.subject + ' </div> <hr>' +
@@ -572,14 +857,14 @@ internetMod.addInternetToMenu = function() {
             $('#List_' + email.id + '').removeClass('haveMSGborder');
             $('#List_' + email.id + '').removeClass('forGenl');
             $('#List_' + email.id + '').addClass('emailResponded');
-            $('#' + option + '_' + email.id + '-' + emailNumber + '').addClass('optionDisplay');
+            $('#' + option + '_' + email.id + '-' + emailNumber + '').addClass('optionSelected');
             $('#' + option + '_' + email.id + '-' + emailNumber + '').addClass('forGen');
             $('#emailOptions_' + email.id + '-' + emailNumber + '').addClass('disableElement');
             $('#haveMSG_' + email.id + '').hide();
             $('#checkmark_' + email.id + '').show();
             Sound.click();
             internetMod.countNotifs(0);
-            //      $('#optionDisplay_' + email.id + '').show();
+            //      $('#optionSelected_' + email.id + '').show();
             $('#List_' + email.id + '').toggle().toggle();
         }
 
@@ -588,13 +873,14 @@ internetMod.addInternetToMenu = function() {
         $('#Option1_' + email.id + '-1').on('click', function(event) {
             //        $('#response1_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option1');
+            email.message1_option1Selected = true;
             email.option1_ifSelected && email.option1_ifSelected();
         });
 
         $('#Option2_' + email.id + '-1').on('click', function(event) {
             //      $('#response2_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option2');
-
+            email.message1_option2Selected = true;
             email.option2_ifSelected && email.option2_ifSelected();
         });
         //----------------------------------------------------------------------
@@ -615,63 +901,51 @@ internetMod.addInternetToMenu = function() {
         });
     }
 
-    // Example internet email message
+    // Example internet email message MAKE THIS TRIGGER IN OFFICE 3
     var internetMod_tutorialEmail = function() {
         internetMod.AddEmail({
             id: 'testEmail', // must be unique
-            isRandomEvent: true,
+            isRandomEvent: false,
             trigger: function(email) {
                 return GameManager.company.currentLevel == 1;
             },
             category: 'Media', // must be playerCompany, Media, Fans, or Companies
-            date: '', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
+            date: '1/1/3', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
             from: 'Jimmy Dean',
             address: 'jdean@zmail.com',
-            subject: 'Welcome to Email!',
-            message: 'Hello, and welcome to Email! Huzzah!', // Like in html, use <br> to make a line break
-            option1: 'Sure',
-            option1_ifSelected: function() {
-                internetMod.addMoney(1000, 'Bloo');
-            },
+            subject: 'Your Game; Our Movie',
+            message: 'Hello, <br><br>I recently played your new game: so well balanced, great gameplay, just beautiful. The story was riventing, and that is where I come in... :) <br><br>I am an upincoming movie director with 8+ years of experience. Many video games turned into movies have been financial successes but tend to fall apart with bad plot and little effort. <br><br><b>Well, I would like to have the best of both worlds.</b><br><br>I guarntee if you license me your movie rights, I will make your gaming sensation a flim sensation. What do ya say?', // Like in html, use <br> to make a line break
+            option1: 'Yes',
+            option1_ifSelected: function() {},
             option2: 'No',
-            option2_ifSelected: function() {
-                internetMod.addMoney(-1000, 'BLAH');
-            },
+            option2_ifSelected: function() {},
             // Email received based on option
             // Message 2
             // Possible Outcome 1 (v1 = version1, v2 = version2. There has to be two versions since there are two options for each response)
-            v1_message2: 'Message 2 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
-            v1_message2_option1: 'Fine',
-            v1_message2_option1_ifSelected: function() {
-                internetMod.addMoney(1000, 'Kloo');
-            },
-            v1_message2_option2: 'Still no',
-            v1_message2_option2_ifSelected: function() {
-                internetMod.addMoney(1000, 'KLAH');
-            },
+            v1_message2: "Sweet! You'll not regret this. I'll get back to you with an update ASAP. Have a good one!",
+            v1_message2_option1: 'Sounds good!',
+            v1_message2_option1_ifSelected: function() {},
+            v1_message2_option2: 'Actually, nevermind',
+            v1_message2_option2_ifSelected: function() {},
             // Possible Outcome 2
-            v2_message2: 'Message 2 Version NUMBER TWOOOOOOOO',
-            v2_message2_option1: 'Fine',
-            v2_message2_option1_ifSelected: function() {
-                internetMod.addMoney(1000, 'Zloo');
-            },
-            v2_message2_option2: 'Still no',
-            v2_message2_option2_ifSelected: function() {
-                internetMod.addMoney(1000, 'Zlah');
-            },
+            v2_message2: 'I would seriously think about this. I have talked to a number of your fans, and all of them would be stoked to have a movie about their favorite game. If you really feel indifferent, then I will leave you be; however, I promise you that my movie will benefit you, your company, and your fans.',
+            v2_message2_option1: 'Alright, fine',
+            v2_message2_option1_ifSelected: function() {},
+            v2_message2_option2: 'Sorry, no',
+            v2_message2_option2_ifSelected: function() {},
             // Message 3
             // Possible Outcome 1
-            v1_message3: 'Message 3 Version NUMBER ONEEEEEEEEEEEEEEEEEEEEEEE',
-            v1_message3_option1: 'Fine',
+            v1_message3: 'Awesome! I knew you would make the right decision. Lets get started right away. The less time we waste, the better.<br><br>Do you think we should use top-notch actors/actresses? Be warned, it will cost a bit to get the best.',
+            v1_message3_option1: 'Yeah, I think so (40M).',
             v1_message3_option1_ifSelected: function() {
-                internetMod.addMoney(1000, 'Kloo');
+                internetMod.addMoney(-50000000, 'Movie Actors/Actress');
             },
-            v1_message3_option2: 'Still no',
+            v1_message3_option2: "No, we can use other actors/actresses (150K).",
             v1_message3_option2_ifSelected: function() {
-                internetMod.addMoney(1000, 'KLAH');
+                internetMod.addMoney(-150000, 'Movie Actors/Actress');
             },
             // Possible Outcome 2
-            v2_message3: 'Message 3 Version NUMBER TWOOOOOOOO',
+            v2_message3: 'Alright.. Was really looking foward to making something special. :/',
             v2_message3_option1: 'Fine',
             v2_message3_option1_ifSelected: function() {
                 internetMod.addMoney(1000, 'Zloo');
@@ -727,7 +1001,47 @@ internetMod.addInternetToMenu = function() {
     internetMod_tutorialEmail();
 })();
 
+// Mod Tick that checks for various things every week
+internetMod.modTick = function() {
+    // Email Website
+    if (internetMod.UIInitialized == false) return;
+    for (var i = 0; i < internetMod.emailListToAdd.length; i++) {
+        var email = internetMod.emailListToAdd[i];
+        var d = GameManager.company.getDate(GameManager.company.currentWeek);
+        var date = email.date.split('/');
+        if (internetMod.isEmailAdded(email) == false) {
+            if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company)) {
+                var rdmEmailTimer = new Timer(function() {
+                    internetMod.emailPushDefaults(email);
+                    $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
+                    Sound.playSoundOnce("bugDecrease", 0.2);
+                }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
+            } else if (email.isRandomEvent !== true && email.trigger && email.trigger(GameManager.company)) {
+                internetMod.emailPushDefaults(email);
+                $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
+                Sound.playSoundOnce("bugDecrease", 0.2);
+            } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
+                internetMod.emailPushDefaults(email);
+                $('#emailDate').text('' + email.date + '');
+                Sound.playSoundOnce("bugDecrease", 0.2);
+            }
+        }
+        internetMod.checkForReply(email);
+        internetMod.yearChecker();
+    //    var flutterFollowers = GamaManager.company.fans;
+    //    var h = flutterFollowers.toString();
+    //    $('#followers').html('');
+    }
+    /* Social Website
+    if (-1 != GameManager.company.researchCompleted.indexOf(Research.MultiPlatform)) {
+      // finish later
+    }
+    */
+}
 
+GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.modTick);
+
+// Events
 GDT.addEvent({
     id: "internetCreationEmail",
     date: "1/1/2",
@@ -744,9 +1058,12 @@ GDT.addEvent({
     },
     complete: function() {
         internetMod.UIInitialized = true;
-        $("#internetNotifs").show();
-
-        // I am going to change how I implement this, but for now, I will let it be
-        internetMod.addOptionToContextMenu();
+        internetMod.showUI();
+        var topics = General.getTopicOrder(GameManager.company);
+        for (var i = 0; i < topics.length; i++) {
+        var topic = topics[i];
+      }
+        console.log(Knowledge.getTopicAudienceHtml(GameManager.company, topic));
+        console.log(GameManager.company.topics.indexOf(topic));
     }
 });
