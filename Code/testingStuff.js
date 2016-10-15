@@ -1,13 +1,358 @@
+/* internetMod.createContractUI = function() {
+    $("#internetModTopicChooser").hide();
+    $("#internetModGenreChooser").hide();
+    $("#internetModPlatformChooser").hide();
+    $("#internetModCompetitorChooser").hide();
+
+    var iContent = $(".announceChild3");
+    iContent.html("<div class='contractName centeredButtonWrapper'> <input id='contractNameInput' type='text' maxlength='35' value='Contract Name' style='width:500px;font-size: 22pt; text-align:center'/> </div>");
+
+    var iTemplate = $("#gameDefinitionContentTemplate").clone();
+    iTemplate.find("#gameTitle").remove();
+
+    iTemplate.find(".pickTopicButton").clickExcl(function() {
+        internetMod.pickTopicClick();
+    });
+    iTemplate.find("#pickGenreButton").clickExcl(function() {
+        internetMod.pickGenreClick();
+    });
+    iTemplate.find("#pickSecondGenreButton").clickExcl(function() {
+        UI.pickSecondGenreClick()
+    });
+    iTemplate.find(".pickPlatformButton").clickExcl(function() {
+        internetMod.pickPlatformClick($(this))
+    });
+    if (GameManager.company.canDevelopMediumGames()) {
+        if (!GameManager.company.canDevelopLargeGames())
+            iTemplate.find(".gameSizeLarge").hide();
+        if (!GameManager.company.canDevelopAAAGames())
+            iTemplate.find(".gameSizeAAA").hide()
+    } else
+        iTemplate.find("#gameSizeGroup").hide();
+    if (!GameManager.company.canDevelopMMOGames())
+        iTemplate.find(".gameGenreMMO").hide();
+    //if (!GameManager.company.canUseMultiGenre())
+    iTemplate.find("#pickSecondGenreButton").hide();
+    /*else {
+    	iTemplate.find("#pickSecondGenreButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
+    	iTemplate.find("#pickGenreButton").css("margin-left",
+    		"2.5px").css("margin-right", "2.5px").css("width", "145px")
+    }
+    if (GameManager.company.canDevelopMultiPlatform())
+        iTemplate.find(".pickPlatformButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
+    else
+        iTemplate.find(".pickPlatformButton").slice(1).hide();
+    if (!GameManager.company.canSetTargetAudience())
+        iTemplate.find("#targetRating").hide();
+
+
+    iTemplate.find(".pickEngineButtonWrapper").hide();
+    iTemplate.find(".ratingLabel").hide();
+
+    iTemplate.find(".gameDefSelection").clickExcl(function() {
+        Sound.click();
+        var e = $(this);
+        e.parent().find(".gameDefSelection").removeClass("selected");
+        e.addClass("selected");
+    });
+
+    $("#gameDefinition").find(".dialogNextButton").clickExcl(function() {
+        $("#gameDefinition").find(".dialogNextButton").effect("shake", {
+            times: 2,
+            distance: 5
+        }, 50)
+    });
+    var allGraphicTypeIds = Research.getAllItems().filter(function(f) {
+        return f.group ===
+            "graphic-type"
+    }).map(function(f) {
+        return f.id
+    });
+    $("#gameDefinition").find(".dialogBackButton").clickExcl(function() {
+        Sound.click();
+        UI._saveSelectedGameFeatureSettings(function(id) {
+            return allGraphicTypeIds.indexOf(id) != -1
+        });
+        $("#gameDefinition").find(".dialogScreen1").transition({
+            "margin-left": 0
+        });
+        $("#gameDefinition").find(".dialogScreen2").transition({
+            "margin-left": "100%"
+        })
+    });
+
+
+    //Create Publisher Contract
+    iTemplate.append("<div style='width:302px;margin:auto;'><div id='internetModOKButton' class=' baseButton orangeButton windowLargeOkButton'>Create Publisher Contract</div></div>");
+    iTemplate.find("#internetModOKButton").clickExcl(function() {
+        Sound.click();
+        var succes = internetMod.createContract();
+        if (succes == true) {
+            $("#internetModContainer").dialog("close");
+        } else {
+            $("#internetModOKButton").effect("shake", {
+                times: 2,
+                distance: 5
+            }, 50)
+        }
+
+    });
+
+    okClicked = false;
+    PlatformShim.execUnsafeLocalFunction(function() {
+        iContent.append(iTemplate);
+        $("#internetModContent").show();
+        $("#internetModTitle").show();
+    })
+}
+
+internetMod.pickTopicClick = function(element) {
+    Sound.click();
+    var container = $("#internetModTopicChooser");
+
+    if (element) {
+        var pickTopicButton = $("#internetModContent").find(".pickTopicButton");
+        var names = element.innerText.split("\n");
+        pickTopicButton.get(0).innerText = names[0];
+        pickTopicButton.removeClass("selectorButtonEmpty");
+
+        $("#internetModContent").show();
+        $("#internetModTitle").show();
+        $("#internetModTopicChooser").hide();
+        return;
+    }
+    PlatformShim.execUnsafeLocalFunction(function() {
+        var iModal = $(".simplemodal-data");
+        iModal.find(".overlayTitle").text("Pick Topic".localize("heading"));
+        container.empty();
+        var activeTopiciTemplate = '<div class="selectorButton whiteButton" onclick="internetMod.pickTopicClick(this)">{{name}}</div>';
+        var lockedTopiciTemplate = '<div class="selectorButton disabledButton">{{name}}</div>';
+        var itemsPerRow = 3;
+        var currentCount = 0;
+        var row = 0;
+        var researchVisibleCount = 0;
+        var topics = General.getTopicOrder(GameManager.company);
+        for (var i = 0; i < topics.length; i++) {
+            var topic = topics[i];
+            currentCount++;
+            if (currentCount > itemsPerRow) {
+                row++;
+                currentCount = 1
+            }
+            var isAvailable = GameManager.company.topics.indexOf(topic) != -1;
+            var isInResearch = GameManager.currentResearches.filter(function(f) {
+                return f.topicId === topic.id
+            }).length > 0;
+            var isEnabled = isAvailable;
+            var iTemplate = isEnabled ? activeTopiciTemplate :
+                lockedTopiciTemplate;
+            var isNameHidden = (!isEnabled && (!isAvailable && !isInResearch)) || !isEnabled;
+            if (!isNameHidden)
+                if (GameManager.areHintsEnabled() && Knowledge.hasTopicAudienceWeightingKnowledge(GameManager.company, topic)) {
+                    var enabledDisabledContent = !isEnabled ? " disabledButton" : '" onclick="internetMod.pickTopicClick(this)';
+                    var whiteButton = !isEnabled ? " " : " whiteButton ";
+                    var t = '<div class="selectorButton' + whiteButton + "pickTopicButtonAudienceHintVisible" + enabledDisabledContent + '"><span style="position:relative;top:5px;">{0}<span style="font-size:11pt;"><br/>{1}</span></span></div>';
+                    iTemplate = t.format(topic.name, Knowledge.getTopicAudienceHtml(GameManager.company, topic))
+                } else
+                    iTemplate = iTemplate.replace("{{name}}", topic.name);
+            else
+                iTemplate = iTemplate.replace("{{name}}", "?");
+            var element = $(iTemplate);
+            element.css("position", "absolute");
+            element.css("top", 50 * row + row * 10);
+            element.css("left", (currentCount - 1) * 190 + 10);
+            element.css("font-size", UI.pickTopicFontSize + "pt");
+            container.append(element);
+            if (!isAvailable && !isInResearch)
+                researchVisibleCount++
+        }
+        iModal.find(".selectionOverlayContainer").fadeIn("fast")
+
+        $("#internetModContent").hide();
+        $("#internetModTitle").hide();
+        $("#internetModTopicChooser").show();
+    })
+};
+
+internetMod.pickGenreClick = function(element) {
+    Sound.click();
+    var container = $("#internetModGenreChooser");
+
+    if (element) {
+        var pickGenreButton = $("#internetModContent").find("#pickGenreButton");
+        pickGenreButton.get(0).innerText = element.innerText;
+        pickGenreButton.removeClass("selectorButtonEmpty");
+
+        $("#internetModContent").show();
+        $("#internetModTitle").show();
+        $("#internetModGenreChooser").hide();
+        return
+    }
+    PlatformShim.execUnsafeLocalFunction(function() {
+        var iModal = $(".simplemodal-data");
+        iModal.find(".overlayTitle").text("Pick Genre".localize("heading"));
+        container.empty();
+        var iTemplate = '<div class="selectorButton" onclick="internetMod.pickGenreClick(this)">{{name}}</div>';
+        var genres = General.getAvailableGenres(GameManager.company);
+        //var second = iModal.find("#pickSecondGenreButton").get(0).innerText;
+        var topMarginAdded = false;
+        for (var i = 0; i < genres.length; i++) {
+            //if (second == genres[i].name)
+            //	continue;
+            var genre = genres[i];
+            var element = $(iTemplate.replace("{{name}}", genre.name));
+            element.css("margin-left", 210);
+            if (!topMarginAdded) {
+                element.css("margin-top", 90);
+                topMarginAdded = true
+            }
+            element.addClass("whiteButton");
+            container.append(element)
+        }
+        iModal.find(".selectionOverlayContainer").fadeIn("fast")
+
+        $("#internetModContent").hide();
+        $("#internetModTitle").hide();
+        $("#internetModGenreChooser").show();
+    })
+};
+
+internetMod.pickPlatformClick = function(platformName, platformId) {
+    Sound.click();
+    var container = $("#internetModPlatformChooser");
+
+
+    if (platformName && platformId) {
+        var pickplatformButton = $("#internetModContent").find(".pickPlatformButton");
+        pickplatformButton.get(0).innerText = platformName;
+        pickplatformButton.removeClass("selectorButtonEmpty");
+
+        $("#internetModContent").show();
+        $("#internetModTitle").show();
+        $("#internetModPlatformChooser").hide();
+        return;
+    }
+
+
+    PlatformShim.execUnsafeLocalFunction(function() {
+        var iModal = $(".simplemodal-data");
+        iModal.find(".overlayTitle").text("Pick Platform".localize("heading"));
+
+        container.empty();
+        var platforms = Platforms.getPlatformsOnMarket(GameManager.company);
+        var game = GameManager.company.currentGame;
+
+        platforms = platforms.slice().sort(function(a, b) {
+            return Platforms.getTotalMarketSizePercent(b, GameManager.company) - Platforms.getTotalMarketSizePercent(a,
+                GameManager.company)
+        });
+
+        for (var i = 0; i < platforms.length; i++) {
+            var element =
+                $("#platformButtonTemplate").clone();
+            element.removeAttr("id");
+            var platform = platforms[i];
+            element.platformId = platform.id;
+            element.platformName = platform.name;
+            var isEnabled = GameManager.company.licencedPlatforms.indexOf(platform) != -1;
+            element.find(".platformButtonImage").attr("src", Platforms.getPlatformImage(platform, GameManager.company.currentWeek));
+            element.find(".platformTitle").text(platform.name);
+            element.find(".cost").text("Dev. cost: ".localize() + UI.getShortNumberString(platform.developmentCosts));
+            if (!isEnabled) {
+                element.find(".licenseCost").text("License cost: ".localize() +
+                    UI.getShortNumberString(platform.licencePrize));
+                if (GameManager.company.cash < platform.licencePrize)
+                    element.find(".licenseCost").addClass("red")
+            } else
+                element.find(".licenseCost").hide();
+            element.find(".marketShare").text("Marketshare: ".localize() + UI.getPercentNumberString(Platforms.getTotalMarketSizePercent(platform, GameManager.company)));
+            if (GameManager.areHintsEnabled()) {
+                var iContent = Knowledge.getPlatformAudienceHintHtml(GameManager.company, platform);
+                if (iContent)
+                    element.find(".audienceHints").html(iContent);
+                var iContent = Knowledge.getPlatformGenreHintHtml(GameManager.company, platform);
+                if (iContent)
+                    element.find(".genreHints").html(iContent)
+            }
+            (function(element) {
+                if (isEnabled) {
+                    element.addClass("whiteButton");
+                    element.on("click", function() {
+                        internetMod.pickPlatformClick(element.platformName, element.platformId)
+                    })
+                } else if (platform.licencePrize <= GameManager.company.cash) {
+                    element.addClass("whiteButton");
+                    element.on("click", function() {
+                        var that = this;
+                        UI.buyPlatform($(that).find(".platformTitle").get(0).innerText, function(e) {
+                            if (e)
+                                internetMod.pickPlatformClick(element.platformName, element.platformId)
+                        })
+                    })
+                } else
+                    element.addClass("disabledButton")
+            })(element);
+            container.append(element)
+        }
+        iModal.find(".selectionOverlayContainer").fadeIn("fast")
+
+        $("#internetModContent").hide();
+        $("#internetModTitle").hide();
+        $("#internetModPlatformChooser").show();
+    })
+};
+
+var getSelectedTopic = function() {
+    var iModalContent = $("#internetModContent");
+    var topicName = iModalContent.find(".pickTopicButton").text();
+    var topic = GameManager.company.topics.first(function(t) {
+        return t.name == topicName
+    });
+    return topic
+};
+var getSelectedGenre = function() {
+    var iModalContent = $("#internetModContent");
+    var genreName = iModalContent.find("#pickGenreButton").text();
+    var genre = GameGenre.getAll().first(function(i) {
+        return i.name == genreName
+    });
+    return genre
+};
+var getSelectedPlatform = function() {
+    var iModalContent = $("#internetModContent");
+    var platformName = iModalContent.find("#pickPlatformButton").text();
+    var platform = GameManager.company.licencedPlatforms.first(function(i) {
+        return i.name.trim() == platformName.trim()
+    });
+    return platform
+};
 // THIS IS FOR CRAP AND STUFF
 
-// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="content"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <div class="emailInfo"> Category: Fans <br> From: John Smith <br> <!-- The date below is how Game Dev Tycoon keeps track of time and dates --> Date: yy/mm/dd <br> <br> <div class="emailSubj">Subject: Your amazing game! </div> <hr> <p class="emailENTRY">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. <br><br> Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you!</p> <hr> </div> </div> <div class="inNew"> Compose A New Email </div> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div>');
+// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <div class="emailInfo"> Category: Fans <br> From: John Smith <br> <!-- The date below is how Game Dev Tycoon keeps track of time and dates --> Date: yy/mm/dd <br> <br> <div class="emailSubj">Subject: Your amazing game! </div> <hr> <p class="emailENTRY">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. <br><br> Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you!</p> <hr> </div> </div> <div class="inNew"> Compose A New Email </div> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div>');
 
 // var INcompanyName = GameManager.company.name.localize();
 
-// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="content"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul id="priList" class="priList"> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Company Name</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div id="emailMain" class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div> ');
+// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul id="priList" class="priList"> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Company Name</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div id="emailMain" class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div> ');
 
 
 /*
+
+<li class="announceChild3" style="display: list-item;">
+  <input id="msgGameTitle" type="text" value="Game Name" maxlength="35" style="font-size: 22pt; border-radius: 5px;" required=""><table cellspacing="15">
+    <tbody><tr>
+  <td id="msgPickGameTopic" class="msgGameOption">Pick Topic</td>
+  <td id="msgPickGameGenre" class="msgGameOption">Pick Genre</td>
+</tr>
+<tr>
+  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
+  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
+  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
+</tr>
+
+  </tbody></table>
+</li>
+
+
 var a = function() {
     return UI.isMenuOpen() ? (Sound.click(), GameManager.resume(!0), UI.closeContextMenu(), !1) : VisualsManager.isAnimatingScroll ? !1 : !0
 };
@@ -53,7 +398,7 @@ RnDAdd({
     targetZone: 2,
     complete: function(company) {
         return new Notification("R&D Lab".localize(), "Boss, we have finished the development of the Internet Browser. Test it out and make sure it works.");
-        $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div id="content" class="content"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <script id="emailMSGNav-template" type="text/x-handlebars-template"> {{#emailAll}} <li class="priListItem" onclick="{{onClick}}"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"> <div id="nameE">{{emailFrom}} </div> <div id="usernameE">{{emailAddress}} </div> <hr style="margin-top: 0px;"> <div id="subjectE">{{emailSubject}}</div> <div id="messageE">{{emailMessage}} </div> </li> {{/emailAll}} </script></ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="loaders"></div> </div></div>');
+        $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div id="iContent" class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <script id="emailMSGNav-template" type="text/x-handlebars-template"> {{#emailAll}} <li class="priListItem" onclick="{{onClick}}"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">{{emailFrom}} </div> <div id="usernameE">{{emailAddress}} </div> <hr style="margin-top: 0px;"> <div id="subjectE">{{emailSubject}}</div> <div id="messageE">{{emailMessage}} </div> </li> {{/emailAll}} </script></ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="loaders"></div> </div></div>');
     }
 });
 
@@ -70,7 +415,7 @@ RnDAdd({
     complete: function(company) {
         return new Notification("R&D Lab".localize(), "Boss, we have added the Bug Center to the internet browser");
         $("#tabBar").append('<td id="bug" class="tab" onclick="openBug()">Bug Center</td>');
-        $("#content").append('<div id="bugSITE"> Sorry <br> Not Available </div>')
+        $("#iContent").append('<div id="bugSITE"> Sorry <br> Not Available </div>')
     }
 });
 
@@ -87,7 +432,7 @@ RnDAdd({
     complete: function(company) {
         return new Notification("R&D Lab".localize(), "Boss, we have added the Social Network and Forum to the internet browser");
         $("#tabBar").append('<td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td>');
-        $("#content").append('<div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-content/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
+        $("#iContent").append('<div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
     }
 });
 */
@@ -138,3 +483,51 @@ $(emailView).append(newEmail(emailExampleName));
 $(emailView).hide(newEmail(emailExampleName));
 
 */
+
+var UI.showPlatformReleaseNews = internetMod.newsCheese;
+var internetMod.showNews = function() {
+    var c = $("#platformReleaseNewsContent");
+    c.empty();
+    var k = $("#platformReleaseNewsTemplate").clone();
+    k.find(".windowTitle").text("News".localize("heading"));
+    for (var l, h = 0; h < Platforms.allPlatforms.length; h++)
+        if (Platforms.allPlatforms[h].id === a.text) {
+            l = Platforms.allPlatforms[h];
+            break
+        }
+    h = "Today the new game platform {0} by {1} has been released.".localize().format(l.name, l.company);
+    k.find(".platformRelaseNewsImage").attr("src", Platforms.getPlatformImage(l, GameManager.company.currentWeek));
+    var m = k.find(".platformReleaseOkButton").css({
+            opacity: 0
+        }).text(a.buttonText),
+        n = function() {
+            Sound.click();
+            GameManager.company.activeNotifications.splice(GameManager.company.activeNotifications.indexOf(a), 1);
+            0 < GameManager.company.activeNotifications.length ? UI.closeModal(function() {
+                UI._showNotification(GameManager.company.activeNotifications[0], b)
+            }) : UI.closeModal(function() {
+                b && b()
+            })
+        };
+    k.find(".notificationText").text(h).typewrite({
+        delay: 20,
+        extra_char: "",
+        replace_br: !0,
+        speedUpOnClick: !0,
+        soundLoop: "notificationTyping",
+        volume: 0.12,
+        callback: function() {
+            m.transition({
+                opacity: 1
+            }, "fast").clickExclOnce(n)
+        }
+    });
+    UI.IS_SEGOE_UI_INSTALLED || k.find(".notificationText").addClass("fallback");
+    c.append(k);
+    UI.showModalContent("#platformReleaseNewsContent", {
+        disableCheckForNotifications: !0,
+        close: !1
+    })
+};
+
+internetMod.newsCheese = internetMod.showNews; //assign your custom method over the original.
