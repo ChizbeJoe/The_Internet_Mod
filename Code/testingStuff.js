@@ -1,4 +1,4 @@
-internetMod.createContractUI = function() {
+/* internetMod.createContractUI = function() {
     $("#internetModTopicChooser").hide();
     $("#internetModGenreChooser").hide();
     $("#internetModPlatformChooser").hide();
@@ -37,7 +37,7 @@ internetMod.createContractUI = function() {
     	iTemplate.find("#pickSecondGenreButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
     	iTemplate.find("#pickGenreButton").css("margin-left",
     		"2.5px").css("margin-right", "2.5px").css("width", "145px")
-    }*/
+    }
     if (GameManager.company.canDevelopMultiPlatform())
         iTemplate.find(".pickPlatformButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
     else
@@ -484,10 +484,50 @@ $(emailView).hide(newEmail(emailExampleName));
 
 */
 
-var UI._showNotification = internetMod.newsCheese;
+var UI.showPlatformReleaseNews = internetMod.newsCheese;
 var internetMod.showNews = function() {
-    //add your custom code
-    UI._showNotification(); //if appropriate, call the original logic
+    var c = $("#platformReleaseNewsContent");
+    c.empty();
+    var k = $("#platformReleaseNewsTemplate").clone();
+    k.find(".windowTitle").text("News".localize("heading"));
+    for (var l, h = 0; h < Platforms.allPlatforms.length; h++)
+        if (Platforms.allPlatforms[h].id === a.text) {
+            l = Platforms.allPlatforms[h];
+            break
+        }
+    h = "Today the new game platform {0} by {1} has been released.".localize().format(l.name, l.company);
+    k.find(".platformRelaseNewsImage").attr("src", Platforms.getPlatformImage(l, GameManager.company.currentWeek));
+    var m = k.find(".platformReleaseOkButton").css({
+            opacity: 0
+        }).text(a.buttonText),
+        n = function() {
+            Sound.click();
+            GameManager.company.activeNotifications.splice(GameManager.company.activeNotifications.indexOf(a), 1);
+            0 < GameManager.company.activeNotifications.length ? UI.closeModal(function() {
+                UI._showNotification(GameManager.company.activeNotifications[0], b)
+            }) : UI.closeModal(function() {
+                b && b()
+            })
+        };
+    k.find(".notificationText").text(h).typewrite({
+        delay: 20,
+        extra_char: "",
+        replace_br: !0,
+        speedUpOnClick: !0,
+        soundLoop: "notificationTyping",
+        volume: 0.12,
+        callback: function() {
+            m.transition({
+                opacity: 1
+            }, "fast").clickExclOnce(n)
+        }
+    });
+    UI.IS_SEGOE_UI_INSTALLED || k.find(".notificationText").addClass("fallback");
+    c.append(k);
+    UI.showModalContent("#platformReleaseNewsContent", {
+        disableCheckForNotifications: !0,
+        close: !1
+    })
 };
 
 internetMod.newsCheese = internetMod.showNews; //assign your custom method over the original.
