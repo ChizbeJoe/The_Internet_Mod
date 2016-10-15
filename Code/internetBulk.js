@@ -326,6 +326,8 @@ internetMod.exit = function() {
         }
     });
 
+    // When this is clicked, the game definition window should be displayed (or a version of a game defintion window). I don't need certain buttons, like Medium, Large, AAA, etc, but I can just take care of that with .remove(), so don't worry about it.
+    // All the HTML can be found in "Main.js".
     $('.announceChild2').click(function() {
         //  var msgPart2 = (this).innerHTML.replace('"', '').replace('"', '');
         $(this).siblings('.announceChild2').removeClass('msgOptionSelected');
@@ -339,6 +341,12 @@ internetMod.exit = function() {
             }
         }
 
+       /* Currently, the code below opens up a div where I had a version of the game defintion window.
+        If it's simple enough, I'd like to have the game definition dialog displayed inside ".announceChild3".
+       I just don't want players to feel like they are about to make a game when the same game definition window pops up.
+       So if a slightly different version is in .announceChild3, there won't be much confusion.
+       I can probably just use .css() to make the Social Website's game def dialog a little different.
+       */
         if (!$(this).hasClass('msgOptionSelected') && $('.announceChild3').show()) {
             $('.announceChild3').slideToggle(200);
         } else {
