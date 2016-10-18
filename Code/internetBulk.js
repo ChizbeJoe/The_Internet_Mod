@@ -36,26 +36,28 @@ function Timer(callback, delay) {
 }
 
 // Implements Context Menu Button
-UI._showContextMenu = showMenuItem;
-var showMenuItem = function(type, menuItems, x, y) {
-    var item = {
-        label: "Internet...".localize("menu item"),
-        action: function() {
-            Sound.click();
-            internetMod.ShowWindow();
-            GameManager.resume(false);
-            // addReplyBulk.Pause();
-        }
-    };
+(function() {
+    var showMenuUI = UI._showContextMenu;
+    var showMenuItem = function(type, menuItems, x, y) {
+        var item = {
+            label: "Internet...".localize("menu item"),
+            action: function() {
+                Sound.click();
+                internetMod.ShowWindow();
+                GameManager.resume(false);
+                // addReplyBulk.Pause();
+            }
+        };
 
-    if (internetMod.UIInitialized) {
-        menuItems.push(item);
+        if (internetMod.UIInitialized) {
+            menuItems.push(item);
+        }
+
+        showMenuUI(type, menuItems, x, y);
     }
 
-    showMenuUI(type, menuItems, x, y);
-}
-
-UI._showContextMenu = showMenuItem;
+    UI._showContextMenu = showMenuItem;
+})();
 
 // Thanks kristof!
 internetMod.addMoney = function(money, text) {
@@ -78,14 +80,18 @@ internetMod.addHype = function(hype) {
 
 
 internetMod.emailNotifOPEN = function() {
+    internetMod.startSlideshow();
     $("#loaders").hide();
-    $("#internet").show();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
     $("#emailSITE").show();
+    $("#internetContainer").show();
     GameManager.pause(true);
     // addReplyBulk.Pause();
 }
 
-/* Internet Window HTML
+/* OLD Internet Window HTML
 internetMod.originalWindow_Email = function() {
     $("body").append('<div id="internet">' +
         '<table class="navBar"> <tr id="tabBar">' +
@@ -169,16 +175,19 @@ $("#iNotifs").bind("DOMSubtreeModified", function() {
 
 // Shows the internet window
 internetMod.ShowWindow = function() {
-    $("#internet").show();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
     $("#loaders").hide();
+    $("#internetContainer").show();
+    internetMod.startSlideshow();
 }
 
 // Internet tabs -----------------------------------------------------------------------------------------------------------
 // Refreshes a page (Currenly not working 100% correctly)
+
+
 internetMod.refresh = function() {
     Sound.click();
     $("#loaders").html('REFRESHING...');
@@ -191,78 +200,122 @@ internetMod.refresh = function() {
     }, 1500);
 };
 
-// Opens the Email website
-internetMod.openEmail = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#emailSITE").show();
-    }, 1000);
-};
+// News Website
+(function() {
+    var slideCount = $('#newsArticleSlideshow ul li').length;
+    var slideWidth = $('#newsArticleSlideshow ul li').width();
+    var slideHeight = $('#newsArticleSlideshow ul li').height();
+    var sliderUlWidth = slideCount * slideWidth;
 
-// Open a website that I haven't made up my mind about :P
-internetMod.openXYZ = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#forumSITE").show();
-    }, 1000);
-};
+    $('#newsArticleSlideshow').css('width', slideWidth);
+    $('#newsArticleSlideshow').css('height', slideHeight);
+    $('#newsArticleSlideshow ul').css('width', sliderUlWidth);
+    $('#newsArticleSlideshow ul').css('margin-left', -slideWidth);
 
-// Opens the Social Network website
-internetMod.openSocial = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#socialSITE").show();
-    }, 1000);
-};
+    internetMod.animateSlideBarLoop = function() {
+        $("#actualSlideBar").css("width", '0%');
+        $("#actualSlideBar").animate({
+            width: "100%"
+        }, 5000, internetMod.animateSlideBarLoop);
+    }
 
-// Opens the Bug Center website
-internetMod.openBug = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#bugSITE").show();
-    }, 1000);
-};
+    internetMod.animateSlideBarLoop();
 
-// Closes (hides) the entire div
-internetMod.exit = function() {
-    Sound.click();
-    $("#internet").hide();
-    GameManager.resume(true);
-    // addReplyBulk.Resume();
-};
+    internetMod.moveRight = function() {
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
 
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+        console.log('TESTETSETETSETSETSETSETESTESTESTSETSETESTESTESTSETSETSETESTESTETESTESTEST');
+    }
+
+    internetMod.moveLeft = function() {
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: +slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }
+
+
+    //    internetModSlideshowInterval();
+
+    internetMod.disableSlideshow = function() {
+        $("#actualSlideBar").stop();
+        $("#actualSlideBar").css("width", '0%');
+        clearInterval(internetModSlideshowInterval);
+    }
+
+    internetMod.resetSlideshow = function() {
+        internetMod.disableSlideshow();
+        internetMod.animateSlideBarLoop();
+    }
+
+    $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
+})();
+
+internetMod.startSlideshow = function() {
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+        console.log('TESTETSETETSETSETSETSETESTESTESTSETSETESTESTESTSETSETSETESTESTETESTESTEST');
+    }, 5000);
+}
+
+    $('#slideRight').click(function(e) {
+        e.stopPropagation();
+        internetMod.moveRight();
+        clearInterval(internetModSlideshowInterval);
+        internetModSlideshowInterval = setInterval(function() {
+            var slideWidth = $('#newsArticleSlideshow ul li').width();
+            $("#actualSlideBar").stop();
+            internetMod.animateSlideBarLoop();
+
+            $('#newsArticleSlideshow ul').animate({
+                left: -slideWidth
+            }, 900, function() {
+                $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+                $('#newsArticleSlideshow ul').css('left', '');
+            });
+        }, 5000);
+    });
+
+    $('#slideLeft').click(function(e) {
+        e.stopPropagation();
+        internetMod.moveLeft();
+        clearInterval(internetModSlideshowInterval);
+        internetModSlideshowInterval = setInterval(function() {
+            var slideWidth = $('#newsArticleSlideshow ul li').width();
+            $("#actualSlideBar").stop();
+            internetMod.animateSlideBarLoop();
+
+            $('#newsArticleSlideshow ul').animate({
+                left: -slideWidth
+            }, 900, function() {
+                $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+                $('#newsArticleSlideshow ul').css('left', '');
+            });
+        }, 5000);
+    });
+
+// GDT.on(GDT.eventKeys.saves.newGame, internetMod.newsSite);
 
 // Social Network ------------------------------------------------------------------------------------------------------
 (function() {
@@ -278,7 +331,6 @@ internetMod.exit = function() {
 
     internetMod.UI_showNewMSG = function() {
         $('#newMsgUI').fadeIn(100);
-        internetMod.gameAnnouncement();
     }
 
     internetMod.clickTest = function() {
@@ -303,9 +355,6 @@ internetMod.exit = function() {
         } else {
             $('#announce').removeClass('msgOptionSelected');
             $('.announceChild').slideToggle(200);
-            $('.announceChild').removeClass('msgOptionSelected');
-            $('.announceChild2').slideToggle(200);
-            $('.announceChild2').removeClass('msgOptionSelected')
             internetMod.clearMessageBox();
         }
 
@@ -341,12 +390,12 @@ internetMod.exit = function() {
             }
         }
 
-       /* Currently, the code below opens up a div where I had a version of the game defintion window.
-        If it's simple enough, I'd like to have the game definition dialog displayed inside ".announceChild3".
-       I just don't want players to feel like they are about to make a game when the same game definition window pops up.
-       So if a slightly different version is in .announceChild3, there won't be much confusion.
-       I can probably just use .css() to make the Social Website's game def dialog a little different.
-       */
+        /* Currently, the code below opens up a div where I had a version of the game defintion window.
+         If it's simple enough, I'd like to have the game definition dialog displayed inside ".announceChild3".
+        I just don't want players to feel like they are about to make a game when the same game definition window pops up.
+        So if a slightly different version is in .announceChild3, there won't be much confusion.
+        I can probably just use .css() to make the Social Website's game def dialog a little different.
+        */
         if (!$(this).hasClass('msgOptionSelected') && $('.announceChild3').show()) {
             $('.announceChild3').slideToggle(200);
         } else {
@@ -369,7 +418,7 @@ internetMod.exit = function() {
     internetMod.postFlutterMessage = function() {
         var d = GameManager.company.getDate(GameManager.company.currentWeek);
         var MsgText = $('#newMSGString').text();
-        var MsgLikes = internetMod.flutterFans;
+        //  var MsgLikes = internetMod.flutterFans;
 
         if (MsgText.length > 5) {
             Sound.playSoundOnce("tack", 0.2);
@@ -843,14 +892,14 @@ internetMod.addInternetToMenu = function() {
         $('#Option1_' + email.id + '-1').on('click', function(event) {
             //        $('#response1_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option1');
-            email.message1_option1Selected = true;
+            //  email.message1_option1Selected = true;
             email.option1_ifSelected && email.option1_ifSelected();
         });
 
         $('#Option2_' + email.id + '-1').on('click', function(event) {
             //      $('#response2_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option2');
-            email.message1_option2Selected = true;
+            //      email.message1_option2Selected = true;
             email.option2_ifSelected && email.option2_ifSelected();
         });
         //----------------------------------------------------------------------
@@ -1031,3 +1080,76 @@ GDT.addEvent({
         internetMod.showUI();
     }
 });
+
+// Opens the Email website
+internetMod.openEmail = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#emailSITE").show();
+    }, 1000);
+};
+
+// Open a website that I haven't made up my mind about :P
+internetMod.openNews = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#newsSITE").show();
+    }, 1000);
+};
+
+// Opens the Social Network website
+internetMod.openSocial = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#forumSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#socialSITE").show();
+    }, 1000);
+};
+
+// Opens the Bug Center website
+internetMod.openBug = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#bugSITE").show();
+    }, 1000);
+};
+
+// Closes (hides) the entire div
+internetMod.exit = function() {
+    Sound.click();
+    $("#internetContainer").hide();
+    GameManager.resume(true);
+    internetMod.disableSlideshow();
+    // addReplyBulk.Resume();
+};

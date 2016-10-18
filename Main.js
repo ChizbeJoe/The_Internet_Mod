@@ -7,13 +7,17 @@ var internetMod = {};
     $("head").append('<link rel="stylesheet" type="text/css" href="./mods/The_Internet_Mod/css/internetMod.css">' +
         '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600,400italic,800" rel="stylesheet" type="text/css">' +
         '<link href="https://fonts.googleapis.com/css?family=Lato:400,300,100,700,900,400italic" rel="stylesheet" type="text/css">' +
-        '<link href="https://fonts.googleapis.com/css?family=Covered+By+Your+Grace" rel="stylesheet" type="text/css">');
+        '<link href="https://fonts.googleapis.com/css?family=Covered+By+Your+Grace" rel="stylesheet" type="text/css">' +
+        '<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">' +
+        '<link href="https://fonts.googleapis.com/css?family=Electrolize" rel="stylesheet">');
 
     // Internet Window
-    $("body").append('<div id="internet">' +
-        '<table class="navBar justEmail"> <tr id="tabBar">' +
+    $("body").append('<div id="internetContainer"><div id="internet">' +
+    // eventually add class .justEmail on intial append
+        '<table class="navBar" style="width: 100%;"> <tr id="tabBar">' +
         '<td id="refresh" onclick="internetMod.refresh()"><img class="refresh" src="./mods/The_Internet_Mod/img/refresh.png"></td>' +
         '<td id="email" class="tab" onclick="internetMod.openEmail()">Email</td>' +
+        '<td id="news" class="tab" onclick="internetMod.openNews()">Game Link News</td>' +
         '<td id="bug" class="tab" onclick="internetMod.openBug()">Bug Center</td>' +
         '<td id="social" class="tab" onclick="internetMod.openSocial()">Social Network</td>' +
         '<td id="exit" class="tabX" onclick="internetMod.exit()"> </td> </tr> </table>' +
@@ -30,8 +34,35 @@ var internetMod = {};
         '<td id="iCompanyName" class"forGenrl"></td> <td>Media</td> <td>Companies</td> <td>Fans</td>' +
         '</tr> </table>' +
         '<div id="emailMain" class="emailMain"></div> </div> </div>' +
-        //NOT SURE YET Website
-        //  '<div id="forumSITE">Sorry <br> Not Available</div>' +
+        // News Website
+        '<div id="newsSITE">' +
+        '<div id="newsNavBar">' +
+        '<div style="margin: 0 auto; display: inline;">' +
+        '<table id="newsTabBar" style="float: left;"> <tr> <td class="newsTAB"> <div class="info"></div> <div class="navText">HOME</div> </td> <td class="newsTAB"> <div class="info"></div> <div class="navText">GAMES</div> </td> </tr> </table> <div id="newsBanner" style="float: left;"> <div style="float: left; padding: 10px; padding-left: 10px;">GAME</div> <div id="gSpotButt"><img id="gSpotImg" src="http://i.imgur.com/TAgBeBn.png"></img> </div> <div style="float: left; padding: 10px;">LINK</div> </div> <table id="newsTabBar"> <tr> <td class="newsTAB"> <div class="info"></div> <div class="navText">PLATFORMS</div> </td> <td class="newsTAB"> <div class="info"></div> <div class="navText">ABOUT</div> </td> </tr> </table> </div> </div>' +
+        '<div id="newsContent"> <div id="newsHome" class="newsPage"> <div class="innerContentContainer">' +
+        '<div class="nextSlideBar"><div id="actualSlideBar"></div></div>' +
+        '<div id="newsArticleSlideshow">' +
+        '<div id="slideRight" class="control_next">>></div>' +
+        '<div id="slideLeft" class="control_prev"><<</div>' +
+        '<ul style="display: inline-block;">' +
+        '<li>' +
+        '<img id="slideContents" src="http://vignette2.wikia.nocookie.net/gamedevtycoon/images/2/21/Playsystem.png/revision/latest?cb=20130115235301">' +
+        '<div id="slideDetails">' +
+        '<span id="articleHeader">The PlaySystem is coming off Shelves!</span>' +
+        '<p id="articleText">After five years of stealing the console spotlight, the PlaySystem is finally being taken off the market. Experts say that the cause for this is the release of Venas upincoming console.</p>' +
+        '</div> </img> </li>' +
+        '<li><img id="slideContents" src="http://vignette4.wikia.nocookie.net/gamedevtycoon/images/5/58/CustomPlatform1V3.png/revision/latest?cb=20140903185221"> <div id="slideDetails"> <span id="articleHeader">Nintendo Taking Over?</span> <p id="articleText">With the PlaySystem gone, Nintendo may very well make a gaming monopoly. How will Vonny respond?</p> </div> </img></li>' +
+        '<li><img id="slideContents" src="http://vignette2.wikia.nocookie.net/gamedevtycoon/images/8/89/PC.png/revision/latest?cb=20130116021423"> <div id="slideDetails"> <span id="articleHeader">The PC Slowly Dying Out</span> <p id="articleText">The Godovore 64 has nearly eclipse the PC. Experts wonder if this is the end for PCs.</p> </div> </img></li>' +
+        '</ul> </div>' +
+        '<div id="newsCateStoryBlock">' +
+        '<div id="articleGameBlock" class="articleNewsBlock"><div> <img class="articleBlockImage" src="http://vignette2.wikia.nocookie.net/gamedevtycoon/images/2/21/Playsystem.png/revision/latest?cb=20130115235301"> <div class="articleBlockDetails"> <span id="articleHeader">The PlaySystem is coming off Shelves</span> </div> </img> </div></div>' +
+        '<div id="articlePlatformBlock" class="articleNewsBlock"><div> <img class="articleBlockImage" src="http://vignette2.wikia.nocookie.net/gamedevtycoon/images/2/21/Playsystem.png/revision/latest?cb=20130115235301"> <div class="articleBlockDetails"> <span id="articleHeader">The PlaySystem is coming off Shelves</span> </div> </img> </div></div>' +
+        '</div> </div> </div>' +
+        '<div id="newsGames" class="newsPage"></div>' +
+        '<div id="newsPlatforms" class="newsPage"></div>' +
+        '<div id="newsAbout" class="newsPage"></div>' +
+        '</div>' +
+        '</div>' +
         // Social Network Website
         '<div id="socialSITE">' +
         '<div id="socialNav">' +
@@ -93,18 +124,22 @@ var internetMod = {};
         // Bug Site
         '<div id="bugSITE"> Sorry <br> Not Available </div>' +
         // Loading Div
-        '<div id="loaders"></div> </div></div>' +
+        '<div id="loaders"></div> </div></div></div>' +
         // Email Notifications
         '<div id="internetNotifs" onclick="internetMod.emailNotifOPEN()">' +
         '<img class="iNotifs" src="./mods/The_Internet_Mod/img/mail-Icon.png"><div id="iNotifs">0</div></img></div>' +
         '</div>');
-    $("#internet").hide();
+    $("#internetContainer").hide();
     $("#internetNotifs").hide();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+  //  $("#news").hide();
     $("#bugSITE").hide();
     $("#bug").hide();
     $("#socialSITE").hide();
-  //  $("#social").hide();
+    //  $("#social").hide();
     $('#newMsgUI').hide();
+    $("#loaders").hide();
 
     var ready = function() {
         console.log("The Internet Mod has succesfully loaded");
