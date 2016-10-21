@@ -484,9 +484,10 @@ $(emailView).hide(newEmail(emailExampleName));
 
 */
 
-var UI.showPlatformReleaseNews = internetMod.newsCheese;
-var internetMod.showNews = function() {
-    var c = $("#platformReleaseNewsContent");
+
+var newsCheese = UI.showPlatformReleaseNews;
+var blahNewsYeah = function() {
+    var c = $("#newsContent");
     c.empty();
     var k = $("#platformReleaseNewsTemplate").clone();
     k.find(".windowTitle").text("News".localize("heading"));
@@ -528,6 +529,60 @@ var internetMod.showNews = function() {
         disableCheckForNotifications: !0,
         close: !1
     })
+    console.log('HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
 };
 
-internetMod.newsCheese = internetMod.showNews; //assign your custom method over the original.
+UI.showPlatformReleaseNews = blahNewsYeah; //assign your custom method over the original.
+
+
+var a = Media;
+// var platformNewsStuff = Media.getScheduledNotifications;
+var newsStuffYep = function(a) {
+    for (var b = [], d = Math.floor(a.currentWeek), c = Media.allScheduledStories.filter(function(b) {
+            return -1 === a.scheduledStoriesShown.indexOf(b.id)
+        }), l = 0; l < c.length; l++) {
+        var h = c[l];
+
+        // Pushes the event to the array b
+        d == General.getWeekFromDateString(h.date, h.ignoreGameLengthModifier) && b.push(h)
+    }
+
+    // Stops repeat of Notification
+    a.scheduledStoriesShown.addRange(b.map(function(a) {
+        return a.id
+    }));
+
+    // Displays the notification
+    return b.map(function(b) {
+        return b.notification  ? b.notification : b.getNotification(a)
+    })
+};
+Media.getScheduledNotifications = newsStuffYep; //assign your custom method over the original.
+
+// var cheeseYo = Media.getNewNotifications;
+var newsCheeseYep = function(a) {
+    for (var b = [], d = Media.TriggerNotifications.filter(function(b) {
+            return -1 === a.triggerNotificationsShown.indexOf(b.id) && b.trigger(a)
+        }), c = 0; c < d.length; c++) {
+        var l = d[c];
+        a.triggerNotificationsShown.push(l.id);
+        l.getNotification ? b.push(l.getNotification(a)) : b.push(l.notification)
+    }
+    a.triggerNotificationsShown.addRange(b.map(function(a) {
+        return a.id
+    }));
+    b.addRange(Media.getScheduledNotifications(a));
+    return b
+};
+
+Media.getNewNotifications = newsCheeseYep; //assign your custom method over the original.
+
+
+
+/*
+var newsArticlesArray = [{
+    id: "riseOf64",
+    date: "1/6/3",
+    notification: new Notification(c, "Recent market studies suggest that the Govodore G64 is steadily outselling competitors in the PC sector. Consumers prefer the lower price, greater availability and the flexible hardware configuration over other home computers.{n}Experts say that this might spell the end of competing hardware manufacturers.".localize())
+}];
+*/

@@ -202,6 +202,58 @@ internetMod.refresh = function() {
 
 // News Website
 (function() {
+  // Article Template
+  internetMod.articleStuff = [];
+  internetMod.articleToAdd = [];
+
+  internetMod.AddNewsArticle = function(newsArticle) {
+      internetMod.articleToAdd.push(newsArticle);
+  }
+
+  internetMod.AddArticleToHTMLPage = function(newsArticle) {
+      var newsSlideshowDiv = $('#newsArticleSlideshow ul');
+      var recentGamingNews = $('#articleGameBlock');
+      var recentPlatformNews = $('#articlePlatformBlock');
+      var gamingNewsList = $('#gamesArticleList');
+      var platformsNewsList = $('#platformsArticleList');
+
+      newsSlideshowDiv.prepend('<li id="Slideshow_' + newsArticle.id + '" class="' + newsArticle.category + '">' +
+      '<img id="slideContents" src="' + newsArticle.imageURL + '"><div id="slideDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span>' +
+      '<p id="articleText">' + newsArticle.text + '</p></div> </img></li>');
+
+      if (newsArticle.category == 'games') {
+      recentGamingNews.html('<div>' +
+      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
+      '</div>');
+
+      gamingNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
+
+    } else if (newsArticle.category == 'platforms') {
+      recentPlatformNews.html('<div>' +
+      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
+      '</div>');
+
+      platformsNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
+    }
+  }
+
+  // News Articles
+  var internetMod_exampleArticle = function() {
+      internetMod.AddNewsArticle({
+          id: "testArticle", // must be unique
+          category: "games",
+          header: "Ninvento's Not Messing Around",
+          text: "According to a Ninvento shareholder, the release of the TES is but the beginning of series of awesomeness",
+          date: "1/2/1",
+          imageURL: "./images/platforms/TES.png"
+      });
+  }
+  internetMod_exampleArticle();
+
+  // News Slideshow
     var slideCount = $('#newsArticleSlideshow ul li').length;
     var slideWidth = $('#newsArticleSlideshow ul li').width();
     var slideHeight = $('#newsArticleSlideshow ul li').height();
@@ -231,7 +283,6 @@ internetMod.refresh = function() {
             $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
             $('#newsArticleSlideshow ul').css('left', '');
         });
-        console.log('TESTETSETETSETSETSETSETESTESTESTSETSETESTESTESTSETSETSETESTESTETESTESTEST');
     }
 
     internetMod.moveLeft = function() {
@@ -261,9 +312,42 @@ internetMod.refresh = function() {
     }
 
     $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
+
+    internetMod.hideAllPages = function() {
+      $("#newsHome").fadeOut();
+      $("#newsGames").fadeOut();
+      $("#newsPlatforms").fadeOut();
+      $("#newsAbout").fadeOut();
+      $("#newsArticlesOnDeck").fadeOut();
+    }
+
+    internetMod.goNewsHome = function() {
+      internetMod.hideAllPages();
+      $("#newsHome").fadeIn();
+    }
+
+    internetMod.goNewsGames = function() {
+      internetMod.hideAllPages();
+      $("#newsGames").fadeIn();
+    }
+
+    internetMod.goNewsPlatforms = function() {
+      internetMod.hideAllPages();
+      $("#newsPlatforms").fadeIn();
+    }
+
+    internetMod.goNewsAbout = function() {
+      internetMod.hideAllPages();
+      $("#newsAbout").fadeIn();
+    }
 })();
 
+
 internetMod.startSlideshow = function() {
+    if ($('#newsArticleSlideshow ul').children().length > 5) {
+        $("#newsArticleSlideshow ul li:gt(4)").remove();
+    }
+
     internetModSlideshowInterval = setInterval(function() {
         var slideWidth = $('#newsArticleSlideshow ul li').width();
         $("#actualSlideBar").stop();
@@ -275,45 +359,45 @@ internetMod.startSlideshow = function() {
             $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
             $('#newsArticleSlideshow ul').css('left', '');
         });
-        console.log('TESTETSETETSETSETSETSETESTESTESTSETSETESTESTESTSETSETSETESTESTETESTESTEST');
     }, 5000);
 }
 
-    $('#slideRight').click(function(e) {
-        e.stopPropagation();
-        internetMod.moveRight();
-        clearInterval(internetModSlideshowInterval);
-        internetModSlideshowInterval = setInterval(function() {
-            var slideWidth = $('#newsArticleSlideshow ul li').width();
-            $("#actualSlideBar").stop();
-            internetMod.animateSlideBarLoop();
+$('#slideRight').click(function(e) {
+    e.stopPropagation();
+    internetMod.moveRight();
+    clearInterval(internetModSlideshowInterval);
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
 
-            $('#newsArticleSlideshow ul').animate({
-                left: -slideWidth
-            }, 900, function() {
-                $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
-                $('#newsArticleSlideshow ul').css('left', '');
-            });
-        }, 5000);
-    });
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }, 5000);
+});
 
-    $('#slideLeft').click(function(e) {
-        e.stopPropagation();
-        internetMod.moveLeft();
-        clearInterval(internetModSlideshowInterval);
-        internetModSlideshowInterval = setInterval(function() {
-            var slideWidth = $('#newsArticleSlideshow ul li').width();
-            $("#actualSlideBar").stop();
-            internetMod.animateSlideBarLoop();
+$('#slideLeft').click(function(e) {
+    e.stopPropagation();
+    internetMod.moveLeft();
+    clearInterval(internetModSlideshowInterval);
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
 
-            $('#newsArticleSlideshow ul').animate({
-                left: -slideWidth
-            }, 900, function() {
-                $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
-                $('#newsArticleSlideshow ul').css('left', '');
-            });
-        }, 5000);
-    });
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }, 5000);
+});
+
 
 // GDT.on(GDT.eventKeys.saves.newGame, internetMod.newsSite);
 
@@ -1045,20 +1129,28 @@ internetMod.modTick = function() {
                 Sound.playSoundOnce("bugDecrease", 0.2);
             }
         }
-        internetMod.checkForReply(email);
-        internetMod.yearChecker();
-        //    var flutterFollowers = GamaManager.company.fans;
-        //    var h = flutterFollowers.toString();
-        //    $('#followers').html('');
     }
-    /* Social Website
-    if (-1 != GameManager.company.researchCompleted.indexOf(Research.MultiPlatform)) {
-      // finish later
-    }
-    */
+    internetMod.checkForReply(email);
+    internetMod.yearChecker();
+
+    for (var k = 0; k < internetMod.articleToAdd.length; k++) {
+            var newsArticle = internetMod.articleToAdd[k];
+            var nDate = newsArticle.date.split('/');
+            if (GameManager.company.isLaterOrEqualThan(parseInt(nDate[0]), parseInt(nDate[1]), parseInt(nDate[2])) && internetMod.articleStuff.indexOf(newsArticle) == -1) {
+                internetMod.articleStuff.push(newsArticle);
+                internetMod.AddArticleToHTMLPage(newsArticle);
+            }
+        }
+       /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
+           newsArticlesArray.push(newsArticle);
+        } */
+
+    //News Website
 }
 
+
 GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.modTick);
+// GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.newsTick);
 
 // Events
 GDT.addEvent({
