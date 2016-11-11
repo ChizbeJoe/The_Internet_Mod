@@ -485,99 +485,19 @@ $(emailView).hide(newEmail(emailExampleName));
 */
 
 
-var newsCheese = UI.showPlatformReleaseNews;
-var blahNewsYeah = function() {
-    var c = $("#newsContent");
-    c.empty();
-    var k = $("#platformReleaseNewsTemplate").clone();
-    k.find(".windowTitle").text("News".localize("heading"));
-    for (var l, h = 0; h < Platforms.allPlatforms.length; h++)
-        if (Platforms.allPlatforms[h].id === a.text) {
-            l = Platforms.allPlatforms[h];
-            break
-        }
-    h = "Today the new game platform {0} by {1} has been released.".localize().format(l.name, l.company);
-    k.find(".platformRelaseNewsImage").attr("src", Platforms.getPlatformImage(l, GameManager.company.currentWeek));
-    var m = k.find(".platformReleaseOkButton").css({
-            opacity: 0
-        }).text(a.buttonText),
-        n = function() {
-            Sound.click();
-            GameManager.company.activeNotifications.splice(GameManager.company.activeNotifications.indexOf(a), 1);
-            0 < GameManager.company.activeNotifications.length ? UI.closeModal(function() {
-                UI._showNotification(GameManager.company.activeNotifications[0], b)
-            }) : UI.closeModal(function() {
-                b && b()
-            })
-        };
-    k.find(".notificationText").text(h).typewrite({
-        delay: 20,
-        extra_char: "",
-        replace_br: !0,
-        speedUpOnClick: !0,
-        soundLoop: "notificationTyping",
-        volume: 0.12,
-        callback: function() {
-            m.transition({
-                opacity: 1
-            }, "fast").clickExclOnce(n)
-        }
-    });
-    UI.IS_SEGOE_UI_INSTALLED || k.find(".notificationText").addClass("fallback");
-    c.append(k);
-    UI.showModalContent("#platformReleaseNewsContent", {
-        disableCheckForNotifications: !0,
-        close: !1
-    })
-    console.log('HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-};
 
-UI.showPlatformReleaseNews = blahNewsYeah; //assign your custom method over the original.
+var newsStuffYep = function() {
+    return
+}
 
+UI.showPlatformReleaseNews = newsStuffYep; //assign your custom method over the original.
 
-var a = Media;
 // var platformNewsStuff = Media.getScheduledNotifications;
-var newsStuffYep = function(a) {
-    for (var b = [], d = Math.floor(a.currentWeek), c = Media.allScheduledStories.filter(function(b) {
-            return -1 === a.scheduledStoriesShown.indexOf(b.id)
-        }), l = 0; l < c.length; l++) {
-        var h = c[l];
-
-        // Pushes the event to the array b
-        d == General.getWeekFromDateString(h.date, h.ignoreGameLengthModifier) && b.push(h)
-    }
-
-    // Stops repeat of Notification
-    a.scheduledStoriesShown.addRange(b.map(function(a) {
-        return a.id
-    }));
-
-    // Displays the notification
-    return b.map(function(b) {
-        return b.notification  ? b.notification : b.getNotification(a)
-    })
-};
 Media.getScheduledNotifications = newsStuffYep; //assign your custom method over the original.
 
 // var cheeseYo = Media.getNewNotifications;
-var newsCheeseYep = function(a) {
-    for (var b = [], d = Media.TriggerNotifications.filter(function(b) {
-            return -1 === a.triggerNotificationsShown.indexOf(b.id) && b.trigger(a)
-        }), c = 0; c < d.length; c++) {
-        var l = d[c];
-        a.triggerNotificationsShown.push(l.id);
-        l.getNotification ? b.push(l.getNotification(a)) : b.push(l.notification)
-    }
-    a.triggerNotificationsShown.addRange(b.map(function(a) {
-        return a.id
-    }));
-    b.addRange(Media.getScheduledNotifications(a));
-    return b
-};
 
-Media.getNewNotifications = newsCheeseYep; //assign your custom method over the original.
-
-
+Media.getNewNotifications = newsStuffYep; //assign your custom method over the original.
 
 /*
 var newsArticlesArray = [{

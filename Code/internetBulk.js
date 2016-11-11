@@ -17,6 +17,7 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
+var internetImages = './mods/The_Internet_Mod/Img/';
 
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
@@ -202,79 +203,196 @@ internetMod.refresh = function() {
 
 // News Website
 (function() {
-  // Article Template
-  internetMod.articleStuff = [];
-  internetMod.articleToAdd = [];
-
-  internetMod.AddNewsArticle = function(newsArticle) {
-      internetMod.articleToAdd.push(newsArticle);
-  }
-
-  internetMod.AddArticleToHTMLPage = function(newsArticle) {
-      var newsSlideshowDiv = $('#newsArticleSlideshow ul');
-      var recentGamingNews = $('#articleGameBlock');
-      var recentPlatformNews = $('#articlePlatformBlock');
-      var gamingNewsList = $('#gamesArticleList');
-      var platformsNewsList = $('#platformsArticleList');
-
-      newsSlideshowDiv.prepend('<li id="Slideshow_' + newsArticle.id + '" class="' + newsArticle.category + '">' +
-      '<img id="slideContents" src="' + newsArticle.imageURL + '"><div id="slideDetails">' +
-      '<span class="articleHeader">' + newsArticle.header + '</span>' +
-      '<p id="articleText">' + newsArticle.text + '</p></div> </img></li>');
-
-      if (newsArticle.category == 'games') {
-      recentGamingNews.html('<div>' +
-      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
-      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
-      '</div>');
-
-      gamingNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
-
-    } else if (newsArticle.category == 'platforms') {
-      recentPlatformNews.html('<div>' +
-      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
-      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
-      '</div>');
-
-      platformsNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
-    }
-  }
-
-  // News Articles
-  var internetMod_exampleArticle = function() {
-      internetMod.AddNewsArticle({
-          id: "testArticle", // must be unique
-          category: "games",
-          header: "Ninvento's Not Messing Around",
-          text: "According to a Ninvento shareholder, the release of the TES is but the beginning of series of awesomeness",
-          date: "1/2/1",
-          imageURL: "./images/platforms/TES.png"
-      });
-  }
-  internetMod_exampleArticle();
-
-  // News Slideshow
+    imagesForADS = ['./mods/The_Internet_Mod/Img/refresh.png', './mods/The_Internet_Mod/Img/refresh.png', './mods/The_Internet_Mod/Img/refresh.png', './mods/The_Internet_Mod/Img/refresh.png'];
     var slideCount = $('#newsArticleSlideshow ul li').length;
     var slideWidth = $('#newsArticleSlideshow ul li').width();
     var slideHeight = $('#newsArticleSlideshow ul li').height();
     var sliderUlWidth = slideCount * slideWidth;
 
-    $('#newsArticleSlideshow').css('width', slideWidth);
-    $('#newsArticleSlideshow').css('height', slideHeight);
     $('#newsArticleSlideshow ul').css('width', sliderUlWidth);
     $('#newsArticleSlideshow ul').css('margin-left', -slideWidth);
 
+
+    // Article Template
+    internetMod.articleStuff = [];
+    internetMod.articleToAdd = [];
+
+    internetMod.AddNewsArticle = function(newsArticle) {
+        internetMod.articleToAdd.push(newsArticle);
+    }
+
+    internetMod.AddArticleToHTMLPage = function(newsArticle) {
+        var newsSlideshowDiv = $('#newsArticleSlideshow ul');
+        var recentGamesNews = $('.articleGameBlock');
+        var recentPlatformNews = $('.articlePlatformBlock');
+        var gamesNewsList = $('#gamesArticleList');
+        var platformsNewsList = $('#platformsArticleList');
+        var textPreviewFormat = newsArticle.text.replace(/<|b>|br>|i>|h2>|u>|s>/g, "").replace(/\//g, "");
+        var textForSlideshow = textPreviewFormat.substr(0, 80) + '...';
+        var textForListItem = textPreviewFormat.substr(0, 245) + '...';;
+        var newsListItemTemplate = '<li id="ArticleList_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '"> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span class="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + textForListItem + '</p> </div> </div> </li>';
+        var recentNewsItemTemplate = '<div id="ArticleRecent_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '"><img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails"><span class="articleHeader">' + newsArticle.header + '</span> </div> </img></div>';
+
+        newsSlideshowDiv.prepend('<li id="ArticleSlideshow_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '" data-position="1">' +
+            '<img id="slideContents" src="' + newsArticle.imageURL + '"><div id="slideDetails">' +
+            '<span class="articleHeader">' + newsArticle.header + '</span>' +
+            '<span class="articleListDate">' + newsArticle.date + '</span>' +
+            '<p id="articleText">' + textForSlideshow + '</p></div> </img></li>');
+
+        if (newsArticle.category == 'games') {
+            recentGamesNews.html(recentNewsItemTemplate);
+            gamesNewsList.prepend(newsListItemTemplate);
+        } else if (newsArticle.category == 'platforms') {
+            recentPlatformNews.html(recentNewsItemTemplate);
+            platformsNewsList.prepend(newsListItemTemplate);
+        }
+
+        // For some reason, it only works as a class
+        $('.Article_' + newsArticle.id + '').click(function() {
+            internetMod.hideAllPages();
+            // For fictional ads
+            var iRandomAD = imagesForADS[Math.floor(Math.random() * imagesForADS.length)];
+            $('.newsAD').attr('src', iRandomAD);
+
+            $('#headerInArticle').html(newsArticle.header);
+            $('#dateInArticle').text(newsArticle.date);
+            $('#imageForArticle').attr('src', newsArticle.imageURL);
+            $('#textInArticle').html(newsArticle.text);
+            $("#newsArticlesOnDeck").fadeIn();
+        });
+    }
+
+    // News Articles
+    var Article_riseOfG64 = function() {
+        internetMod.AddNewsArticle({
+            id: "riseOfG64", // must be unique
+            category: "platforms",
+            header: "The Rise of the Govodore G64",
+            text: "The on-going battle for gaming platform dominance has a clear victor: according to recent market studies, the Govodore <i>G64</i> is steadily outselling competitors in the PC sector, and there are a few reasons why the <i>G64</i> is doing so well:<br><br><h2>1. Consumers Prefer the Lower Price</h2><br>With a selling price of just $595, the <i>G64</i> is a computer that does not exclusively cater to the rich; many middle-class families are able to buy and use the <i>G64</i>. <b>Greater availability</b> is a signifcant reason the <i>G64</i> thrives, but it's certainly not the only reason.<br><br><h2>2. The <i>G64</i>'s Hardware</h2><br>Compared to other computers, the <i>G64</i> allows for easy configuration of hardware. With various motherboard ports, a cartridge port is left wide-open for any kind of use. Experts even say that this might spell the end of competing hardware manufacturers.<br><br>Right now, Godovore is clearly leading with around 30% of the computer marketshare. Will the PC be able to survive?",
+            date: "1/1/3",
+            imageURL: "./images/platforms/G64.png"
+        });
+    }
+    Article_riseOfG64();
+
+    var Article_dinkeyKingSuccess = function() {
+        internetMod.AddNewsArticle({
+            id: "dinkeyKingSuccess", // must be unique
+            category: "games",
+            header: "Ninvento's Arcade Aggressor",
+            text: 'Previously a nobody game development company, Ninvento is currently the talk of various arcades around the United States. In fact, their new arcade game <i>Dinkey King</i> has reached an impressive milestone: <b>over 60,000 machines have been sold!</b><br><br>Repeatedly trying to beat their high-score, many are glued to screen. To explore this love for the game, we asked certain players what they thought and received various responses:<br>- "I used to love the arcade game Tac-Man, and while <i>Dinkey King</i> is like Tac-Man, it offers a little more. You just run and hide in Tac-Man, but in <i>Dinkey King</i> it is not just about the high score; there is a goal: save the princess!"<br>- "I guess I just like the motions more than other games: run, jump, stop, RUN! Its a simple way to relax but still engaging."<br>- "Plain and simple, I love monkeys; ever since I saw King Kong, I have loved monkeys. <i>Dinkey King</i> gets that side of me, haha!"<br><br> A certain money maker, <i>Dinkey King</i> paves the way for the future of Ninvento.',
+            date: "1/1/4",
+            imageURL: "./images/platforms/G64.png"
+        });
+    }
+    Article_dinkeyKingSuccess();
+
+    var Article_ninventoAnnounceTES = function() {
+        internetMod.AddNewsArticle({
+            id: "ninventoAnnounceTES", // must be unique
+            category: "platforms",
+            header: "Ninvento's Own Console in the Works!",
+            text: 'Ninvento has wowed us before with hits like <i>Nario Bruhs</i> and <i>Dinkey King</i>, but after months of various rumours, the Japanese company just confirmed something even bigger: its very own home gaming console! The console will feature cartridge based games and a uniquely designed controller. While it would be a truly remarkable feat, many industry experts doubt that home gaming consoles will take off. A console or two have faired well, but various others have crashed and burned, which sets a bad precedent for consoles down the road.<br><br>What will come of future consoles? How can this problem be solved? To answer these questions, we contacted Market Analyst Richard Bryers.<br<br>According to Bryers, "consoles are steadily performaning worse in the market. Something drastic needs to come along if this downward trend is to change." <img class="imageInArticle" src="./mods/The_Internet_Mod/Img/consoleMarketBar.png" style="float: right !important; width: 300px; margin: 10px 0 0 10px;"></img> Additionally, Bryers said that consoles just "lack the whole," meaning all fail to fully deliver in every area: "Whether it be Afary struggling with controllers or other companies struggling with pricing, there is always something wrong with the console." We are eager to see what Ninvento will deliver and how it will perform in a genrally unstable market.',
+            date: "1/1/4",
+            imageURL: "./images/platforms/TES.png"
+        });
+    }
+    Article_ninventoAnnounceTES();
+
+    var Article_venaAnnounceMasterV = function() {
+        internetMod.AddNewsArticle({
+            id: "venaAnnounceMasterV", // must be unique
+            category: "platforms",
+            header: "Another Day, Another Console!",
+            text: "The gaming industry is on the up-and-up after the massive success of Ninvento's console TES; moreover, another japanese company called Vena announced a home gaming console on their own.<br><br>We contacted a Vena developer who wished to remain anonymous, and after some persistence, the developer stated, “Vena does not wanna say too much, but our console will be technically superior to the massively successful TES by Ninvento.”<br><br>Considering that Vena's last console, the Matt III, was released just last year, some industry experts expect this new console will be a simple rebranding for United States distribution.<br><br>We and others were previously skeptical of the console market, but after the prodigious success of the TES, Vena and other developers certainly have a chance to achieve something big! ",
+            date: "1/2/1",
+            imageURL: "./images/platforms/Master V.png"
+        });
+    }
+    Article_venaAnnounceMasterV();
+
+    var Article_announceGameling = function() {
+        internetMod.AddNewsArticle({
+            id: "announceGameling", // must be unique
+            category: "platforms",
+            header: "Another Day, Another Console!",
+            text: "Today, Ninvento has announced that they will introduce a portable gaming device called <i>Gameling</i>. The device comes with changeable game cartridges, a monochrome screen on a green background, built-in speakers, and even multiplayer support via a connection cable.<br><br>Compared to PCs and other gaming consoles, the Gameling is underpowered, but given the lower cost and excellent portability, it might find a huge following.<br><br>Interestingly enough, <i>Gameling</i> was initially called 'Bot Maxis Game' and was advertised as 'BMG-01'; however, the device was released to poor reception. In fact, even the Ninvento employees would refer to the device as 'LameGame.'<br><br>The <i>Gameling</i> is said to hit shelves soon. Hopefully, it will live up to expectations.",
+            date: "1/2/2",
+            imageURL: "./images/platforms/Gameling.png"
+        });
+    }
+    Article_announceGameling();
+
+    var Article_endOfG64 = function() {
+        internetMod.AddNewsArticle({
+            id: "endOfG64", // must be unique
+            category: "platforms",
+            header: "Govodore Says Goodbye, PC Says Hello!",
+            text: "Hardware manufacturers around the world were surprised today as Govodore, the creator of the popular <i>G64</i>, has filed for bankruptcy. Govodore simply failed to introduce a higher priced alternative and was forced to shut down production of the <i>G64</i>. Previous market data shows that the Govodore <i>G64</i> was slowly selling less and less.<img class='imageInArticle' src='./mods/The_Internet_Mod/Img/govodoreDyingGraph.png' style='float: right !important; width: 280px; margin: 10px 0 0 10px;'></img> In an unofficial statement, a <i>G64</i> employee said that the company has been unsuccessful in introducing higher priced computers to compete against newer and more advanced PCs. The platform will retire from the market in the coming months",
+            date: "1/2/3",
+            imageURL: "./images/platforms/G64.png" // change this to red x over it
+        });
+    }
+    Article_endOfG64();
+
+    var Article_announceVenaWar = function() {
+        internetMod.AddNewsArticle({
+            id: "announceVenaWar", // must be unique
+            category: "platforms",
+            header: "Vena Incites a New Gaming War!",
+            text: "Vena, creator of the <i>Master V</i> console, has announced the <i>Vena Gear</i>, a portable console to directly compete against the <i>Gameling</i> from Ninvento. A spokesperson for the company said, 'Unlike similar devices on the market, which don't come close to gaming consoles, the <i>Vena Gear</i> has basically the full power of the Master V, except that you can take it with you. The <i>Vena Gear</i> also has a full color screen'. The <i>Vena Gear</i> certainly has much to offer. Will this device topple the <i>Gameling</i>? We will see. The <i>Vena Gear</i> will debut in the coming months, but that's not all from Vena!<br><br>According to various rumours, Vena has early concepts for an entirely new home gaming console. Not much is known yet, but Ninvento certainly has a lot to respond to. With the <i>Vena Gear</i> and another new console, will Ninvento be able to handle the heat? Only time will tell.",
+            date: "1/2/4",
+            imageURL: "./images/platforms/superb/Vena Gear.png"
+        });
+    }
+    Article_announceVenaWar ();
+
+    var Article_announceVenaOasis = function() {
+        internetMod.AddNewsArticle({
+            id: "announceVenaOasis", // must be unique
+            category: "platforms",
+            header: "Vena's Announces a Sibling Console!",
+            text: "Vena has announced that they will release a new gaming console. The <i>Vena Oasis</i> comes with 16-bit graphics and sound which promises a new kind of gaming experience. Vena said at the announcement, 'The Oasis is a new start, it will be the genesis of a new generation of gaming consoles and we believe it will do very well in the market'. Hopefully, this console won't be overshadowed like previous Vena consoles have been by Ninvento products. Presumably in an effort to counter this, some of the games already announced for the <i>Vena Oasis</i> suggest that it will appeal to more mature audiences. Maybe this move will prove well for the <i>Vena Oasis</i>.",
+            date: "1/3/1",
+            imageURL: "./images/platforms/superb/Vena Oasis.png"
+        });
+    }
+    Article_announceVenaOasis();
+
+    var Article_announceSuperTES = function() {
+        internetMod.AddNewsArticle({
+            id: "announceSuperTES", // must be unique
+            category: "platforms",
+            header: "Ninvento Is Not Done with the TES!",
+            text: "Today, Ninvento announced the much anticipated successor to the popular TES console. Ninvento Creative Director Akemi Cho was eager to give some details: 'This is the greatest console we have ever built. It comes with state of the art 16-bit graphics and sound. It is simply super, and that's why we decided to call it the <i>Super TES</i>!'. Additionally, the sequel console will come with a sequel game: <i>Super Nario Bruhs</i>! Considering how well the original <i>Nario Bruhs</i> sold on the TES, the follow-up title should prove to be just as succesful.<br><br>The <i>Super NES</i> isn't completely new. In fact, it is just a redesigned version of the <i>Super Vanicom</i>, which dominated the Japanese console market. If the <i>Super TES</i> performs just as well as the <i>Super Vanicom</i>, Ninvento will grow immensely.<br><br>Fans around the world have been waiting for this moment, and if Ninvento's excitement proves to be legit, they will not be disappointed.",
+            date: "1/3/1",
+            imageURL: "./images/platforms/superb/Super TES.png"
+        });
+    }
+    Article_announceSuperTES();
+
+    var Article_announcePlaySystem = function() {
+        internetMod.AddNewsArticle({
+            id: "announcePlaySystem", // must be unique
+            category: "platforms",
+            header: "A Gaming Dream Already Canceled!",
+            text: "The media is abuzz with the latest news from this year's Entertainment Conference. In a surprise announcement yesterday, Vonny, a company known for general electronics, presented a prototype console called the <i>Play System</i>.<br><br>Apparently, Vonny was collaborating with Ninvento, creators of the beloved and successful <i>TES</i> and <i>Super TES</i> consoles, to develop what is basically a <i>Super TES</i> with a CD drive.<br><br>However, journalists around the world are baffled as only one day after Vonny and Ninvento jointly announced the <i>Play System</i> at the Entertainment Conference, things have turned sour. Ninvento announced today that they will cancel the project and instead seek to develop a new console with a different partner.<br><br>Rumour has it that the distribution deal the companies had worked out was unfavorable to Ninvento handing over much of the control to Vonny.<br><br>This seems to be the end of the <i>Play System</i>.",
+            date: "1/3/2",
+            imageURL: "./images/platforms/superb/Playsystem.png" // change this to red x over it
+        });
+    }
+    Article_announcePlaySystem();
+
+    // News Slideshow
     internetMod.animateSlideBarLoop = function() {
+        $("#actualSlideBar").stop();
         $("#actualSlideBar").css("width", '0%');
         $("#actualSlideBar").animate({
             width: "100%"
         }, 5000, internetMod.animateSlideBarLoop);
     }
 
-    internetMod.animateSlideBarLoop();
-
     internetMod.moveRight = function() {
-        $("#actualSlideBar").stop();
         internetMod.animateSlideBarLoop();
 
         $('#newsArticleSlideshow ul').animate({
@@ -286,7 +404,6 @@ internetMod.refresh = function() {
     }
 
     internetMod.moveLeft = function() {
-        $("#actualSlideBar").stop();
         internetMod.animateSlideBarLoop();
 
         $('#newsArticleSlideshow ul').animate({
@@ -314,40 +431,41 @@ internetMod.refresh = function() {
     $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
 
     internetMod.hideAllPages = function() {
-      $("#newsHome").fadeOut();
-      $("#newsGames").fadeOut();
-      $("#newsPlatforms").fadeOut();
-      $("#newsAbout").fadeOut();
-      $("#newsArticlesOnDeck").fadeOut();
+        $("#newsHome").fadeOut();
+        $("#newsGames").fadeOut();
+        $("#newsPlatforms").fadeOut();
+        $("#newsAbout").fadeOut();
+        $("#newsArticlesOnDeck").fadeOut();
+    }
+
+    internetMod.showNewsPage = function(newsPage) {
+        $("#newsHome").fadeOut();
+        $("#newsGames").fadeOut();
+        $("#newsPlatforms").fadeOut();
+        $("#newsAbout").fadeOut();
+        $("#newsArticlesOnDeck").fadeOut();
+        $("#" + newsPage + "").fadeIn();
     }
 
     internetMod.goNewsHome = function() {
-      internetMod.hideAllPages();
-      $("#newsHome").fadeIn();
+        internetMod.showNewsPage("newsHome");
     }
 
     internetMod.goNewsGames = function() {
-      internetMod.hideAllPages();
-      $("#newsGames").fadeIn();
+        internetMod.showNewsPage("newsGames");
     }
 
     internetMod.goNewsPlatforms = function() {
-      internetMod.hideAllPages();
-      $("#newsPlatforms").fadeIn();
+        internetMod.showNewsPage("newsPlatforms");
     }
 
     internetMod.goNewsAbout = function() {
-      internetMod.hideAllPages();
-      $("#newsAbout").fadeIn();
+        internetMod.showNewsPage("newsAbout");
     }
 })();
 
 
 internetMod.startSlideshow = function() {
-    if ($('#newsArticleSlideshow ul').children().length > 5) {
-        $("#newsArticleSlideshow ul li:gt(4)").remove();
-    }
-
     internetModSlideshowInterval = setInterval(function() {
         var slideWidth = $('#newsArticleSlideshow ul li').width();
         $("#actualSlideBar").stop();
@@ -448,7 +566,7 @@ $('#slideLeft').click(function(e) {
     }
 
     $('.announceChild').click(function() {
-        var msgPart1 = $(this).html().replace('"', '').replace('"', '');
+        var msgPart1 = $(this).html().replace(/"/g, '');
         $(this).addClass('msgOptionSelected');
         $(this).siblings('.announceChild').removeClass('msgOptionSelected');
         $('#msgPrt1').text('' + msgPart1 + '');
@@ -631,6 +749,51 @@ internetMod.addInternetToMenu = function() {
                         '<td id="Option2_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption2 + '</td> </tr> </table>' +
                         '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
                     $('#otherResponses_' + email.id + '').show();
+                    $('#Option1_' + email.id + '-2').on('click', function(event) {
+                        internetMod.optionDefaults('2', 'Option1');
+
+                        email.v1_message2_option1_ifSelected && email.v1_message2_option1_ifSelected();
+                    });
+
+                    $('#Option2_' + email.id + '-2').on('click', function(event) {
+                        internetMod.optionDefaults('2', 'Option2');
+
+                        email.v1_message2_option2_ifSelected && email.v1_message2_option2_ifSelected();
+                    });
+
+                    $('#Option1_' + email.id + '-3').on('click', function(event) {
+                        internetMod.optionDefaults('3', 'Option1');
+
+                        email.v1_message3_option1_ifSelected && email.v1_message3_option1_ifSelected();
+                    });
+
+                    $('#Option2_' + email.id + '-3').on('click', function(event) {
+                        internetMod.optionDefaults('3', 'Option2');
+
+                        email.v1_message3_option2_ifSelected && email.v1_message3_option2_ifSelected();
+                    });
+                    $('#Option1_' + email.id + '-4').on('click', function(event) {
+                        internetMod.optionDefaults('4', 'Option1');
+
+                        email.v1_message4_option1_ifSelected && email.v1_message4_option1_ifSelected();
+                    });
+
+                    $('#Option2_' + email.id + '-4').on('click', function(event) {
+                        internetMod.optionDefaults('4', 'Option2');
+
+                        email.v1_message4_option2_ifSelected && email.v1_message4_option2_ifSelected();
+                    });
+                    $('#Option1_' + email.id + '-5').on('click', function(event) {
+                        internetMod.optionDefaults('5', 'Option1');
+
+                        email.v1_message5_option1_ifSelected && email.v1_message5_option1_ifSelected();
+                    });
+
+                    $('#Option2_' + email.id + '-5').on('click', function(event) {
+                        internetMod.optionDefaults('5', 'Option2');
+
+                        email.v1_message5_option2_ifSelected && email.v1_message5_option2_ifSelected();
+                    });
                     internetMod.countNotifs(1);
                 }, 1 + 2 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
 
@@ -648,54 +811,6 @@ internetMod.addInternetToMenu = function() {
                     //      $('#optionSelected_' + email.id + '').show();
                     $('#List_' + email.id + '').toggle().toggle();
                 }
-
-
-
-                $('#Option1_' + email.id + '-2').on('click', function(event) {
-                    internetMod.optionDefaults(2, 'Option1');
-
-                    email.v1_message2_option1_ifSelected && email.v1_message2_option1_ifSelected();
-                });
-
-                $('#Option2_' + email.id + '-2').on('click', function(event) {
-                    internetMod.optionDefaults(2, 'Option2');
-
-                    email.v1_message2_option2_ifSelected && email.v1_message2_option2_ifSelected();
-                });
-
-                $('#Option1_' + email.id + '-3').on('click', function(event) {
-                    internetMod.optionDefaults('3', 'Option1');
-
-                    email.v1_message3_option1_ifSelected && email.v1_message3_option1_ifSelected();
-                });
-
-                $('#Option2_' + email.id + '-3').on('click', function(event) {
-                    internetMod.optionDefaults('3', 'Option2');
-
-                    email.v1_message3_option2_ifSelected && email.v1_message3_option2_ifSelected();
-                });
-                $('#Option1_' + email.id + '-4').on('click', function(event) {
-                    internetMod.optionDefaults('4', 'Option1');
-
-                    email.v1_message4_option1_ifSelected && email.v1_message4_option1_ifSelected();
-                });
-
-                $('#Option2_' + email.id + '-4').on('click', function(event) {
-                    internetMod.optionDefaults('4', 'Option2');
-
-                    email.v1_message4_option2_ifSelected && email.v1_message4_option2_ifSelected();
-                });
-                $('#Option1_' + email.id + '-5').on('click', function(event) {
-                    internetMod.optionDefaults('5', 'Option1');
-
-                    email.v1_message5_option1_ifSelected && email.v1_message5_option1_ifSelected();
-                });
-
-                $('#Option2_' + email.id + '-5').on('click', function(event) {
-                    internetMod.optionDefaults('5', 'Option2');
-
-                    email.v1_message5_option2_ifSelected && email.v1_message5_option2_ifSelected();
-                });
             }
 
             // Notifies user when/if he or she has a new message
@@ -714,14 +829,14 @@ internetMod.addInternetToMenu = function() {
         if ($('#Option1_' + email.id + '-1').hasClass('forGen') && !$('#Option2_' + email.id + '-1').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option1_' + email.id + '-1').removeClass('forGen');
-            internetMod.addResponse(2, email.v1_message2, email.v1_message2_option1, email.v1_message2_option2);
+            internetMod.addResponse('2', email.v1_message2, email.v1_message2_option1, email.v1_message2_option2);
         }
 
         // Displays version 2 of email (might condense this as well)
         if ($('#Option2_' + email.id + '-1').hasClass('forGen') && !$('#Option1_' + email.id + '-1').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option2_' + email.id + '-1').removeClass('forGen');
-            internetMod.addResponse(2, email.v2_message2, email.v2_message2_option1, email.v1_message2_option2);
+            internetMod.addResponse('2', email.v2_message2, email.v2_message2_option1, email.v1_message2_option2);
         }
 
         // Thrid message
@@ -729,14 +844,14 @@ internetMod.addInternetToMenu = function() {
         if ($('#Option1_' + email.id + '-2').hasClass('forGen') && !$('#Option2_' + email.id + '-2').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option1_' + email.id + '-2').removeClass('forGen');
-            internetMod.addResponse(3, email.v1_message3, email.v1_message3_option1, email.v1_message3_option2);
+            internetMod.addResponse('3', email.v1_message3, email.v1_message3_option1, email.v1_message3_option2);
         }
 
         // Displays version 2 of email (might condense this as well)
         if ($('#Option2_' + email.id + '-2').hasClass('forGen') && !$('#Option1_' + email.id + '-2').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option2_' + email.id + '-2').removeClass('forGen');
-            internetMod.addResponse(3, email.v2_message3, email.v2_message3_option1, email.v1_message3_option2);
+            internetMod.addResponse('3', email.v2_message3, email.v2_message3_option1, email.v1_message3_option2);
         }
 
         // Fourth message
@@ -744,14 +859,14 @@ internetMod.addInternetToMenu = function() {
         if ($('#Option1_' + email.id + '-3').hasClass('forGen') && !$('#Option2_' + email.id + '-3').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option1_' + email.id + '-3').removeClass('forGen');
-            internetMod.addResponse(4, email.v1_message4, email.v1_message4_option1, email.v1_message4_option2);
+            internetMod.addResponse('4', email.v1_message4, email.v1_message4_option1, email.v1_message4_option2);
         }
 
         // Displays version 2 of email (might condense this as well)
         if ($('#Option2_' + email.id + '-3').hasClass('forGen') && !$('#Option1_' + email.id + '-3').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option2_' + email.id + '-3').removeClass('forGen');
-            internetMod.addResponse(4, email.v2_message4, email.v2_message4_option1, email.v1_message4_option2);
+            internetMod.addResponse('4', email.v2_message4, email.v2_message4_option1, email.v1_message4_option2);
         }
 
         // Fifth message
@@ -759,14 +874,14 @@ internetMod.addInternetToMenu = function() {
         if ($('#Option1_' + email.id + '-4').hasClass('forGen') && !$('#Option2_' + email.id + '-4').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option1_' + email.id + '-4').removeClass('forGen');
-            internetMod.addResponse(5, email.v1_message5, email.v1_message5_option1, email.v1_message5_option2);
+            internetMod.addResponse('5', email.v1_message5, email.v1_message5_option1, email.v1_message5_option2);
         }
 
         // Displays version 2 of email (might condense this as well)
         if ($('#Option2_' + email.id + '-4').hasClass('forGen') && !$('#Option1_' + email.id + '-4').hasClass('forGen')) {
             $('#otherResponses_' + email.id + '').addClass('forGen');
             $('#Option2_' + email.id + '-4').removeClass('forGen');
-            internetMod.addResponse(5, email.v2_message5, email.v2_message5_option1, email.v1_message5_option2);
+            internetMod.addResponse('5', email.v2_message5, email.v2_message5_option1, email.v1_message5_option2);
         }
         // --------------------------------------------------------------------------------------------------------------------------------
 
@@ -928,16 +1043,18 @@ internetMod.addInternetToMenu = function() {
 
     internetMod.AddEmailToHTMLPage = function(email) {
         var emailMessageList = $('#emailMSGList');
-        emailMessageList.append('<li id="List_' + email.id + '" class="forGenl priListItem"> <div class="rndPrItem"><div id="haveMSG_' + email.id + '" class="haveMSG">!</div><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
+        var messageFOREmailList = email.message.replace(/<|b>|br>|h2>|u>/g, "").replace(/\//g, "");
+        var messageInEmailList = messageFOREmailList.substr(0, 80) + '...';
+        emailMessageList.prepend('<li id="List_' + email.id + '" class="forGenl priListItem"> <div class="rndPrItem"><div id="haveMSG_' + email.id + '" class="haveMSG">!</div><img id="checkmark_' + email.id + '" class="checkmark_Email" " src="./mods/The_Internet_Mod/img/checkmark.png" style="display: none;"></img><img class="iconE" src="./mods/The_Internet_Mod/img/profileIcon_Email.png">' +
             '<div id="nameE">' + email.from + '</div>' +
             '<div id="usernameE">' + email.address + '</div><hr style="margin-top: 0px;">' +
             '<div id="subjectE">' + email.subject + '</div>' +
-            '<div id="messageE">' + email.message + '</div>' +
+            '<div id="messageE">' + messageInEmailList + '</div>' +
             //'<div id="optionSelected_' + email.id + '" class="optionSelected" style="display: none;"> <hr> <div id="optionActual" class="optionActual"><b>Response:</b><span id="response1_' + email.id + '" style="display: none;"> ' + email.option1 + '</span><span id="response2_' + email.id + '" style="display: none;"> ' + email.option2 + '</span></div> </div></div>' +
             '</li>');
 
         var emailViewingArea = $('#emailMain');
-        emailViewingArea.append('<div id="Email_' + email.id + '" class="emailInfo">' +
+        emailViewingArea.prepend('<div id="Email_' + email.id + '" class="emailInfo">' +
             'Category: ' + email.category + ' <br>' +
             'From: ' + email.from + ' (' + email.address + ')<br>' +
             'Date: <span id="emailDate"></span>' +
@@ -1134,16 +1251,38 @@ internetMod.modTick = function() {
     internetMod.yearChecker();
 
     for (var k = 0; k < internetMod.articleToAdd.length; k++) {
-            var newsArticle = internetMod.articleToAdd[k];
-            var nDate = newsArticle.date.split('/');
-            if (GameManager.company.isLaterOrEqualThan(parseInt(nDate[0]), parseInt(nDate[1]), parseInt(nDate[2])) && internetMod.articleStuff.indexOf(newsArticle) == -1) {
-                internetMod.articleStuff.push(newsArticle);
-                internetMod.AddArticleToHTMLPage(newsArticle);
-            }
+        var newsArticle = internetMod.articleToAdd[k];
+        var nDate = newsArticle.date.split('/');
+        var slideCount = $('#newsArticleSlideshow ul li').length;
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        var sliderUlWidth = slideCount * slideWidth;
+        $('#newsArticleSlideshow ul').css('width', sliderUlWidth);
+        $('#newsArticleSlideshow ul').css('margin-left', -slideWidth)
+        if (GameManager.company.isLaterOrEqualThan(parseInt(nDate[0]), parseInt(nDate[1]), parseInt(nDate[2])) && internetMod.articleStuff.indexOf(newsArticle) == -1) {
+            internetMod.articleStuff.push(newsArticle);
+            internetMod.AddArticleToHTMLPage(newsArticle);
         }
-       /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
-           newsArticlesArray.push(newsArticle);
-        } */
+        if ($('#newsArticleSlideshow ul li').length > 4) {
+          /*   $("#newsArticleSlideshow ul li").sort(internetMod.sortSlideshow).appendTo('#newsArticleSlideshow ul');
+
+              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position')) + 1;
+              $('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position', '' + testYo + '');
+
+              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position')) + 1;
+              $('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position', '' + testYo + '');
+
+              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position')) + 1;
+              $('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position', '' + testYo + '');
+
+              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position')) + 1;
+              $('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position', '' + testYo + '');*/
+
+            $("#newsArticleSlideshow ul li:gt(3)").remove();
+        }
+    }
+    /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
+        newsArticlesArray.push(newsArticle);
+     } */
 
     //News Website
 }
@@ -1241,7 +1380,7 @@ internetMod.openBug = function() {
 internetMod.exit = function() {
     Sound.click();
     $("#internetContainer").hide();
-    GameManager.resume(true);
     internetMod.disableSlideshow();
+    GameManager.resume(true);
     // addReplyBulk.Resume();
 };
