@@ -19,6 +19,7 @@ TO-DO List (Not Done is "-". Done is "+"):
 var internetMod = {};
 var internetImages = './mods/The_Internet_Mod/Img/';
 
+
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
 
@@ -35,6 +36,7 @@ function Timer(callback, delay) {
 
     this.Resume();
 }
+
 
 // Implements Context Menu Button
 (function() {
@@ -75,9 +77,9 @@ internetMod.addFans = function(fans) {
 }
 
 internetMod.addHype = function(hype) {
-        GameManager.company.adjustHype(hype);
-    }
-    // kristof1104 is the best --------------------------------------------------------------------------------------------------- (Thx :-) )
+    GameManager.company.adjustHype(hype);
+}
+// kristof1104 is the best --------------------------------------------------------------------------------------------------- (Thx :-) )
 
 
 internetMod.emailNotifOPEN = function() {
@@ -229,12 +231,12 @@ internetMod.refresh = function() {
         var platformsNewsList = $('#platformsArticleList');
         var textPreviewFormat = newsArticle.text.replace(/<|b>|br>|i>|h2>|u>|s>/g, "").replace(/\//g, "");
         var textForSlideshow = textPreviewFormat.substr(0, 80) + '...';
-        var textForListItem = textPreviewFormat.substr(0, 245) + '...';;
+        var textForListItem = textPreviewFormat.substr(0, 240) + '...';
         var newsListItemTemplate = '<li id="ArticleList_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '"> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span class="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + textForListItem + '</p> </div> </div> </li>';
         var recentNewsItemTemplate = '<div id="ArticleRecent_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '"><img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails"><span class="articleHeader">' + newsArticle.header + '</span> </div> </img></div>';
 
         newsSlideshowDiv.prepend('<li id="ArticleSlideshow_' + newsArticle.id + '" class="Article_' + newsArticle.id + ' ' + newsArticle.category + '" data-position="1">' +
-            '<img id="slideContents" src="' + newsArticle.imageURL + '"><div id="slideDetails">' +
+            '<img class="slideContents" src="' + newsArticle.imageURL + '"><div class="slideDetails">' +
             '<span class="articleHeader">' + newsArticle.header + '</span>' +
             '<span class="articleListDate">' + newsArticle.date + '</span>' +
             '<p id="articleText">' + textForSlideshow + '</p></div> </img></li>');
@@ -315,7 +317,7 @@ internetMod.refresh = function() {
         internetMod.AddNewsArticle({
             id: "announceGameling", // must be unique
             category: "platforms",
-            header: "Another Day, Another Console!",
+            header: "One Small Device, One Big Dream",
             text: "Today, Ninvento has announced that they will introduce a portable gaming device called <i>Gameling</i>. The device comes with changeable game cartridges, a monochrome screen on a green background, built-in speakers, and even multiplayer support via a connection cable.<br><br>Compared to PCs and other gaming consoles, the Gameling is underpowered, but given the lower cost and excellent portability, it might find a huge following.<br><br>Interestingly enough, <i>Gameling</i> was initially called 'Bot Maxis Game' and was advertised as 'BMG-01'; however, the device was released to poor reception. In fact, even the Ninvento employees would refer to the device as 'LameGame.'<br><br>The <i>Gameling</i> is said to hit shelves soon. Hopefully, it will live up to expectations.",
             date: "1/2/2",
             imageURL: "./images/platforms/Gameling.png"
@@ -345,13 +347,13 @@ internetMod.refresh = function() {
             imageURL: "./images/platforms/superb/Vena Gear.png"
         });
     }
-    Article_announceVenaWar ();
+    Article_announceVenaWar();
 
     var Article_announceVenaOasis = function() {
         internetMod.AddNewsArticle({
             id: "announceVenaOasis", // must be unique
             category: "platforms",
-            header: "Vena's Announces a Sibling Console!",
+            header: "Vena's Announces the Sibling Console!",
             text: "Vena has announced that they will release a new gaming console. The <i>Vena Oasis</i> comes with 16-bit graphics and sound which promises a new kind of gaming experience. Vena said at the announcement, 'The Oasis is a new start, it will be the genesis of a new generation of gaming consoles and we believe it will do very well in the market'. Hopefully, this console won't be overshadowed like previous Vena consoles have been by Ninvento products. Presumably in an effort to counter this, some of the games already announced for the <i>Vena Oasis</i> suggest that it will appeal to more mature audiences. Maybe this move will prove well for the <i>Vena Oasis</i>.",
             date: "1/3/1",
             imageURL: "./images/platforms/superb/Vena Oasis.png"
@@ -371,17 +373,95 @@ internetMod.refresh = function() {
     }
     Article_announceSuperTES();
 
+    var Article_deadPlaySystem = function() {
+        internetMod.AddNewsArticle({
+            id: "deadPlaySystem", // must be unique
+            category: "platforms",
+            header: "A Gaming Dream Already Canceled",
+            text: "The media is abuzz with the latest news from this year's Entertainment Conference. In a surprise announcement yesterday, Vonny, a company known for general electronics, presented a prototype console called the <i>Play System</i>.<br><br>Apparently, Vonny was collaborating with Ninvento, creators of the beloved and successful <i>TES</i> and <i>Super TES</i> consoles, to develop what is basically a <i>Super TES</i> with a CD drive.<br><br>However, journalists around the world are baffled as only one day after Vonny and Ninvento jointly announced the <i>Play System</i> at the Entertainment Conference, things have turned sour. Ninvento announced today that they will cancel the project and instead seek to develop a new console with a different partner.<br><br>Rumour has it that the distribution deal the companies had worked out was unfavorable to Ninvento handing over much of the control to Vonny.<br><br>This seems to be the end of the <i>Play System</i>.",
+            date: "1/3/2",
+            imageURL: "./images/platforms/superb/PlaysystemA.png" // change this to red x over it
+        });
+    }
+    Article_deadPlaySystem();
+
     var Article_announcePlaySystem = function() {
         internetMod.AddNewsArticle({
             id: "announcePlaySystem", // must be unique
             category: "platforms",
-            header: "A Gaming Dream Already Canceled!",
-            text: "The media is abuzz with the latest news from this year's Entertainment Conference. In a surprise announcement yesterday, Vonny, a company known for general electronics, presented a prototype console called the <i>Play System</i>.<br><br>Apparently, Vonny was collaborating with Ninvento, creators of the beloved and successful <i>TES</i> and <i>Super TES</i> consoles, to develop what is basically a <i>Super TES</i> with a CD drive.<br><br>However, journalists around the world are baffled as only one day after Vonny and Ninvento jointly announced the <i>Play System</i> at the Entertainment Conference, things have turned sour. Ninvento announced today that they will cancel the project and instead seek to develop a new console with a different partner.<br><br>Rumour has it that the distribution deal the companies had worked out was unfavorable to Ninvento handing over much of the control to Vonny.<br><br>This seems to be the end of the <i>Play System</i>.",
-            date: "1/3/2",
-            imageURL: "./images/platforms/superb/Playsystem.png" // change this to red x over it
+            header: "The PlaySystem is Back!",
+            text: "Today, Vonny has announced their very own console called the <i>PlaySystem</i>. Apparently the company has completely reworked their earlier prototype after Ninvento cancelled the project. We concated Ninvento about the news, but the company had nothing to say on the matter.<br><br>The new <i>PlaySystem</i> comes with a CD-ROM drive and 32-bit processors; moreover, it is wholly owned by Vonny. Various Vonny developers said that they have immensly struggled to get this thing on the road, with a Vena director claiming that Vonny has no clue how to develop hardware or software and that the console is 'a ridiculous idea.' However, industry professionals say that this might be the beginning of a new generation of consoles, paving the way for a bright gaming future.<br><br>The <i>Playsystem</i> will enter the market in a few months.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/Playsystem.png"
         });
     }
     Article_announcePlaySystem();
+
+    var Article_announceTES64 = function() {
+        internetMod.AddNewsArticle({
+            id: "announceTES64", // must be unique
+            category: "platforms",
+            header: "Ninvento Ready to WOW Again!",
+            text: "Ninvento announced their next generation console called <i>TES 64</i> today. Expected to be released relatively soon, it is the world's first gaming console to support 64-bit processors for graphics and audio. Ninvento said this will allow never-before-seen 3D realism.<br><br>Apparently, a graphics company known as Vilicon Graphics, Inc. was looking for a video game partner in order to showcase new graphics technology. This technology is what Ninvento will be using for their new and improved graphics.<br><br>In recent years, the <i>Super TES</i> has lost much of the market share to more modern consoles. Market experts said that the hardware of the <i>TES 64</i> is surely impressive, but expressed their surprise that it still uses ROM cartridges instead of the much cheaper and higher capacity CD-ROM format. Nevertheless, the <i>TES 64</i> seems like an impressive console, and Ninvento has said that it plans to aggressively price it against Vonny's <i>Playsystem</i>.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/TES 64.png"
+        });
+    }
+    Article_announceTES64();
+
+    var Article_announceDreamVast = function() {
+        internetMod.AddNewsArticle({
+            id: "announceDreamVast", // must be unique
+            category: "platforms",
+            header: "Vena's DreamVast is a Dream Console",
+            text: "The day Vena fans have waited a long time for has arrived, for Vena has announced their next generation console, the <i>DreamVast</i>. A company spokesperson said, 'The <i>DreamVast</i> is a dream come true. This console is the most advanced gaming console in history!'<br><br>The new console supports powerful graphics hardware promising graphic quality rivaling those on high-end PCs. The <i>DreamVast</i> is also the first console to ship with a modem out-of-the-box, making it ready for online play.<br><br>There is a lot riding on this console. With the bomb that was the <i>Vena Oasis</i>, Vena is in the middle of a serious financial predicament. If the <i>DreamVast</i> also fails to deliver, it could be the end for Vena.<br><br>With Vena and fans crossing their fingers and hoping for the best, the console will be available in coming months.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/DreamVast.png"
+        });
+    }
+    Article_announceDreamVast();
+
+    var Article_announcePlaysystem2 = function() {
+        internetMod.AddNewsArticle({
+            id: "announcePlaysystem2", // must be unique
+            category: "platforms",
+            header: "Vonny Announces a Playsystem Successor",
+            text: "Today, Vonny has announced the much anticipated successor to their popular <i>Playsystem</i> console. The <i>Playsystem 2</i> will have upgraded hardware to compete with newer generation consoles such as the <i>DreamVast</i>. Unlike the <i>DreamVast</i>, the <i>Playsystem 2</i> does not focus much on online play but instead seems to focus on the strengths of the previous <i>Playsystem</i>. A solid upgraded controller including vibration function, upgraded graphics, support for DVD titles and even backwards compatibility with <i>Playsystem 1</i> games.<br><br>Sparking excitement in the gaming industry, demo titles like <i>Great Turismo 200</i> and <i>Teggen Tag Tourney</i> certainly demonstrate the capabilites of the coming console. Many are dying to see any other games this new generation of gaming brings forth.<br><br>The <i>Playsystem 2</i> will be released in several months.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/Playsystem 2.png"
+        });
+    }
+    Article_announcePlaysystem2();
+
+
+    // DreamVast slowing down story add to Flutter
+
+    var Article_announcemBox = function() {
+        internetMod.AddNewsArticle({
+            id: "announcemBox", // must be unique
+            category: "platforms",
+            header: "A New Player Enters the Console Competition",
+            text: "PC software juggernaut Mirconoft has announced today that they will enter the game console market with their very own gaming console called the <i>mBox</i>. This newbie in the console industry was conjured up by Micronoft's 'DefectX' team. The 4 members reassembled and configured a Dill laptop to work as a prototype for a video game console.<br><br>First demonstrations have been impressive, but we will have to wait and see how it fares against the popular DreamVast, as well as against the recently announced and much anticipated <i>Playsystem 2</i>2. The new console is said to debut relatively soon.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/mBox.png"
+        });
+    }
+    Article_announcemBox();
+
+    var Article_launchPlaysystem2 = function() {
+        internetMod.AddNewsArticle({
+            id: "Article_launchPlaysystem2", // must be unique
+            category: "platforms",
+            header: "Vonny's Playsystem 2 Makes Gaming History",
+            text: "The launch of the <i>Playsystem 2</i> has been a phenomenal success. Stores everywhere are out of stock as manufacturing can barely keep up. Fans have resorted to buying the console on internet auction sites for as much as five times the normal price.<br><br>With exceedingly excellent hardware (possibly the best console hardware yet), appropriately varying accessories, simply perfect controllers, and astonishingly entertaining games, Vonny's innovative machine has raised the bar for console competitors. In fact, Vonny's immensely succesful console could be responsible for <i>DreamVast</i> sales plummeting.<br><br>Possibly considering the effect the <i>Playsystem 2</i> has had on sales, Micronoft has delayed their upcoming console, the <i>mBox</i> . One can assume they want to ensure quaility after Vonny's historic launch.",
+            date: "1/3/3",
+            imageURL: "./images/platforms/superb/Playsystem 2.png"
+        });
+    }
+    Article_launchPlaysystem2();
+    // add playsystem DRE disc error dealio article about DreamVast discontinuation
+
+    //mBox delayed add to Flutter
 
     // News Slideshow
     internetMod.animateSlideBarLoop = function() {
@@ -685,6 +765,7 @@ internetMod.addInternetToMenu = function() {
 
     internetMod.reset = function() {
         internetMod.emailList = [];
+        $('#internetNotifs').hide();
         $("#emailMSGList").html("");
     }
 
@@ -738,6 +819,7 @@ internetMod.addInternetToMenu = function() {
             if ($('#emailOptions_' + email.id + '-1').hasClass('disableElement') && $('#otherResponses_' + email.id + '').hasClass('forGen')) {
                 console.log("Option 1 or 2 has been clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 var addReplyBulk = new Timer(function() {
+                    console.log('This being repeated?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????');
                     $('#trashEmail_' + email.id + '').remove();
                     $('#otherResponses_' + email.id + '').removeClass('forGen');
                     $('#otherResponses_' + email.id + '').append('<div id="Email_' + email.id + '-' + emailNumber + '" class="emailInfo forGen">' +
@@ -749,6 +831,7 @@ internetMod.addInternetToMenu = function() {
                         '<td id="Option2_' + email.id + '-' + emailNumber + '" class="emailOption forGenl">' + emailVersionOption2 + '</td> </tr> </table>' +
                         '<table id="trashEmail_' + email.id + '" class="trashEmail"> <tr> <td id="trashTD">Trash Email (Double Click)</td> </tr> </table>');
                     $('#otherResponses_' + email.id + '').show();
+
                     $('#Option1_' + email.id + '-2').on('click', function(event) {
                         internetMod.optionDefaults('2', 'Option1');
 
@@ -902,6 +985,7 @@ internetMod.addInternetToMenu = function() {
         internetMod.emailList.push(email);
         internetMod.AddEmailToHTMLPage(email);
         internetMod.countNotifs(0);
+        Sound.playSoundOnce("bugDecrease", 0.2);
     }
 
     GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
@@ -909,8 +993,17 @@ internetMod.addInternetToMenu = function() {
     GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
 
 
+    internetMod.getStringDateFormatForWeekNumber = function(weekNumber) {
+        var week = Math.floor(weekNumber) % 4 + 1;
+        var month = Math.floor(weekNumber) / 4;
+        var year = month / 12 + 1;
+        month = month % 12 + 1;
+        return Math.floor(year) + "/" + Math.floor(month) + "/" + Math.floor(week);
+    };
+
     internetMod.AddEmail = function(email) {
         internetMod.emailListToAdd.push(email);
+        // email.pushDate = undefined;
         //            email.option1Selected = false;
         //          email.option2Selected = false;
     }
@@ -1030,16 +1123,7 @@ internetMod.addInternetToMenu = function() {
               }
               */
 
-    //  $(document).mouseup(function(e) {
-    if (GameManager.resume(true) || GameManager.resume(!0)) {
-        rdmEmailTimer.Resume();
-        addReplyBulk.Resume();
-    }
-    if (GameManager.pause(true) || GameManager.pause(!0)) {
-        rdmEmailTimer.Pause();
-        addReplyBulk.Pause();
-    }
-    //  });
+
 
     internetMod.AddEmailToHTMLPage = function(email) {
         var emailMessageList = $('#emailMSGList');
@@ -1121,16 +1205,16 @@ internetMod.addInternetToMenu = function() {
         });
     }
 
-    // Example internet email message MAKE THIS TRIGGER IN OFFICE 3
+    // Example internet email message
     var internetMod_tutorialEmail = function() {
         internetMod.AddEmail({
             id: 'testEmail', // must be unique
-            isRandomEvent: false,
+            isRandomEvent: true,
             trigger: function(email) {
                 return GameManager.company.currentLevel == 1;
             },
             category: 'Media', // must be playerCompany, Media, Fans, or Companies
-            date: '1/1/3', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
+            date: '', // When it comes to date and trigger, I want to be able to remove one or the other without there being a GDT event handler issue.
             from: 'Jimmy Dean',
             address: 'jdean@zmail.com',
             subject: 'Your Game; Our Movie',
@@ -1230,22 +1314,37 @@ internetMod.modTick = function() {
         var d = GameManager.company.getDate(GameManager.company.currentWeek);
         var date = email.date.split('/');
         if (internetMod.isEmailAdded(email) == false) {
-            if (email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company)) {
-                var rdmEmailTimer = new Timer(function() {
-                    internetMod.emailPushDefaults(email);
-                    $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
-                    Sound.playSoundOnce("bugDecrease", 0.2);
-                }, 48 + 24 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK * 1E3);
-            } else if (email.isRandomEvent !== true && email.trigger && email.trigger(GameManager.company)) {
+          if (email.date.length < 3 && email.isRandomEvent && email.trigger && email.trigger(GameManager.company)) {
+              //add random offset date to email date
+              var weekNumber = General.getWeekFromDateString(email.date, true);
+              weekNumber += Math.floor((GameManager.gameTime / 1000) + 36 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK); //moves the initial add date with a random week offset between 1-10
+              email.date = internetMod.getStringDateFormatForWeekNumber(weekNumber);
+              console.log('The event triggered randomly');
+          } else if (!email.isRandomEvent && email.trigger && email.trigger(GameManager.company)) {
                 internetMod.emailPushDefaults(email);
                 $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
-            } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
+                console.log('The event just triggered');
+            } else if (email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
                 internetMod.emailPushDefaults(email);
                 $('#emailDate').text('' + email.date + '');
-                Sound.playSoundOnce("bugDecrease", 0.2);
+                console.log('The event was pushed by date');
             }
         }
+        /*  if (internetMod.isEmailAdded(email) == false) {
+              if (email.isRandomEvent && email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company)) {
+                  internetMod.emailPushDefaults(email);
+                  $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
+                  console.log('The event triggered randomly');
+              } else if (email.isRandomEvent !== true && email.trigger && email.trigger(GameManager.company)) {
+                  internetMod.emailPushDefaults(email);
+                  $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
+                  console.log('The event just triggered');
+              } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
+                  internetMod.emailPushDefaults(email);
+                  $('#emailDate').text('' + email.date + '');
+                  console.log('The event was pushed by date');
+              }
+          } */
     }
     internetMod.checkForReply(email);
     internetMod.yearChecker();
@@ -1257,25 +1356,25 @@ internetMod.modTick = function() {
         var slideWidth = $('#newsArticleSlideshow ul li').width();
         var sliderUlWidth = slideCount * slideWidth;
         $('#newsArticleSlideshow ul').css('width', sliderUlWidth);
-        $('#newsArticleSlideshow ul').css('margin-left', -slideWidth)
+        $('#newsArticleSlideshow ul').css('margin-left', -slideWidth);
         if (GameManager.company.isLaterOrEqualThan(parseInt(nDate[0]), parseInt(nDate[1]), parseInt(nDate[2])) && internetMod.articleStuff.indexOf(newsArticle) == -1) {
             internetMod.articleStuff.push(newsArticle);
             internetMod.AddArticleToHTMLPage(newsArticle);
         }
         if ($('#newsArticleSlideshow ul li').length > 4) {
-          /*   $("#newsArticleSlideshow ul li").sort(internetMod.sortSlideshow).appendTo('#newsArticleSlideshow ul');
+            /*   $("#newsArticleSlideshow ul li").sort(internetMod.sortSlideshow).appendTo('#newsArticleSlideshow ul');
 
-              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position')) + 1;
-              $('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position', '' + testYo + '');
+                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position')) + 1;
+                $('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position', '' + testYo + '');
 
-              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position')) + 1;
-              $('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position', '' + testYo + '');
+                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position')) + 1;
+                $('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position', '' + testYo + '');
 
-              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position')) + 1;
-              $('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position', '' + testYo + '');
+                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position')) + 1;
+                $('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position', '' + testYo + '');
 
-              var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position')) + 1;
-              $('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position', '' + testYo + '');*/
+                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position')) + 1;
+                $('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position', '' + testYo + '');*/
 
             $("#newsArticleSlideshow ul li:gt(3)").remove();
         }
