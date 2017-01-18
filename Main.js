@@ -156,6 +156,8 @@ var internetMod = {};
     GDT.loadJs([
         'Code/internetBulk.js',
         'Code/testingStuff.js',
+        'Code/newsSITE.js',
+        'Code/emailSITE.js',
     ], ready, error);
 
 })();
