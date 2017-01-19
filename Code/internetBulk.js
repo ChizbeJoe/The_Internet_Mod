@@ -1019,21 +1019,10 @@ internetMod.modTick = function() {
             internetMod.AddArticleToHTMLPage(newsArticle);
         }
         if ($('#newsArticleSlideshow ul li').length > 4) {
-            /*   $("#newsArticleSlideshow ul li").sort(internetMod.sortSlideshow).appendTo('#newsArticleSlideshow ul');
-
-                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position')) + 1;
-                $('#newsArticleSlideshow ul li:nth-child(1)').attr('data-position', '' + testYo + '');
-
-                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position')) + 1;
-                $('#newsArticleSlideshow ul li:nth-child(2)').attr('data-position', '' + testYo + '');
-
-                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position')) + 1;
-                $('#newsArticleSlideshow ul li:nth-child(3)').attr('data-position', '' + testYo + '');
-
-                var testYo = parseInt($('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position')) + 1;
-                $('#newsArticleSlideshow ul li:nth-child(4)').attr('data-position', '' + testYo + '');*/
-
             $("#newsArticleSlideshow ul li:gt(3)").remove();
+        }
+        if (d.year == 25 && d.month == 9 && d.week == 2) {
+          GameManaer.company.flags.visoriusAnnounced = true;
         }
     }
     /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
