@@ -1,588 +1,238 @@
-/* internetMod.createContractUI = function() {
-    $("#internetModTopicChooser").hide();
-    $("#internetModGenreChooser").hide();
-    $("#internetModPlatformChooser").hide();
-    $("#internetModCompetitorChooser").hide();
+Media.allScheduledStories = [];
+var se = SalesEvents;
+var m = Media;
 
-    var iContent = $(".announceChild3");
-    iContent.html("<div class='contractName centeredButtonWrapper'> <input id='contractNameInput' type='text' maxlength='35' value='Contract Name' style='width:500px;font-size: 22pt; text-align:center'/> </div>");
+// Maybe change some of these to Flutter once Flutter is fleshed out
 
-    var iTemplate = $("#gameDefinitionContentTemplate").clone();
-    iTemplate.find("#gameTitle").remove();
-
-    iTemplate.find(".pickTopicButton").clickExcl(function() {
-        internetMod.pickTopicClick();
-    });
-    iTemplate.find("#pickGenreButton").clickExcl(function() {
-        internetMod.pickGenreClick();
-    });
-    iTemplate.find("#pickSecondGenreButton").clickExcl(function() {
-        UI.pickSecondGenreClick()
-    });
-    iTemplate.find(".pickPlatformButton").clickExcl(function() {
-        internetMod.pickPlatformClick($(this))
-    });
-    if (GameManager.company.canDevelopMediumGames()) {
-        if (!GameManager.company.canDevelopLargeGames())
-            iTemplate.find(".gameSizeLarge").hide();
-        if (!GameManager.company.canDevelopAAAGames())
-            iTemplate.find(".gameSizeAAA").hide()
-    } else
-        iTemplate.find("#gameSizeGroup").hide();
-    if (!GameManager.company.canDevelopMMOGames())
-        iTemplate.find(".gameGenreMMO").hide();
-    //if (!GameManager.company.canUseMultiGenre())
-    iTemplate.find("#pickSecondGenreButton").hide();
-    /*else {
-    	iTemplate.find("#pickSecondGenreButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
-    	iTemplate.find("#pickGenreButton").css("margin-left",
-    		"2.5px").css("margin-right", "2.5px").css("width", "145px")
+Media.createFirstGameStory = function(company) {
+    var d = company.getDate(company.currentWeek);
+    var game = company.currentGame;
+    var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+    if (game.score <= 3) {
+        var msg = "{0}, a newcomer in the game industry, has just released their first game '{1}'. The game got generally low scores from reviewers but with a bit of experience we are sure that we will see better games from {0} in the future.".localize("fragment, continue with firstGameStoryRatingFragments").format(company.name, game.title);
+    } else if (game.score <= 5.6) {
+        var msg = "{0}, a newcomer in the game industry, has just released their first game '{1}'. The game had a moderate response from reviewers. We are curious what {0} will deliver in the future.".localize("fragment, continue with firstGameStoryRatingFragments").format(company.name, game.title);
+    } else {
+        var msg = "{0}, a newcomer in the game industry, has just released their first game '{1}'. The game received favorable reviews. With such a good start {0} are sure to gain fans quickly.".localize("fragment, continue with firstGameStoryRatingFragments").format(company.name, game.title);
     }
-    if (GameManager.company.canDevelopMultiPlatform())
-        iTemplate.find(".pickPlatformButton").css("margin-left", "2.5px").css("margin-right", "2.5px").css("width", "145px");
-    else
-        iTemplate.find(".pickPlatformButton").slice(1).hide();
-    if (!GameManager.company.canSetTargetAudience())
-        iTemplate.find("#targetRating").hide();
 
-
-    iTemplate.find(".pickEngineButtonWrapper").hide();
-    iTemplate.find(".ratingLabel").hide();
-
-    iTemplate.find(".gameDefSelection").clickExcl(function() {
-        Sound.click();
-        var e = $(this);
-        e.parent().find(".gameDefSelection").removeClass("selected");
-        e.addClass("selected");
+    internetMod.AddNewsArticle({
+        id: "companyFirstGame", // must be unique
+        category: "games",
+        header: "A New Player in the Gaming Industry",
+        text: msg,
+        date: newsDate,
+        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
     });
+    console.log('First Game Story Intialized');
+};
 
-    $("#gameDefinition").find(".dialogNextButton").clickExcl(function() {
-        $("#gameDefinition").find(".dialogNextButton").effect("shake", {
-            times: 2,
-            distance: 5
-        }, 50)
+Media.createSequelStory = function(company, game) {
+    var d = company.getDate(company.currentWeek);
+    var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+    var sequelTo = company.getGameById(game.sequelTo);
+    var responseVerb = game.score > 9 ? "outstanding".localize() : game.score > 7 ? "great".localize() : game.score > 5 ? "moderate".localize() : game.score > 3 ? "below average".localize() : "pretty bad".localize();
+    var msg = "{0} has recently released a sequel to their game {1}. The newest game in the series titled {2} was met with {3} responses.".localize().format(company.name, sequelTo.title, game.title, responseVerb);
+    if (game.score > 6 && game.flags.hasBetterEngineThanSequel)
+        msg += " " + "Critics praised that {0} had a newer engine than the original, really driving technical innovation.".localize().format(game.title);
+    if (game.flags.sequelsTooClose) {
+        var weekDiff = Math.floor(game.releaseWeek - sequelTo.releaseWeek);
+        msg += "A major negative reaction came from fans who felt that with the original coming out just {0} weeks before, the company is trying to milk the franchise for more money without delivering much new for players to enjoy.".localize().format(weekDiff);
+        var newsHeader = "The Sequel is Already Here?";
+    }
+    internetMod.AddNewsArticle({
+        id: "companySequelGame-" + randomFoo + "", // must be unique
+        category: "games",
+        header: newsHeader,
+        text: msg,
+        date: newsDate,
+        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
     });
-    var allGraphicTypeIds = Research.getAllItems().filter(function(f) {
-        return f.group ===
-            "graphic-type"
-    }).map(function(f) {
-        return f.id
+    console.log('Sequel Story Intialized');
+};
+
+/*
+Media.createExtensionPackStory = function(company, game) {
+    var d = GameManager.company.getDate(GameManager.company.currentWeek);
+    var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+    var sequelTo = company.getGameById(game.sequelTo);
+    var responseVerb = game.score > 9 ? "outstanding".localize() : game.score > 7 ? "great".localize() : game.score > 5 ? "moderate".localize() : game.score > 3 ? "below average".localize() : "pretty bad".localize();
+    var msg = "{0} has recently released an expansion pack to their game {1}. The expansion pack titled {2} was met with {3} responses.".localize().format(company.name, sequelTo.title,
+        game.title, responseVerb);
+    if (game.flags.sequelsTooClose) {
+        var weekDiff = Math.floor(game.releaseWeek - sequelTo.releaseWeek);
+        msg += "A major negative reaction came from fans who felt that with the main game coming out just {0} weeks before, the company is trying to milk the franchise for more money without delivering much new for players to enjoy.".localize().format(weekDiff)
+        var newsHeader = "" + company.name + " Abusing Previous Success?'"
+    }
+    internetMod.AddNewsArticle({
+        id: "companyExpansionPack", // must be unique
+        category: "games",
+        header: newsHeader,
+        text: msg,
+        date: newsDate,
+        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
     });
-    $("#gameDefinition").find(".dialogBackButton").clickExcl(function() {
-        Sound.click();
-        UI._saveSelectedGameFeatureSettings(function(id) {
-            return allGraphicTypeIds.indexOf(id) != -1
+    console.log('Expansion Pack Story Intialized');
+};
+
+// Maybe just make this on flutter
+m.generateAudienceMismatchStory = function(company, game) {
+    var d = company.getDate(company.currentWeek);
+    var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+    var descr = game.score > 8 ? "outstanding".localize() : game.score > 6 ? "good".localize() : "moderate".localize();
+    var newsHeader = game.score > 8 ? "A Great Game, But An Odd Mixture".localize() : game.score > 6 ? "A Good Game, But Curious Marketing".localize() : "moderate".localize();
+    var msg = "It seems that the initial sales for {0} have fallen way below expected numbers. The game received {1} reviews but it seems that the chosen platform isn't very popular with the target audience.".localize("{1} is adjective like good, moderate, outstanding").format(game.title, descr);
+    internetMod.AddNewsArticle({
+        id: "companyAudienceMismatch", // must be unique
+        category: "games",
+        header: newsHeader,
+        text: msg,
+        date: newsDate,
+        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
+    });
+    console.log('Audience Mismatch Story Intialized');
+};
+*/
+
+se.getHypedGameEvent = function(company, game) {
+    /*  var d = company.getDate(company.currentWeek);
+      var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+      var effect = 0;
+      var hyped = game.flags.interviewHyped.decision;
+      var source = game.flags.interviewHyped.source;
+      var msg = "In an exclusive interview a while ago, {0} from {1}".localize("followed by sentence fragment (hypgfr1 or hypgfr2)").format(company.staff[0].name, company.name);
+      if (hyped)
+          msg +=
+          " made very bold remarks about their then-in-development game {0} predicting that it will be \u00fcber successful.".localize("fragment: hypgfr1").format(game.title);
+      else
+          msg += " was holding back when discussing their expections for {0}.".localize("fragment: hypgfr2").format(game.title);
+      var descr;
+      if (game.score > 8)
+          if (hyped) {
+              effect = 0.5;
+              descr = "was spot on as the game has received very positive reviews.".localize("fragment")
+          } else {
+              effect = 0.2;
+              descr = "was just humble as the game received critical acclaim.".localize("fragment")
+          }
+      else if (game.score > 6)
+          if (hyped) {
+              effect = -0.2;
+              descr = "should've been more careful as the final product doesn't match the hyped expectations.".localize("fragment");
+              var newsHeader = "" + company.name + "'s Hyped Game Falls Flat";
+          } else {
+              effect = 0.4;
+              descr = "was right to stay realistic as the game is good but nothing too out of the ordinary.".localize("fragment");
+              var newsHeader = "" + company.name + "'s Long-Awaited Game Stops at the Finsh Line";
+          }
+      else if (hyped) {
+          effect = -0.5;
+          descr = "needs a lesson in how to be humble as the game received mediocre reviews.".localize("fragment")
+          var newsHeader = "The Gaming Disapointment of the Year";
+      }
+      msg += "{n}" + "Now, that the game is out on the market the consensus is that {0} {1}".localize("{0} is player name, {1} is description").format(company.staff[0].name,
+          descr);
+      if (effect > 0)
+          msg += "Overall, this had a positive effect on sales.".localize();
+      else
+          msg += "Overall, this had a negative effect on sales.".localize();
+      if (effect != 0)
+          internetMod.AddNewsArticle({
+              id: "companyGameInterview-" + Math.random().toString() + "", // must be unique
+              category: "games",
+              header: newsHeader,
+              text: msg,
+              date: newsDate,
+              imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
+          }); */
+    console.log('Hyped Game Story Intialized');
+    //  return effect
+};
+
+m.createMMOEndStory = function(game) {
+    var randomBlah = Math.floor(Math.random());
+    var randomFoo = randomBlah.toString();
+    var duration = GameManager.company.currentWeek - game.releaseWeek;
+    var months = Math.roundToDecimals(duration / 4, 1);
+    var company = GameManager.company;
+    var d = company.getDate(company.currentWeek);
+    var newsDate = '' + d.year + '/' + d.month + '/' + d.week + '';
+    var msg = "We just got word that {0} is retiring its MMO game '{1}' from the market. The game has been on the market for {2} months and racked up over {3} in sales.<br><br>".localize();
+    if (!game.flags.isProfitable) {
+        msg += " " + "{1} was likely not profitable anymore as the maintenance costs were likely larger than the income.".localize();
+        var newsHeader = "'" + game.title + "' is Coming Off the Market";
+    } else {
+        msg += " " + "We are not quite sure why {0} has decided to take '{1}' off the market as the game likely still generated income for the company.".localize();
+        var newsHeader = "'" + game.title + "' is Already Out The Door?";
+        var fanLoss = 0;
+        var anotherMMO = GameManager.company.gameLog.first(function(g) {
+            return g.id != game.id && (g.flags.mmo && g.isOnSale())
         });
-        $("#gameDefinition").find(".dialogScreen1").transition({
-            "margin-left": 0
+    }
+    if (anotherMMO) {
+        msg += "<br><br>While fans of '{0}' weren't happy about the news many of them also play {1} which is still on the market.".localize().format(company.name, anotherMMO.title);
+    } else {
+        msg += "<br><br>Fans of '{1}' have voiced complaints with one fan saying: 'I love '{0}' and played '{1}' a lot, but now that they took it off the market I don't know what MMO I should play. If only {0} had released a new MMO I wouldn't be so upset.'".localize();
+        fanLoss = Math.floor(game.fansChanged * 0.1 * company.getRandom())
+    }
+    var articleMsg = msg.format(company.name, game.title, months, UI.getLongNumberString(game.unitsSold));
+    if (fanLoss)
+        internetMod.addFans(-fanLoss);
+    internetMod.AddNewsArticle({
+        id: "companyGameMMO-" + randomFoo + "", // must be unique
+        category: "games",
+        header: newsHeader,
+        text: articleMsg,
+        date: newsDate,
+        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
+    });
+    console.log('MMO Story Intialized');
+};
+
+//Add header
+m.createConsoleStartStory = function(console) {
+    var company = GameManager.company;
+    var isGoodTech = console.isGoodTech;
+    var featureFactor = console.featureFactor;
+    var success = console.successFactor;
+    var quality = console.qF;
+    var msg = "{0} has released their game console {1} today.".localize().format(company.name, console.name);
+    if (isGoodTech) {
+        msg += " " + "The console seems to really push the limits of technology and is the most modern console ever to hit shelves.".localize();
+    } else {
+        msg += " " + "The console does not seem quite on par with the high tech competitors but we will see what players think.".localize();
+        msg += " Looking at the features of {0}, it seems that the ".localize().format(console.name);
+    }
+    if (featureFactor >= 0.8) {
+        msg += "list is extensive which is a good sign and could lead to a wide variety of games becoming available.".localize();
+    } else {
+        msg += " " + "list is a bit slim. Don't expect too many gadgets and controllers to be available for this console.".localize();
+        msg += "First tests indicate that {0}".localize().format(console.name);
+    }
+    if (quality >= 0.8) {
+        msg += "'s build quality is excellent and will likely run for decades without issues.".localize();
+        var newsHeader = ["" + GameManager.company.name + "'s Releases a Groundbreaking Console'", "A Game-Changing Console Hits the Shelves!", "A New Gaming Platform Raises the Stakes"].pickRandom();
+    } else if (quality >= 0.5) {
+        msg += " " + "is of average build quality. Don't expect it to last forever but in general you should not see many issues.".localize();
+        var newsHeader = ["" + GameManager.company.name + "'s New Console Releases to Mixed Responses'", "A New Console, A Decent Experience", "The New " + console.name + ", A Solid 'Okay'"].pickRandom();
+    } else {
+        msg += " " + "is a bit fragile. We wouldn't be surprised if you need to make use of the warranty sooner or later.".localize();
+        var newsHeader = ["" + GameManager.company.name + " Tries and Fails", "The '" + console.name + "' Is A Total Bust", "A New Console Releases With Many Shortcomings"].pickRandom();
+        msg += "All in all ".localize("fragment continues with 'we think that the console...'");
+    }
+    if (success >= 1) {
+        msg += " " + "we think that the console will stir up the market and prove to be very successful.".localize("fragment, started with 'All in all'").format(console.name);
+    } else if (success >= 0.8) {
+        msg += " " + "we think that the console will do reasonably well in the market and it is a welcome addition.".localize("fragment, started with 'All in all'").format(console.name);
+    } else {
+        msg += " " + "it's hard to say whether the console will do well as there are so many other good products on the market.".localize("fragment, started with 'All in all'").format(console.name);
+        internetMod.AddNewsArticle({
+            id: "companyConsoleStart-" + randomFoo + "", // must be unique
+            category: "platforms",
+            header: newsHeader,
+            text: msg,
+            date: newsDate,
+            imageURL: console.iconUri
         });
-        $("#gameDefinition").find(".dialogScreen2").transition({
-            "margin-left": "100%"
-        })
-    });
-
-
-    //Create Publisher Contract
-    iTemplate.append("<div style='width:302px;margin:auto;'><div id='internetModOKButton' class=' baseButton orangeButton windowLargeOkButton'>Create Publisher Contract</div></div>");
-    iTemplate.find("#internetModOKButton").clickExcl(function() {
-        Sound.click();
-        var succes = internetMod.createContract();
-        if (succes == true) {
-            $("#internetModContainer").dialog("close");
-        } else {
-            $("#internetModOKButton").effect("shake", {
-                times: 2,
-                distance: 5
-            }, 50)
-        }
-
-    });
-
-    okClicked = false;
-    PlatformShim.execUnsafeLocalFunction(function() {
-        iContent.append(iTemplate);
-        $("#internetModContent").show();
-        $("#internetModTitle").show();
-    })
-}
-
-internetMod.pickTopicClick = function(element) {
-    Sound.click();
-    var container = $("#internetModTopicChooser");
-
-    if (element) {
-        var pickTopicButton = $("#internetModContent").find(".pickTopicButton");
-        var names = element.innerText.split("\n");
-        pickTopicButton.get(0).innerText = names[0];
-        pickTopicButton.removeClass("selectorButtonEmpty");
-
-        $("#internetModContent").show();
-        $("#internetModTitle").show();
-        $("#internetModTopicChooser").hide();
-        return;
     }
-    PlatformShim.execUnsafeLocalFunction(function() {
-        var iModal = $(".simplemodal-data");
-        iModal.find(".overlayTitle").text("Pick Topic".localize("heading"));
-        container.empty();
-        var activeTopiciTemplate = '<div class="selectorButton whiteButton" onclick="internetMod.pickTopicClick(this)">{{name}}</div>';
-        var lockedTopiciTemplate = '<div class="selectorButton disabledButton">{{name}}</div>';
-        var itemsPerRow = 3;
-        var currentCount = 0;
-        var row = 0;
-        var researchVisibleCount = 0;
-        var topics = General.getTopicOrder(GameManager.company);
-        for (var i = 0; i < topics.length; i++) {
-            var topic = topics[i];
-            currentCount++;
-            if (currentCount > itemsPerRow) {
-                row++;
-                currentCount = 1
-            }
-            var isAvailable = GameManager.company.topics.indexOf(topic) != -1;
-            var isInResearch = GameManager.currentResearches.filter(function(f) {
-                return f.topicId === topic.id
-            }).length > 0;
-            var isEnabled = isAvailable;
-            var iTemplate = isEnabled ? activeTopiciTemplate :
-                lockedTopiciTemplate;
-            var isNameHidden = (!isEnabled && (!isAvailable && !isInResearch)) || !isEnabled;
-            if (!isNameHidden)
-                if (GameManager.areHintsEnabled() && Knowledge.hasTopicAudienceWeightingKnowledge(GameManager.company, topic)) {
-                    var enabledDisabledContent = !isEnabled ? " disabledButton" : '" onclick="internetMod.pickTopicClick(this)';
-                    var whiteButton = !isEnabled ? " " : " whiteButton ";
-                    var t = '<div class="selectorButton' + whiteButton + "pickTopicButtonAudienceHintVisible" + enabledDisabledContent + '"><span style="position:relative;top:5px;">{0}<span style="font-size:11pt;"><br/>{1}</span></span></div>';
-                    iTemplate = t.format(topic.name, Knowledge.getTopicAudienceHtml(GameManager.company, topic))
-                } else
-                    iTemplate = iTemplate.replace("{{name}}", topic.name);
-            else
-                iTemplate = iTemplate.replace("{{name}}", "?");
-            var element = $(iTemplate);
-            element.css("position", "absolute");
-            element.css("top", 50 * row + row * 10);
-            element.css("left", (currentCount - 1) * 190 + 10);
-            element.css("font-size", UI.pickTopicFontSize + "pt");
-            container.append(element);
-            if (!isAvailable && !isInResearch)
-                researchVisibleCount++
-        }
-        iModal.find(".selectionOverlayContainer").fadeIn("fast")
-
-        $("#internetModContent").hide();
-        $("#internetModTitle").hide();
-        $("#internetModTopicChooser").show();
-    })
 };
-
-internetMod.pickGenreClick = function(element) {
-    Sound.click();
-    var container = $("#internetModGenreChooser");
-
-    if (element) {
-        var pickGenreButton = $("#internetModContent").find("#pickGenreButton");
-        pickGenreButton.get(0).innerText = element.innerText;
-        pickGenreButton.removeClass("selectorButtonEmpty");
-
-        $("#internetModContent").show();
-        $("#internetModTitle").show();
-        $("#internetModGenreChooser").hide();
-        return
-    }
-    PlatformShim.execUnsafeLocalFunction(function() {
-        var iModal = $(".simplemodal-data");
-        iModal.find(".overlayTitle").text("Pick Genre".localize("heading"));
-        container.empty();
-        var iTemplate = '<div class="selectorButton" onclick="internetMod.pickGenreClick(this)">{{name}}</div>';
-        var genres = General.getAvailableGenres(GameManager.company);
-        //var second = iModal.find("#pickSecondGenreButton").get(0).innerText;
-        var topMarginAdded = false;
-        for (var i = 0; i < genres.length; i++) {
-            //if (second == genres[i].name)
-            //	continue;
-            var genre = genres[i];
-            var element = $(iTemplate.replace("{{name}}", genre.name));
-            element.css("margin-left", 210);
-            if (!topMarginAdded) {
-                element.css("margin-top", 90);
-                topMarginAdded = true
-            }
-            element.addClass("whiteButton");
-            container.append(element)
-        }
-        iModal.find(".selectionOverlayContainer").fadeIn("fast")
-
-        $("#internetModContent").hide();
-        $("#internetModTitle").hide();
-        $("#internetModGenreChooser").show();
-    })
-};
-
-internetMod.pickPlatformClick = function(platformName, platformId) {
-    Sound.click();
-    var container = $("#internetModPlatformChooser");
-
-
-    if (platformName && platformId) {
-        var pickplatformButton = $("#internetModContent").find(".pickPlatformButton");
-        pickplatformButton.get(0).innerText = platformName;
-        pickplatformButton.removeClass("selectorButtonEmpty");
-
-        $("#internetModContent").show();
-        $("#internetModTitle").show();
-        $("#internetModPlatformChooser").hide();
-        return;
-    }
-
-
-    PlatformShim.execUnsafeLocalFunction(function() {
-        var iModal = $(".simplemodal-data");
-        iModal.find(".overlayTitle").text("Pick Platform".localize("heading"));
-
-        container.empty();
-        var platforms = Platforms.getPlatformsOnMarket(GameManager.company);
-        var game = GameManager.company.currentGame;
-
-        platforms = platforms.slice().sort(function(a, b) {
-            return Platforms.getTotalMarketSizePercent(b, GameManager.company) - Platforms.getTotalMarketSizePercent(a,
-                GameManager.company)
-        });
-
-        for (var i = 0; i < platforms.length; i++) {
-            var element =
-                $("#platformButtonTemplate").clone();
-            element.removeAttr("id");
-            var platform = platforms[i];
-            element.platformId = platform.id;
-            element.platformName = platform.name;
-            var isEnabled = GameManager.company.licencedPlatforms.indexOf(platform) != -1;
-            element.find(".platformButtonImage").attr("src", Platforms.getPlatformImage(platform, GameManager.company.currentWeek));
-            element.find(".platformTitle").text(platform.name);
-            element.find(".cost").text("Dev. cost: ".localize() + UI.getShortNumberString(platform.developmentCosts));
-            if (!isEnabled) {
-                element.find(".licenseCost").text("License cost: ".localize() +
-                    UI.getShortNumberString(platform.licencePrize));
-                if (GameManager.company.cash < platform.licencePrize)
-                    element.find(".licenseCost").addClass("red")
-            } else
-                element.find(".licenseCost").hide();
-            element.find(".marketShare").text("Marketshare: ".localize() + UI.getPercentNumberString(Platforms.getTotalMarketSizePercent(platform, GameManager.company)));
-            if (GameManager.areHintsEnabled()) {
-                var iContent = Knowledge.getPlatformAudienceHintHtml(GameManager.company, platform);
-                if (iContent)
-                    element.find(".audienceHints").html(iContent);
-                var iContent = Knowledge.getPlatformGenreHintHtml(GameManager.company, platform);
-                if (iContent)
-                    element.find(".genreHints").html(iContent)
-            }
-            (function(element) {
-                if (isEnabled) {
-                    element.addClass("whiteButton");
-                    element.on("click", function() {
-                        internetMod.pickPlatformClick(element.platformName, element.platformId)
-                    })
-                } else if (platform.licencePrize <= GameManager.company.cash) {
-                    element.addClass("whiteButton");
-                    element.on("click", function() {
-                        var that = this;
-                        UI.buyPlatform($(that).find(".platformTitle").get(0).innerText, function(e) {
-                            if (e)
-                                internetMod.pickPlatformClick(element.platformName, element.platformId)
-                        })
-                    })
-                } else
-                    element.addClass("disabledButton")
-            })(element);
-            container.append(element)
-        }
-        iModal.find(".selectionOverlayContainer").fadeIn("fast")
-
-        $("#internetModContent").hide();
-        $("#internetModTitle").hide();
-        $("#internetModPlatformChooser").show();
-    })
-};
-
-var getSelectedTopic = function() {
-    var iModalContent = $("#internetModContent");
-    var topicName = iModalContent.find(".pickTopicButton").text();
-    var topic = GameManager.company.topics.first(function(t) {
-        return t.name == topicName
-    });
-    return topic
-};
-var getSelectedGenre = function() {
-    var iModalContent = $("#internetModContent");
-    var genreName = iModalContent.find("#pickGenreButton").text();
-    var genre = GameGenre.getAll().first(function(i) {
-        return i.name == genreName
-    });
-    return genre
-};
-var getSelectedPlatform = function() {
-    var iModalContent = $("#internetModContent");
-    var platformName = iModalContent.find("#pickPlatformButton").text();
-    var platform = GameManager.company.licencedPlatforms.first(function(i) {
-        return i.name.trim() == platformName.trim()
-    });
-    return platform
-};
-// THIS IS FOR CRAP AND STUFF
-
-// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> <li class="priListItem"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">John Smith </div> <div id="usernameE">jsmith145@zmail.com </div> <hr style="margin-top: 0px;"> <div id="subjectE">Your amazing game!</div> <div id="messageE">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you! </div> </li> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <div class="emailInfo"> Category: Fans <br> From: John Smith <br> <!-- The date below is how Game Dev Tycoon keeps track of time and dates --> Date: yy/mm/dd <br> <br> <div class="emailSubj">Subject: Your amazing game! </div> <hr> <p class="emailENTRY">Hello, I just wanted to thank you for your amazing that changed my life. Words cannot express how grateful I am for this present. Probably the only downside is that it is all I can think about. With tremendous gratitude, I ask that you continue making games. Your masterpiece has driven me to continue in my dreams. All that I do from now on leads back to the moment I popped that CD into my computer. <br><br> Please take this donation as a token of my thankfulness. Even though it cannot come even close to what I want to express, it is the only way I know how to show graditude in my current financial situation. Keep making great games! Thank you!</p> <hr> </div> </div> <div class="inNew"> Compose A New Email </div> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div>');
-
-// var INcompanyName = GameManager.company.name.localize();
-
-// $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td> <td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="bug" class="tab" onclick="openBug()"><s>Bug Center</s></td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul id="priList" class="priList"> </ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Company Name</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div id="emailMain" class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div> <div id="bugSITE"> Sorry <br> Not Available </div> <div id="loaders"></div> </div></div> ');
-
-
-/*
-
-<li class="announceChild3" style="display: list-item;">
-  <input id="msgGameTitle" type="text" value="Game Name" maxlength="35" style="font-size: 22pt; border-radius: 5px;" required=""><table cellspacing="15">
-    <tbody><tr>
-  <td id="msgPickGameTopic" class="msgGameOption">Pick Topic</td>
-  <td id="msgPickGameGenre" class="msgGameOption">Pick Genre</td>
-</tr>
-<tr>
-  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
-  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
-  <td id="msgPickGamePlatform" class="msgGameOption">Pick Platform</td>
-</tr>
-
-  </tbody></table>
-</li>
-
-
-var a = function() {
-    return UI.isMenuOpen() ? (Sound.click(), GameManager.resume(!0), UI.closeContextMenu(), !1) : VisualsManager.isAnimatingScroll ? !1 : !0
-};
-
-
--1 != a.researchCompleted.indexOf(Research.opportunityInternet) && b.push({
-    label: "Internet...".localize("menu item"),
-    action: function() {
-        Sound.click();
-        CreateWindow();
-        GameManager.resume(true);
-    }
-})
-*/
-/*
-      var a = Research;
-      var b = 2;
-        var oldInternetPush = b.researchCompleted.push(a.opportunityInternet);
-        var newInternetPush = function(b){
-          var f = "TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST After careful examination we come to the conclusion that the internet is a huge opportunity in the gaming industry. We already see some small signs how successful multiplayer games can be but multiplayer is usually an additional feature to a game and not the main focus.{n}We think we could develop technologies to create a massively multiplayer online game (short MMO), a game where tens of thousands of players can play together. To create such an MMO more research is necessary.{n}The second discovery is that we could start developing an online distribution platform. Instead of players buying games in local stores they could download games directly from our servers. This would cut out the middle man and we could gain a large share of the market and additional income to fund our developments.".localize(),
-              f = new Notification(c, f);
-         oldInternetPush(); //if appropriate, call the original logic
-        };
-
-          b.researchCompleted.push(a.opportunityInternet) = newInternetPush; //assign your custom method over the original.
--1 != company.researchCompleted.indexOf(Research.opportunityInternet) && b.researchCompleted.indexOf("internetMod001")
-*/
-
-/*
-UltimateLib.Research.init();
-
-RnDAdd = UltimateLib.Research.addLab;
-
-RnDAdd({
-    id: "internetMod001",
-    name: "Internet Browser".localize(),
-    pointsCost: 1200,
-    canResearch: function(company) {
-        return -1 != company.researchCompleted.indexOf(Research.opportunityInternet) && b.researchCompleted.indexOf("internetMod001")
-    },
-    iconUri: "./images/projectIcons/superb/internet.png",
-    description: "This software will expand on global interaction like never before!",
-    targetZone: 2,
-    complete: function(company) {
-        return new Notification("R&D Lab".localize(), "Boss, we have finished the development of the Internet Browser. Test it out and make sure it works.");
-        $("body").append('<div id="internet"> <table class="navBar"> <tr id="tabBar"> <td id="refresh" onclick="refresh()"><i class="fa fa-refresh" aria-hidden="true" style="background: #000000;"></i> <td id="email" class="tab" onclick="openEmail()">Email</td> <td id="exit" class="tabX" onclick="exit()"> </td> </tr> </table> <div id="iContent" class="iContent"> <div id="emailSITE"> <div class="overview"> <div id="notifs">All Messages</div> <hr> <ul class="priList"> <script id="emailMSGNav-template" type="text/x-handlebars-template"> {{#emailAll}} <li class="priListItem" onclick="{{onClick}}"> <div class="rndPrItem"> <img class="iconE" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"> <div id="nameE">{{emailFrom}} </div> <div id="usernameE">{{emailAddress}} </div> <hr style="margin-top: 0px;"> <div id="subjectE">{{emailSubject}}</div> <div id="messageE">{{emailMessage}} </div> </li> {{/emailAll}} </script></ul> </div> <div class="viewport"> <table class="inNav"> <tr> <td>Phoenix Games</td> <td>Media</td> <td>Companies</td> <td>Fans</td> </tr> </table> <div class="emailMain"> <script id="email-template" type="text/x-handlebars-template"> {{#emailAll}} <div id="emailInfo" class="emailInfo"> Category: {{emailCategory}} <br> From: {{emailFrom}} <br> Date: {{emailDate}} <br> <br> <div class="emailSubj">Subject: {{emailSubject}} </div> <hr> <p class="emailENTRY">{{emailMessage}}</p> <hr> </div> </div> <table id="emailOptions" cellspacing="20px"> <tr> <td id="emailOption1" onclick="{{option1_ifSelected}}"> {{emailOption1}} </td> <td id="emailOption2" onclick="{{option2_ifSelected}}"> {{emailOption2}} </td> </tr> </table> {{/emailAll}} </script> </div> </div> <div id="loaders"></div> </div></div>');
-    }
-});
-
-RnDAdd({
-    id: "internetMod002",
-    name: "Internet Browser (Bug Center)".localize(),
-    pointsCost: 600,
-    canResearch: function(company) {
-        return -1 != company.researchCompleted.indexOf("internetMod001") && b.researchCompleted.indexOf("internetMod002")
-    },
-    iconUri: "./images/projectIcons/superb/internet.png",
-    description: "This will allow us to specifically address any bugs found in our games.",
-    targetZone: 2,
-    complete: function(company) {
-        return new Notification("R&D Lab".localize(), "Boss, we have added the Bug Center to the internet browser");
-        $("#tabBar").append('<td id="bug" class="tab" onclick="openBug()">Bug Center</td>');
-        $("#iContent").append('<div id="bugSITE"> Sorry <br> Not Available </div>')
-    }
-});
-
-RnDAdd({
-    id: "internetMod003",
-    name: "Internet Browser (Social Opportunities)".localize(),
-    pointsCost: 600,
-    canResearch: function(company) {
-        return -1 != company.researchCompleted.indexOf("internetMod002") && b.researchCompleted.indexOf("internetMod003")
-    },
-    iconUri: "./images/projectIcons/superb/internet.png",
-    description: "This will allow us to interact with the world on social media and forums.",
-    targetZone: 2,
-    complete: function(company) {
-        return new Notification("R&D Lab".localize(), "Boss, we have added the Social Network and Forum to the internet browser");
-        $("#tabBar").append('<td id="social" class="tab" onclick="openSocial()">Social Network</td> <td id="forum" class="tab" onclick="openForum()"><s>Forum</s></td>');
-        $("#iContent").append('<div id="forumSITE"> Sorry <br> Not Available </div> <div id="socialSITE"> <div id="socialNav"> <div id="home" class="flutterBanner">FLUTTER</div> <!-- Insert icons when compiling and organizing --> <div id="navButts"> <div id="home" class="butt">HOME</div> <div id="notifications" class="butt">NOTIFS</div> <div id="trends" class="butt">TRENDS</div> <div id="profile" class="butt">PROFILE</div> </div> </div> <div id="socialContent"> <div id="socialProfile"> <div class="profileInfo"> <img class="profilePic" src="http://bonniesomerville.nz/wp-iContent/uploads/2015/08/profile-icon.png"></img> <div class="profileIdenity"> <div class="profileName">John Smith</div> <div class="profileUsername">@jsmith12</div> <textarea maxlength="90" class="profileDesc">Enter a description...</textarea> </div> <div class="profileStats"> <div><b>Followers:</b> <div id="followers" class="proifileStatsEntry">79K</div> </div> <div><b>Likes:</b> <div id="likes" class="proifileStatsEntry">459K</div> </div> <div><b>Dislikes:</b> <div id="dislikes" class="proifileStatsEntry">2331</div> </div> </div> <div class="profileSOMETHING">PUT SOMETHING HERE. Maybe a like/dislike ratio meter.</div> </div> <div class="widget"> <div class="widget-form"> <textarea class="postBox" maxlength="140" id="message" style="resize: none;">Say something... (140 Character Limit)</textarea> <div id="postButton" onclick="postFlutterMessage()">Post</div> </div> <div class="widget-conversation"> <ul id="conversation"> </ul> </div> </div> </div> </div> </div>');
-    }
-});
-*/
-
-/*
-// Email Website
-// Messages List
-var msgNav_source = $("#emailMSGNav-template").html();
-var newListEmail = Handlebars.compile(msgNav_source);
-var emailMessages = "#emailMessages";
-
-// Email (View) Opened
-var email_source = $("#email-template").html();
-var newEmail = Handlebars.compile(email_source);
-var emailView = "#emailMain";
-
-// Email Template Example
-emailExampleName = {
-    emailAll: [{
-        onClick: "openEmailExampleName()",
-        emailCategory: "Media",
-        emailFrom: "Jimmy Fly",
-        emailAddress: "jfly709@zmail.com",
-        emailDate: "1/9/12",
-        emailSubject: "A Simple Interview",
-        emailMessage: "Hello! I am a fairly popular reporter for Zoom Magazine, and some of your fans are just dying for information about your new game. Would you be willing to share anything?",
-        emailOption1: "Yes",
-        option1_ifSelected: "jFly_interview_yes()",
-        emailOption2: "No",
-        option2_ifSelected: "jFly_interview_no()"
-    }]
-};
-
-function openEmailExampleName() {
-    $(emailView).show(newEmail(emailExampleName));
-}
-
-function jFly_interview_yes() {
-    company.adjustHype(30);
-}
-
-function jFly_interview_no() {
-    company.adjustHype(-30);
-}
-
-$(emailMessages).append(newListEmail(emailExampleName));
-$(emailView).append(newEmail(emailExampleName));
-$(emailView).hide(newEmail(emailExampleName));
-
-*/
-
-
-var newsCheese = UI.showPlatformReleaseNews;
-var blahNewsYeah = function() {
-    var c = $("#newsContent");
-    c.empty();
-    var k = $("#platformReleaseNewsTemplate").clone();
-    k.find(".windowTitle").text("News".localize("heading"));
-    for (var l, h = 0; h < Platforms.allPlatforms.length; h++)
-        if (Platforms.allPlatforms[h].id === a.text) {
-            l = Platforms.allPlatforms[h];
-            break
-        }
-    h = "Today the new game platform {0} by {1} has been released.".localize().format(l.name, l.company);
-    k.find(".platformRelaseNewsImage").attr("src", Platforms.getPlatformImage(l, GameManager.company.currentWeek));
-    var m = k.find(".platformReleaseOkButton").css({
-            opacity: 0
-        }).text(a.buttonText),
-        n = function() {
-            Sound.click();
-            GameManager.company.activeNotifications.splice(GameManager.company.activeNotifications.indexOf(a), 1);
-            0 < GameManager.company.activeNotifications.length ? UI.closeModal(function() {
-                UI._showNotification(GameManager.company.activeNotifications[0], b)
-            }) : UI.closeModal(function() {
-                b && b()
-            })
-        };
-    k.find(".notificationText").text(h).typewrite({
-        delay: 20,
-        extra_char: "",
-        replace_br: !0,
-        speedUpOnClick: !0,
-        soundLoop: "notificationTyping",
-        volume: 0.12,
-        callback: function() {
-            m.transition({
-                opacity: 1
-            }, "fast").clickExclOnce(n)
-        }
-    });
-    UI.IS_SEGOE_UI_INSTALLED || k.find(".notificationText").addClass("fallback");
-    c.append(k);
-    UI.showModalContent("#platformReleaseNewsContent", {
-        disableCheckForNotifications: !0,
-        close: !1
-    })
-    console.log('HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-};
-
-UI.showPlatformReleaseNews = blahNewsYeah; //assign your custom method over the original.
-
-
-var a = Media;
-// var platformNewsStuff = Media.getScheduledNotifications;
-var newsStuffYep = function(a) {
-    for (var b = [], d = Math.floor(a.currentWeek), c = Media.allScheduledStories.filter(function(b) {
-            return -1 === a.scheduledStoriesShown.indexOf(b.id)
-        }), l = 0; l < c.length; l++) {
-        var h = c[l];
-
-        // Pushes the event to the array b
-        d == General.getWeekFromDateString(h.date, h.ignoreGameLengthModifier) && b.push(h)
-    }
-
-    // Stops repeat of Notification
-    a.scheduledStoriesShown.addRange(b.map(function(a) {
-        return a.id
-    }));
-
-    // Displays the notification
-    return b.map(function(b) {
-        return b.notification  ? b.notification : b.getNotification(a)
-    })
-};
-Media.getScheduledNotifications = newsStuffYep; //assign your custom method over the original.
-
-// var cheeseYo = Media.getNewNotifications;
-var newsCheeseYep = function(a) {
-    for (var b = [], d = Media.TriggerNotifications.filter(function(b) {
-            return -1 === a.triggerNotificationsShown.indexOf(b.id) && b.trigger(a)
-        }), c = 0; c < d.length; c++) {
-        var l = d[c];
-        a.triggerNotificationsShown.push(l.id);
-        l.getNotification ? b.push(l.getNotification(a)) : b.push(l.notification)
-    }
-    a.triggerNotificationsShown.addRange(b.map(function(a) {
-        return a.id
-    }));
-    b.addRange(Media.getScheduledNotifications(a));
-    return b
-};
-
-Media.getNewNotifications = newsCheeseYep; //assign your custom method over the original.
-
-
-
-/*
-var newsArticlesArray = [{
-    id: "riseOf64",
-    date: "1/6/3",
-    notification: new Notification(c, "Recent market studies suggest that the Govodore G64 is steadily outselling competitors in the PC sector. Consumers prefer the lower price, greater availability and the flexible hardware configuration over other home computers.{n}Experts say that this might spell the end of competing hardware manufacturers.".localize())
-}];
-*/
