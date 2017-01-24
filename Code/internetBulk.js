@@ -36,26 +36,28 @@ function Timer(callback, delay) {
 }
 
 // Implements Context Menu Button
-UI._showContextMenu = showMenuItem;
-var showMenuItem = function(type, menuItems, x, y) {
-    var item = {
-        label: "Internet...".localize("menu item"),
-        action: function() {
-            Sound.click();
-            internetMod.ShowWindow();
-            GameManager.resume(false);
-            // addReplyBulk.Pause();
-        }
-    };
+(function() {
+    var showMenuUI = UI._showContextMenu;
+    var showMenuItem = function(type, menuItems, x, y) {
+        var item = {
+            label: "Internet...".localize("menu item"),
+            action: function() {
+                Sound.click();
+                internetMod.ShowWindow();
+                GameManager.resume(false);
+                // addReplyBulk.Pause();
+            }
+        };
 
-    if (internetMod.UIInitialized) {
-        menuItems.push(item);
+        if (internetMod.UIInitialized) {
+            menuItems.push(item);
+        }
+
+        showMenuUI(type, menuItems, x, y);
     }
 
-    showMenuUI(type, menuItems, x, y);
-}
-
-UI._showContextMenu = showMenuItem;
+    UI._showContextMenu = showMenuItem;
+})();
 
 // Thanks kristof!
 internetMod.addMoney = function(money, text) {
@@ -78,14 +80,18 @@ internetMod.addHype = function(hype) {
 
 
 internetMod.emailNotifOPEN = function() {
+    internetMod.startSlideshow();
     $("#loaders").hide();
-    $("#internet").show();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
     $("#emailSITE").show();
+    $("#internetContainer").show();
     GameManager.pause(true);
     // addReplyBulk.Pause();
 }
 
-/* Internet Window HTML
+/* OLD Internet Window HTML
 internetMod.originalWindow_Email = function() {
     $("body").append('<div id="internet">' +
         '<table class="navBar"> <tr id="tabBar">' +
@@ -169,16 +175,19 @@ $("#iNotifs").bind("DOMSubtreeModified", function() {
 
 // Shows the internet window
 internetMod.ShowWindow = function() {
-    $("#internet").show();
     $("#emailSITE").hide();
     $("#forumSITE").hide();
     $("#socialSITE").hide();
     $("#bugSITE").hide();
     $("#loaders").hide();
+    $("#internetContainer").show();
+    internetMod.startSlideshow();
 }
 
 // Internet tabs -----------------------------------------------------------------------------------------------------------
 // Refreshes a page (Currenly not working 100% correctly)
+
+
 internetMod.refresh = function() {
     Sound.click();
     $("#loaders").html('REFRESHING...');
@@ -191,78 +200,206 @@ internetMod.refresh = function() {
     }, 1500);
 };
 
-// Opens the Email website
-internetMod.openEmail = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#emailSITE").show();
-    }, 1000);
-};
+// News Website
+(function() {
+  // Article Template
+  internetMod.articleStuff = [];
+  internetMod.articleToAdd = [];
 
-// Open a website that I haven't made up my mind about :P
-internetMod.openXYZ = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#forumSITE").show();
-    }, 1000);
-};
+  internetMod.AddNewsArticle = function(newsArticle) {
+      internetMod.articleToAdd.push(newsArticle);
+  }
 
-// Opens the Social Network website
-internetMod.openSocial = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#socialSITE").show();
-    }, 1000);
-};
+  internetMod.AddArticleToHTMLPage = function(newsArticle) {
+      var newsSlideshowDiv = $('#newsArticleSlideshow ul');
+      var recentGamingNews = $('#articleGameBlock');
+      var recentPlatformNews = $('#articlePlatformBlock');
+      var gamingNewsList = $('#gamesArticleList');
+      var platformsNewsList = $('#platformsArticleList');
 
-// Opens the Bug Center website
-internetMod.openBug = function() {
-    Sound.click();
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").html('LOADING...');
-    $("#loaders").show();
-    setTimeout(function() {
-        $("#loaders").hide();
-        $("#loaders").empty();
-        $("#bugSITE").show();
-    }, 1000);
-};
+      newsSlideshowDiv.prepend('<li id="Slideshow_' + newsArticle.id + '" class="' + newsArticle.category + '">' +
+      '<img id="slideContents" src="' + newsArticle.imageURL + '"><div id="slideDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span>' +
+      '<p id="articleText">' + newsArticle.text + '</p></div> </img></li>');
 
-// Closes (hides) the entire div
-internetMod.exit = function() {
-    Sound.click();
-    $("#internet").hide();
-    GameManager.resume(true);
-    // addReplyBulk.Resume();
-};
+      if (newsArticle.category == 'games') {
+      recentGamingNews.html('<div>' +
+      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
+      '</div>');
 
+      gamingNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
+
+    } else if (newsArticle.category == 'platforms') {
+      recentPlatformNews.html('<div>' +
+      '<img class="articleBlockImage" src="' + newsArticle.imageURL + '"> <div class="articleBlockDetails">' +
+      '<span class="articleHeader">' + newsArticle.header + '</span> </div> </img>' +
+      '</div>');
+
+      platformsNewsList.prepend('<li> <div style="padding-left: 20px; padding-top: 10px;"> <img class="articleListImage" src="' + newsArticle.imageURL + '"></img> <div class="articleInfoBlock"> <span class="articleHeader" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + newsArticle.header + '</span> <span id="articleListDate">' + newsArticle.date + '</span> <p class="articleListText">' + newsArticle.text + '</p> </div> </div> </li>');
+    }
+  }
+
+  // News Articles
+  var internetMod_exampleArticle = function() {
+      internetMod.AddNewsArticle({
+          id: "testArticle", // must be unique
+          category: "games",
+          header: "Ninvento's Not Messing Around",
+          text: "According to a Ninvento shareholder, the release of the TES is but the beginning of series of awesomeness",
+          date: "1/2/1",
+          imageURL: "./images/platforms/TES.png"
+      });
+  }
+  internetMod_exampleArticle();
+
+  // News Slideshow
+    var slideCount = $('#newsArticleSlideshow ul li').length;
+    var slideWidth = $('#newsArticleSlideshow ul li').width();
+    var slideHeight = $('#newsArticleSlideshow ul li').height();
+    var sliderUlWidth = slideCount * slideWidth;
+
+    $('#newsArticleSlideshow').css('width', slideWidth);
+    $('#newsArticleSlideshow').css('height', slideHeight);
+    $('#newsArticleSlideshow ul').css('width', sliderUlWidth);
+    $('#newsArticleSlideshow ul').css('margin-left', -slideWidth);
+
+    internetMod.animateSlideBarLoop = function() {
+        $("#actualSlideBar").css("width", '0%');
+        $("#actualSlideBar").animate({
+            width: "100%"
+        }, 5000, internetMod.animateSlideBarLoop);
+    }
+
+    internetMod.animateSlideBarLoop();
+
+    internetMod.moveRight = function() {
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }
+
+    internetMod.moveLeft = function() {
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: +slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }
+
+
+    //    internetModSlideshowInterval();
+
+    internetMod.disableSlideshow = function() {
+        $("#actualSlideBar").stop();
+        $("#actualSlideBar").css("width", '0%');
+        clearInterval(internetModSlideshowInterval);
+    }
+
+    internetMod.resetSlideshow = function() {
+        internetMod.disableSlideshow();
+        internetMod.animateSlideBarLoop();
+    }
+
+    $('#newsArticleSlideshow ul li:last-child').prependTo('#newsArticleSlideshow ul');
+
+    internetMod.hideAllPages = function() {
+      $("#newsHome").fadeOut();
+      $("#newsGames").fadeOut();
+      $("#newsPlatforms").fadeOut();
+      $("#newsAbout").fadeOut();
+      $("#newsArticlesOnDeck").fadeOut();
+    }
+
+    internetMod.goNewsHome = function() {
+      internetMod.hideAllPages();
+      $("#newsHome").fadeIn();
+    }
+
+    internetMod.goNewsGames = function() {
+      internetMod.hideAllPages();
+      $("#newsGames").fadeIn();
+    }
+
+    internetMod.goNewsPlatforms = function() {
+      internetMod.hideAllPages();
+      $("#newsPlatforms").fadeIn();
+    }
+
+    internetMod.goNewsAbout = function() {
+      internetMod.hideAllPages();
+      $("#newsAbout").fadeIn();
+    }
+})();
+
+
+internetMod.startSlideshow = function() {
+    if ($('#newsArticleSlideshow ul').children().length > 5) {
+        $("#newsArticleSlideshow ul li:gt(4)").remove();
+    }
+
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }, 5000);
+}
+
+$('#slideRight').click(function(e) {
+    e.stopPropagation();
+    internetMod.moveRight();
+    clearInterval(internetModSlideshowInterval);
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }, 5000);
+});
+
+$('#slideLeft').click(function(e) {
+    e.stopPropagation();
+    internetMod.moveLeft();
+    clearInterval(internetModSlideshowInterval);
+    internetModSlideshowInterval = setInterval(function() {
+        var slideWidth = $('#newsArticleSlideshow ul li').width();
+        $("#actualSlideBar").stop();
+        internetMod.animateSlideBarLoop();
+
+        $('#newsArticleSlideshow ul').animate({
+            left: -slideWidth
+        }, 900, function() {
+            $('#newsArticleSlideshow ul li:first-child').appendTo('#newsArticleSlideshow ul');
+            $('#newsArticleSlideshow ul').css('left', '');
+        });
+    }, 5000);
+});
+
+
+// GDT.on(GDT.eventKeys.saves.newGame, internetMod.newsSite);
 
 // Social Network ------------------------------------------------------------------------------------------------------
 (function() {
@@ -278,7 +415,6 @@ internetMod.exit = function() {
 
     internetMod.UI_showNewMSG = function() {
         $('#newMsgUI').fadeIn(100);
-        internetMod.gameAnnouncement();
     }
 
     internetMod.clickTest = function() {
@@ -303,9 +439,6 @@ internetMod.exit = function() {
         } else {
             $('#announce').removeClass('msgOptionSelected');
             $('.announceChild').slideToggle(200);
-            $('.announceChild').removeClass('msgOptionSelected');
-            $('.announceChild2').slideToggle(200);
-            $('.announceChild2').removeClass('msgOptionSelected')
             internetMod.clearMessageBox();
         }
 
@@ -341,12 +474,12 @@ internetMod.exit = function() {
             }
         }
 
-       /* Currently, the code below opens up a div where I had a version of the game defintion window.
-        If it's simple enough, I'd like to have the game definition dialog displayed inside ".announceChild3".
-       I just don't want players to feel like they are about to make a game when the same game definition window pops up.
-       So if a slightly different version is in .announceChild3, there won't be much confusion.
-       I can probably just use .css() to make the Social Website's game def dialog a little different.
-       */
+        /* Currently, the code below opens up a div where I had a version of the game defintion window.
+         If it's simple enough, I'd like to have the game definition dialog displayed inside ".announceChild3".
+        I just don't want players to feel like they are about to make a game when the same game definition window pops up.
+        So if a slightly different version is in .announceChild3, there won't be much confusion.
+        I can probably just use .css() to make the Social Website's game def dialog a little different.
+        */
         if (!$(this).hasClass('msgOptionSelected') && $('.announceChild3').show()) {
             $('.announceChild3').slideToggle(200);
         } else {
@@ -369,7 +502,7 @@ internetMod.exit = function() {
     internetMod.postFlutterMessage = function() {
         var d = GameManager.company.getDate(GameManager.company.currentWeek);
         var MsgText = $('#newMSGString').text();
-        var MsgLikes = internetMod.flutterFans;
+        //  var MsgLikes = internetMod.flutterFans;
 
         if (MsgText.length > 5) {
             Sound.playSoundOnce("tack", 0.2);
@@ -843,14 +976,14 @@ internetMod.addInternetToMenu = function() {
         $('#Option1_' + email.id + '-1').on('click', function(event) {
             //        $('#response1_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option1');
-            email.message1_option1Selected = true;
+            //  email.message1_option1Selected = true;
             email.option1_ifSelected && email.option1_ifSelected();
         });
 
         $('#Option2_' + email.id + '-1').on('click', function(event) {
             //      $('#response2_' + email.id + '').show();
             internetMod.optionDefaults(1, 'Option2');
-            email.message1_option2Selected = true;
+            //      email.message1_option2Selected = true;
             email.option2_ifSelected && email.option2_ifSelected();
         });
         //----------------------------------------------------------------------
@@ -996,20 +1129,28 @@ internetMod.modTick = function() {
                 Sound.playSoundOnce("bugDecrease", 0.2);
             }
         }
-        internetMod.checkForReply(email);
-        internetMod.yearChecker();
-        //    var flutterFollowers = GamaManager.company.fans;
-        //    var h = flutterFollowers.toString();
-        //    $('#followers').html('');
     }
-    /* Social Website
-    if (-1 != GameManager.company.researchCompleted.indexOf(Research.MultiPlatform)) {
-      // finish later
-    }
-    */
+    internetMod.checkForReply(email);
+    internetMod.yearChecker();
+
+    for (var k = 0; k < internetMod.articleToAdd.length; k++) {
+            var newsArticle = internetMod.articleToAdd[k];
+            var nDate = newsArticle.date.split('/');
+            if (GameManager.company.isLaterOrEqualThan(parseInt(nDate[0]), parseInt(nDate[1]), parseInt(nDate[2])) && internetMod.articleStuff.indexOf(newsArticle) == -1) {
+                internetMod.articleStuff.push(newsArticle);
+                internetMod.AddArticleToHTMLPage(newsArticle);
+            }
+        }
+       /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
+           newsArticlesArray.push(newsArticle);
+        } */
+
+    //News Website
 }
 
+
 GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.modTick);
+// GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.newsTick);
 
 // Events
 GDT.addEvent({
@@ -1031,3 +1172,76 @@ GDT.addEvent({
         internetMod.showUI();
     }
 });
+
+// Opens the Email website
+internetMod.openEmail = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#emailSITE").show();
+    }, 1000);
+};
+
+// Open a website that I haven't made up my mind about :P
+internetMod.openNews = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#newsSITE").show();
+    }, 1000);
+};
+
+// Opens the Social Network website
+internetMod.openSocial = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#forumSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#socialSITE").show();
+    }, 1000);
+};
+
+// Opens the Bug Center website
+internetMod.openBug = function() {
+    Sound.click();
+    $("#emailSITE").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").html('LOADING...');
+    $("#loaders").show();
+    setTimeout(function() {
+        $("#loaders").hide();
+        $("#loaders").empty();
+        $("#bugSITE").show();
+    }, 1000);
+};
+
+// Closes (hides) the entire div
+internetMod.exit = function() {
+    Sound.click();
+    $("#internetContainer").hide();
+    GameManager.resume(true);
+    internetMod.disableSlideshow();
+    // addReplyBulk.Resume();
+};
