@@ -1,6 +1,25 @@
 Media.allScheduledStories = [];
 var se = SalesEvents;
 var m = Media;
+var rev = Reviews;
+
+rev.reviewGame = function(company) {
+    var game = company.currentGame;
+    var reviews = Reviews.rateGame(company);
+    var delay = game.releaseWeek - company.currentWeek;
+    company.currentGame.reviews = reviews;
+    var announceMessage = "The first reviews for our newly released game, {0}, came in!".localize().format(company.currentGame.title);
+    company.notifications.push(new Notification("Game review".localize("heading"), announceMessage, "OK".localize(), delay + 0.3));
+    company.notifications.push(new Notification("{Reviews}", null, null, delay + 0.3));
+    if (company.gameLog.length === 0)
+        Media.createFirstGameStory(company);
+    if (game.flags.sameGenreTopic) {
+        var story = Media.createSameGenreTopicStory(company, game);
+        if (story) {
+            story.weeksUntilFired = delay + 1;
+        }
+    }
+};
 
 // Maybe change some of these to Flutter once Flutter is fleshed out
 
@@ -22,8 +41,9 @@ Media.createFirstGameStory = function(company) {
         header: "A New Player in the Gaming Industry",
         text: msg,
         date: newsDate,
-        imageURL: "./images/platforms/superb/GameSphere.png" // CHANGE THIS IMAGE
+        imageURL: "" // CHANGE THIS IMAGE
     });
+
     console.log('First Game Story Intialized');
 };
 

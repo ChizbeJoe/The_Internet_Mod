@@ -17,8 +17,15 @@ TO-DO List (Not Done is "-". Done is "+"):
 */
 
 var internetMod = {};
+var dataStore = GDT.getDataStore("InternetMod");
 var internetImages = './mods/The_Internet_Mod/Img/';
+internetMod.firstNames = ["Abigail", "Addison", "Alexa", "Alexis", "Alice", "Alicia", "Allison", "Alma", "Alyssa", "Amanda", "Amber", "Amelia", "Amy", "Ana", "Andrea", "Anita", "Ann", "Anna", "Anne", "Annette", "Annie", "April", "Arianna", "Arlene", "Ashley", "Aubree", "Aubrey", "Audrey", "Ava", "Avery", "Beatrice", "Becky", "Bella", "Bernice", "Bertha", "Bessie", "Beth", "Beverley", "Beverly", "Billie", "Bobbie", "Bonnie", "Brandie", "Brandy", "Brianna", "Brittany", "Brooklyn", "Bamila", "Candice", "Carla", "Carmen", "Carole", "Caroline", "Carolyn", "Carrie", "Cassandra", "Catherine", "Cathy", "Celina", "Charlene", "Charlotte", "Cherly", "Chloe", "Christina", "Christine", "Christy", "Cindy", "Claire", "Clara", "Claudia", "Colleen", "Connie", "Constance", "Courtney", "Crystal", "Daisy", "Dana", "Danielle", "Darlene", "Dawn", "Deann", "Deanna", "Debbie", "Debra", "Delores", "Denise", "Diana", "Diane", "Dianne", "Dolores", "Dora", "Doris", "Edith", "Edna", "Eileen", "Elaine", "Eleanor", "Elizabeth", "Ella", "Ellen", "Elsie", "Emily", "Emma", "Erica", "Erika", "Erin", "Esther", "Ethel", "Eva", "Evelyn", "Felecia", "Felicia", "Florence", "Frances", "Gabriella", "Gail", "Genesis", "Georgia", "Gertrude", "Gina", "Gladys", "Glenda", "Gloria", "Grace", "Gwendolyn", "Hailey", "Hannah", "Harper", "Hazel", "Heather", "Heidi", "Herminia", "Hilda", "Holly", "Ida", "Irene", "Irma", "Isabella", "Isobel", "Jackie", "Jacqueline", "Jamie", "Jane", "Janet", "Janice", "Jean", "Jeanette", "Jeanne", "Jennie", "Jennifer", "Jenny", "Jessica", "Jessie", "Jill", "Jo", "Joan", "Joann", "Joanne", "Josephine", "Joy", "Joyce", "Juanita", "Judith", "Judy", "Julia", "Julie", "June", "Katherine", "Kathryn", "Kathy", "Katie", "Katrina", "Kay", "Kaylee", "Kelly", "Kenzi", "Kim", "Kitty", "Krin", "Kristen", "Kristin", "Kristina", "Kylie", "Lauren", "Laurie", "Layla", "Leah", "Lena", "Leona", "Lesa", "Leslie", "Leta", "Letitia", "Lillian", "Lillie", "Lily", "Linda", "Lisa", "Lois", "Loretta", "Lori", "Lorraine", "Louella", "Louise", "Lucille", "Lucy", "Lydia", "Lynn", "Mabel", "Madison", "Mae", "Marcia", "Margie", "Marian", "Marie", "Marilyn", "Marion", "Marjorie", "Marlene", "Marsha", "Martha", "Mary", "Mattie", "Maureen", "Maxine", "Megan", "Meghan", "Melanie", "Melinda", "Melissa", "Mia", "Michele", "Michelle", "Mildred", "Minnie", "Miriam", "Misty", "Monica", "Myrtle", "Naomi", "Natalie", "Nellie", "Nevaeh", "Nicole", "Nina", "Noelle", "Nora", "Norma", "Olivia", "Pamela", "Patsy", "Paula", "Pauline", "Pearl", "Peggy", "Penny", "Peyton", "Phyllis", "Priscilla", "Rachel", "Ramona", "Rebecca", "Regina", "Renee", "Rhonda", "Riley", "Rita", "Roberta", "Robin", "Rosa", "Rose", "Rosemary", "Ruby", "Sally", "Samantha", "Sandra", "Sara", "Sarah", "Savannah", "Scarlett", "Serenity", "Shannon", "Sharlene", "Sheila", "Shelly", "Sherri", "Sherry", "Sofia", "Sonia", "Sophia", "Sophie", "Stacey", "Stacy", "Stella", "Stephanie", "Sue", "Susan", "Suzanne", "Sylvia", "Tamara", "Tammy", "Tanya", "Tara", "Taylor", "Teresa", "Terra", "Terri", "Terry", "Theresa", "Tiffany", "Tina", "Toni", "Tonya", "Tracey", "Tracy", "Valerie", "Vanessa", "Vera", "Veronica", "Vicki", "Vickie", "Victoria", "Violet", "Vivan", "Wanda", "Wendy", "Willie", "Wilma", "Yolanda", "Yvonne", "Zoe", "Zoey", "Aaron", "Adam", "Adrian", "Aiden", "Alan", "Albert", "Alberto", "Alex", "Alexander", "Alfred", "Alfredo", "Allan", "Allen", "Alvin", "Andre", "Andrew", "Andy", "Angel", "Anthony", "Antonio", "Armando", "Arnold", "Arron", "Arthur", "Austin", "Barry", "Ben", "Benjamin", "Bernard", "Bill", "Billy", "Bob", "Bobby", "Brad", "Bradley", "Brandon", "Brayden", "Brennan", "Brent", "Brett", "Brian", "Bruce", "Bryan", "Byron", "Caleb", "Calvin", "Cameron", "Carl", "Carlos", "Carter", "Chad", "Charles", "Charlie", "Chester", "Chris", "Christian", "Christopher", "Clarence", "Claude", "Clayton", "Clifford", "Clifton", "Clinton", "Clyde", "Cody", "Connor", "Corey", "Cory", "Craig", "Curtis", "Dale", "Dan", "Daniel", "Danny", "Darrell", "Darren", "Darryl", "Daryl", "Dave", "David", "Dean", "Dennis", "Derek", "Derrick", "Devon", "Don", "Donald", "Douglas", "Duane", "Dustin", "Dwayne", "Dwight", "Dylan", "Earl", "Eddie", "Edgar", "Eduardo", "Edward", "Edwin", "Eli", "Elijah", "Eric", "Erik", "Ernest", "Ethan", "Eugene", "Evan", "Everett", "Felix", "Fernando", "Flenn", "Floyd", "Francis", "Francisco", "Frank", "Franklin", "Fred", "Freddie", "Frederick", "Gabe", "Gabriel", "Gary", "Gavin", "Gene", "George", "Gerald", "Gilbert", "Glen", "Gordon", "Greg", "Gregory", "Harold", "Harry", "Harvey", "Hector", "Henry", "Herbert", "Herman", "Howard", "Hugh", "Hunter", "Ian", "Isaac", "Isaiah", "Ivan", "Jack", "Jackson", "Jacob", "James", "Jamie", "Jared", "Jason", "Jayden", "Jeff", "Jeffery", "Jeffrey", "Jeremiah", "Jeremy", "Jerome", "Jerry", "Jesse", "Jessie", "Jim", "Jimmie", "Jimmy", "Joe", "Joel", "John", "Johnni", "Johnny", "Jon", "Jonathan", "Jordan", "Jorge", "Jose", "Joseph", "Joshua", "Juan", "Judd", "Julian", "Julio", "Justin", "Karl", "Keith", "Kelly", "Ken", "Kenneth", "Kent", "Kevin", "Kirk", "Kurt", "Kyle", "Lance", "Landon", "Larry", "Lawrence", "Lee", "Leo", "Leon", "Leonard", "Leroy", "Leslie", "Lester", "Lewis", "Liam", "Lloyd", "Logan", "Lonnie", "Louis", "Lucas", "Luis", "Luke", "Manuel", "Marc", "Marcus", "Mario", "Marion", "Mark", "Marshall", "Martin", "Marvin", "Mason", "Mathew", "Matthew", "Maurice", "Max", "Melvin", "Michael", "Micheal", "Miguel", "Mike", "Milton", "Mitchell", "Morris", "Nathan", "Nathaniel", "Neil", "Nelson", "Nicholas", "Noah", "Norman", "Oscar", "Owen", "Pat", "Patrick", "Paul", "Pedro", "Perry", "Peter", "Philip", "Phillip", "Rafael", "Ralph", "Ramon", "Randall", "Randy", "Raul", "Ray", "Raymond", "Reginald", "Ricardo", "Richard", "Rick", "Ricky", "Robert", "Roberto", "Rodney", "Roger", "Roland", "Ron", "Ronald", "Ronnie", "Ross", "Roy", "Ruben", "Russell", "Ryan", "Salvador", "Samuel", "Scott", "Sean", "Sebastian", "Sergio", "Seth", "Shane", "Shawn", "Soham", "Stanley", "Stephen", "Steve", "Steven", "Ted", "Terrance", "Terrence", "Terry", "Theodore", "Thomas", "Tim", "Timmothy", "Todd", "Tom", "Tommy", "Tony", "Tracy", "Travis", "Tristan", "Troy", "Tyler", "Tyrone", "Vernon", "Victor", "Vincent", "Wade", "Wallace", "Walter", "Warren", "Wayne", "Wesley", "Willard", "William", "Willie", "Wyatt", "Zachary", "Zack"];
+internetMod.lastNames = ["Adams", "Alexander", "Allen", "Alvarez", "Anderson", "Andrews", "Armstrong", "Arnold", "Austin", "Bailey", "Baker", "Banks", "Barnes", "Barnett", "Barrett", "Bates", "Beck", "Bell", "Bennett", "Berry", "Bishop", "Black", "Bowman", "Boyd", "Bradley", "Brewer", "Brooks", "Brown", "Bryant", "Burke", "Burns", "Burton", "Butler", "Byrd", "Caldwell", "Campbell", "Carlson", "Carpenter", "Carr", "Carroll", "Carter", "Castillo", "Castro", "Chambers", "Chapman", "Chavez", "Clark", "Cole", "Coleman", "Collins", "Cook", "Cooper", "Cox", "Craig", "Crawford", "Cruz", "Cunningham", "Curtis", "Daniels", "Davidson", "Davis", "Day", "Dean", "Diaz", "Dixon", "Douglas", "Duncan", "Dunn", "Edwards", "Elliott", "Ellis", "Evans", "Ferguson", "Fernandez", "Fields", "Fisher", "Fleming", "Fletcher", "Flores", "Ford", "Foster", "Fowler", "Fox", "Franklin", "Frazier", "Freeman", "Fuller", "Garcia", "Gardner", "Garrett", "Garza", "George", "Gibson", "Gilbert", "Gomez", "Gonzales", "Gonzalez", "Gordon", "Graham", "Grant", "Graves", "Gray", "Green", "Gregory", "Griffin", "Gutierrez", "Hale", "Hall", "Hamilton", "Hansen", "Hanson", "Harper", "Harris", "Harrison", "Hart", "Harvey", "Hawkins", "Hayes", "Henderson", "Henry", "Hernandez", "Herrera", "Hicks", "Hill", "Hoffman", "Holland", "Holmes", "Holt", "Hopkins", "Horton", "Howard", "Howell", "Hudson", "Hughes", "Hunt", "Hunter", "Jackson", "Jacobs", "James", "Jenkins", "Jennings", "Jensen", "Jimenez", "Johnson", "Johnston", "Jones", "Jordan", "Kelley", "Kelly", "Kennedy", "Kim", "King", "Knight", "Kuhn", "Lambert", "Lane", "Larson", "Lawrence", "Lawson", "Lee", "Lewis", "Little", "Long", "Lopez", "Lowe", "Lucas", "Lynch", "Marshall", "Martin", "Martinez", "Mason", "Matthews", "May", "Mccoy", "Mcdonalid", "Mckinney", "Medina", "Mendoza", "Meyer", "Miles", "Miller", "Mills", "Mitchell", "Mitchelle", "Montgomery", "Moore", "Morales", "Moreno", "Morgan", "Morris", "Morrison", "Murphy", "Murray", "Myers", "Neal", "Nelson", "Newman", "Nguyen", "Nichols", "Obrien", "Oliver", "Olson", "Ortiz", "Owens", "Palmer", "Parker", "Patterson", "Payne", "Pearson", "Peck", "Pena", "Perez", "Perkins", "Perry", "Peters", "Peterson", "Phillips", "Pierce", "Porter", "Powell", "Prescott", "Price", "Ramirez", "Ramos", "Ray", "Reed", "Reid", "Reyes", "Reynolds", "Rhodes", "Rice", "Richards", "Richardson", "Riley", "Rivera", "Roberts", "Robertson", "Robinson", "Rodriguez", "Rodriquez", "Rogers", "Romero", "Rose", "Ross", "Ruiz", "Russell", "Ryan", "Sanchez", "Sanders", "Schmidt", "Scott", "Shaw", "Shelton", "Silva", "Simmmons", "Simmons", "Simpson", "Sims", "Smith", "Snyder", "Soto", "Spencer", "Stanley", "Steeves", "Stephens", "Stevens", "Steward", "Stewart", "Stone", "Sullivan", "Sutton", "Taylor", "Terry", "Thomas", "Thompson", "Torres", "Tucker", "Turner", "Vargas", "Vasquez", "Wade", "Wagner", "Walker", "Wallace", "Walters", "Ward", "Warren", "Washington", "Watkins", "Watson", "Watts", "Weaver", "Webb", "Welch", "Wells", "West", "Wheeler", "White", "Williams", "Williamson", "Willis", "Wilson", "Wood", "Woods", "Wright", "Young"];
+internetMod.emailAddressSites = ["@zmail.com", "@bizmail.com", "@mailout.com", "@xyzmail.com"];
 
+internetMod.produceRandomFullName = function() {
+    return internetMod.firstNames.pickRandom() + ' ' + internetMod.lastNames.pickRandom();
+};
 
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
@@ -81,19 +88,6 @@ internetMod.addHype = function(hype) {
 };
 // kristof1104 is the best --------------------------------------------------------------------------------------------------- (Thx :-) )
 
-
-internetMod.emailNotifOPEN = function() {
-    internetMod.startSlideshow();
-    $("#loaders").hide();
-    $("#newsSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#emailSITE").show();
-    $("#internetContainer").show();
-    GameManager.pause(true);
-    // addReplyBulk.Pause();
-};
-
 // Bug Site
 internetMod.createBugWebsite = function() {
     $('#navBar').removeClass('justEmail');
@@ -141,19 +135,6 @@ $("#iNotifs").bind("DOMSubtreeModified", function() {
         }, 200)
     });
 });
-
-
-// Shows the internet window
-internetMod.ShowWindow = function() {
-    $("#emailSITE").hide();
-    $("#forumSITE").hide();
-    $("#socialSITE").hide();
-    $("#bugSITE").hide();
-    $("#loaders").hide();
-    $("#internetContainer").show();
-    internetMod.startSlideshow();
-};
-
 
 // News Website
 (function() {
@@ -367,6 +348,9 @@ $('#slideLeft').click(function(e) {
         if (d.year !== 1 && d.month == 1 && d.week == 1) {
             $('#conversation').prepend('Year ' + g + ''); // eventually add style to this
         }
+        if (d.year == 25 && d.month == 9 && d.week == 2) {
+            GameManager.company.flags.visoriusAnnounced = true;
+        }
     };
 
     internetMod.UI_showNewMSG = function() {
@@ -524,6 +508,7 @@ internetMod.addInternetToMenu = function() {
     internetMod.reset = function() {
         internetMod.emailList = [];
         $('#internetNotifs').hide();
+        $("#iNotifs").html("0");
         $("#emailMSGList").html("");
     };
 
@@ -531,37 +516,21 @@ internetMod.addInternetToMenu = function() {
         internetMod.reset();
     };
 
-    internetMod.load = function(e) {
-        var data = e.data;
-        var internetModData = data['internetModData'];
-        if (!internetModData) {
-            internetMod.startNewGame();
-        } else if (internetModData["added_emails"]) {
-            internetMod.emailList = internetModData["added_emails"].map(
-                function(o) {
-                    return internetMod.emailListToAdd.first(function(item) {
-                        return item.id == o.id
-                    });
-                }
-            );
-            internetMod.UIInitialized = internetModData["UIInitialized"];
-            if (internetMod.UIInitialized) internetMod.showUI();
-        }
+    internetMod.save = function() {
+        // internetMod.emailListToAdd is the one that has to be used because that is where the random date is made, and different saves get different dates
+        GDT.getDataStore("InternetMod").data["emailsToAdd"] = internetMod.emailListToAdd;
     };
 
-    internetMod.save = function(e) {
-        var data = e.data;
-        var internetModData = data['internetModData'];
-        if (!internetModData) {
-            internetModData = data.internetModData = {};
-        }
-        internetModData["added_emails"] = internetMod.emailList.map(function(n) {
-            return {
-                id: n.id
-            };
-        });
-        internetModData["UIInitialized"] = internetMod.UIInitialized;
+    internetMod.load = function() {
+        internetMod.emailList = []; // I cleared this cause internetMod.emailListToAdd should add it back; however, internetMod.emailListToAdd doesn't add the emails to internetMod.emailList after load for some reason
+        internetMod.emailListToAdd = GDT.getDataStore("InternetMod").data["emailsToAdd"];
+        // Need to figure out how to add email HTML on load
+        // However, I got an error when trying to use internetMod.AddEmailToHTMLPage
     };
+
+    GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+    GDT.on(GDT.eventKeys.saves.saving, internetMod.save);
+
 
     internetMod.showUI = function() {
         $("#internetNotifs").show();
@@ -742,8 +711,10 @@ internetMod.addInternetToMenu = function() {
         Sound.playSoundOnce("bugDecrease", 0.2);
     };
 
-    GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
-    GDT.on(GDT.eventKeys.saves.saving, internetMod.save);
+
+    //  GDT.on(GDT.eventKeys.gameplay.afterReleaseGame, internetMod.resetQuestionData);
+    //GDT.on(GDT.eventKeys.saves.loading, internetMod.load);
+    //  GDT.on(GDT.eventKeys.saves.saving, internetMod.save);
     GDT.on(GDT.eventKeys.saves.newGame, internetMod.startNewGame);
 
 
@@ -757,10 +728,6 @@ internetMod.addInternetToMenu = function() {
 
     internetMod.AddEmail = function(email) {
         internetMod.emailListToAdd.push(email);
-        email.replyTime = undefined;
-        // email.pushDate = undefined;
-        //            email.option1Selected = false;
-        //          email.option2Selected = false;
     };
 
     /*
@@ -977,33 +944,15 @@ internetMod.modTick = function() {
                 weekNumber += Math.floor((GameManager.gameTime / 1000) + 36 * GameManager.company.getRandom() * GameManager.SECONDS_PER_WEEK); //moves the initial add date with a random week offset between 1-10
                 email.date = internetMod.getStringDateFormatForWeekNumber(weekNumber);
                 console.log('The event triggered randomly');
-            } else if (!email.isRandomEvent && email.trigger && email.trigger(GameManager.company)) {
-                internetMod.emailPushDefaults(email);
-                $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
-                console.log('The event just triggered');
-            } else if (email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
+            } else if (email.trigger && email.trigger(GameManager.company) && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
                 internetMod.emailPushDefaults(email);
                 $('#emailDate').text('' + email.date + '');
                 console.log('The event was pushed by date');
             }
         }
-        /*  if (internetMod.isEmailAdded(email) == false) {
-              if (email.isRandomEvent && email.isRandomEvent == true && email.trigger && email.trigger(GameManager.company)) {
-                  internetMod.emailPushDefaults(email);
-                  $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
-                  console.log('The event triggered randomly');
-              } else if (email.isRandomEvent !== true && email.trigger && email.trigger(GameManager.company)) {
-                  internetMod.emailPushDefaults(email);
-                  $('#emailDate').text('' + d.year + '/' + d.month + '/' + d.week + '');
-                  console.log('The event just triggered');
-              } else if (email.isRandomEvent !== true && email.date && GameManager.company.isLaterOrEqualThan(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))) {
-                  internetMod.emailPushDefaults(email);
-                  $('#emailDate').text('' + email.date + '');
-                  console.log('The event was pushed by date');
-              }
-          } */
-    }
+
     internetMod.checkForReply(email);
+  }
     internetMod.yearChecker();
 
     for (var k = 0; k < internetMod.articleToAdd.length; k++) {
@@ -1021,9 +970,6 @@ internetMod.modTick = function() {
         if ($('#newsArticleSlideshow ul li').length > 4) {
             $("#newsArticleSlideshow ul li:gt(3)").remove();
         }
-        if (d.year == 25 && d.month == 9 && d.week == 2) {
-          GameManaer.company.flags.visoriusAnnounced = true;
-        }
     }
     /*if (newsArticle.date.charAt(0) == d.year && newsArticle.date.charAt(2) == d.month && newsArticle.date.charAt(4) == d.week) {
         newsArticlesArray.push(newsArticle);
@@ -1031,7 +977,6 @@ internetMod.modTick = function() {
 
     //News Website
 };
-
 
 GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.modTick);
 // GDT.on(GDT.eventKeys.gameplay.weekProceeded, internetMod.newsTick);
@@ -1057,8 +1002,34 @@ GDT.addEvent({
     }
 });
 
-// Internet tabs -----------------------------------------------------------------------------------------------------------
 
+// Opens Email Site from Notif Button
+internetMod.emailNotifOPEN = function() {
+    internetMod.startSlideshow();
+    $("#loaders").hide();
+    $("#newsSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#emailSITE").show();
+    $("#internetContainer").show();
+    GameManager.pause(true);
+    internetMod.createGameDevUI();
+    // addReplyBulk.Pause();
+};
+
+// Shows the internet window
+internetMod.ShowWindow = function() {
+    $("#emailSITE").hide();
+    $("#forumSITE").hide();
+    $("#socialSITE").hide();
+    $("#bugSITE").hide();
+    $("#loaders").hide();
+    $("#internetContainer").show();
+    internetMod.startSlideshow();
+    internetMod.createGameDevUI();
+};
+
+// Internet tabs -----------------------------------------------------------------------------------------------------------
 // Refreshes a page (Currenly not working 100% correctly)
 internetMod.refresh = function() {
     Sound.click();
@@ -1113,4 +1084,5 @@ internetMod.exit = function() {
     internetMod.disableSlideshow();
     GameManager.resume(true);
     // addReplyBulk.Resume();
+    $(".announceChild3").empty();
 };

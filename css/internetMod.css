@@ -291,9 +291,10 @@
 }
 
 .emailENTRY {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 13pt;
-    color: #000000;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14pt;
+  color: #000000;
+  line-height: 26px;
 }
 
 .emailOptions {

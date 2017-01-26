@@ -158,6 +158,8 @@ var internetMod = {};
         'Code/testingStuff.js',
         'Code/newsSITE.js',
         'Code/emailSITE.js',
+        'Code/socialSITE.js',
+    //    'Code/internetModPersistance.js',
     ], ready, error);
 
 })();

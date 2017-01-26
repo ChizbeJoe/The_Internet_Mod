@@ -6,7 +6,7 @@ var Article_dinkeyKingSuccess = function() {
         header: "Ninvento's Arcade Aggressor",
         text: 'Previously a nobody game development company, Ninvento is currently the talk of various arcades around the United States. In fact, their new arcade game <i>Dinkey King</i> has reached an impressive milestone: <b>over 60,000 machines have been sold!</b><br><br>Repeatedly trying to beat their high-score, many are glued to screen. To explore this love for the game, we asked certain players what they thought and received various responses:<br>- "I used to love the arcade game Tac-Man, and while <i>Dinkey King</i> is like Tac-Man, it offers a little more. You just run and hide in Tac-Man, but in <i>Dinkey King</i> it is not just about the high score; there is a goal: save the princess!"<br>- "I guess I just like the motions more than other games: run, jump, stop, RUN! Its a simple way to relax but still engaging."<br>- "Plain and simple, I love monkeys; ever since I saw King Kong, I have loved monkeys. <i>Dinkey King</i> gets that side of me, haha!"<br><br> A certain money maker, <i>Dinkey King</i> paves the way for the future of Ninvento.',
         date: "1/6/3",
-        imageURL: "./images/platforms/dinkeyKingPic.jpg" 
+        imageURL: "./images/platforms/dinkeyKingPic.jpg"
     });
 };
 Article_dinkeyKingSuccess();
@@ -437,3 +437,37 @@ var Article_announcePS5 = function() {
     });
 };
 Article_announcePS5();
+
+// Dynamic Article
+internetMod.emailGameInterview = function() {
+    var randomIdNumber = Math.floor(1E4 * Math.random());
+    var idNumberString = randomIdNumber.toString();
+    var d = GameManager.company.getDate(GameManager.company.currentWeek);
+    var currentGameDate = d.year + "/" + d.month + "/" + d.week;
+    var randomImage = ["./mods/The_Internet_Mod/Img/gameInterview1.jpg", "./mods/The_Internet_Mod/Img/gameInterview2.png"]
+    var yourPlayerName = GameManager.company.staff.first().name;
+
+    var msgMakerSyn = ["Maker", "Developer", "Creator"].pickRandom();
+    var playerNameSyn = [yourPlayerName, "The Head of {0}".format(GameManager.company.name), "The CEO of {0}".format(GameManager.company.name), "The {0} of '{1}'".format(msgMakerSyn, GameManager.company.getBestSeller().title), GameManager.company.name].pickRandom();
+    var playerNameLowCase = [yourPlayerName, "the head of {0}".format(GameManager.company.name), "the CEO of {0}".format(GameManager.company.name), "the {0} of '{1}'".format(msgMakerSyn.toLowerCase(), GameManager.company.getBestSeller().title), GameManager.company.name].pickRandom();
+
+    // News Article Header
+    var hdr = ["An Interview With {0}".format(playerNameSyn), "We Sat Down With {0}".format(playerNameSyn), "{0} Answers Our Calls".format(playerNameSyn), "An Evening With {0}".format(playerNameSyn), "Exclusive Interview With {0}!".format(playerNameSyn), "{0} Drops Some Next-Game Hints".format(playerNameSyn), "{0} Provides New Details About The Coming Game".format(playerNameSyn)].pickRandom();
+
+    var msgGamelinkSyn = ["we", "we here at Gamelink"].pickRandom();
+    var articlePart1Syn = ["managed to contact", "contacted", "managed to land an interview with", "interviewed", "talked to", "conducted an interview with", "managed to conduct an interview with"].pickRandom();
+    var articlePart1 = ["Recently, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn), "Last week, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn), "It's happened! Last week, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn)].pickRandom();
+
+    var articlePart2 = [];
+
+    var articleText = articlePart1 + "<br><br>" + articlePart2;
+
+internetMod.AddNewsArticle({
+    id: "emailGameInterview" + idNumberString, // must be unique
+    category: "games",
+    header: hdr,
+    text: articleText,
+    date: currentGameDate,
+    imageURL: randomImage
+});
+};
