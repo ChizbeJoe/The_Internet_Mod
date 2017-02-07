@@ -16,11 +16,11 @@ var internetMod = {};
     // eventually add class .justEmail on intial append
         '<table class="navBar" style="width: 100%;"> <tr id="tabBar">' +
         '<td id="refresh" onclick="internetMod.refresh()"><img class="refresh" src="./mods/The_Internet_Mod/Img/refresh.png"></td>' +
-        '<td id="email" class="tab" onclick="internetMod.openEmail()">Email</td>' +
-        '<td id="news" class="tab" onclick="internetMod.openNews()">Game Link News</td>' +
-        '<td id="bug" class="tab" onclick="internetMod.openBug()">Bug Center</td>' +
-        '<td id="social" class="tab" onclick="internetMod.openSocial()">Social Network</td>' +
-        '<td id="exit" class="tabX" onclick="internetMod.exit()"> </td> </tr> </table>' +
+        '<td id="emailTab" class="tab" onclick="internetMod.openEmail()">Email</td>' +
+        '<td id="newsTab" class="tab" onclick="internetMod.openNews()">Game Link News</td>' +
+        '<td id="bugTab" class="tab" onclick="internetMod.openBug()">Bug Center</td>' +
+        '<td id="socialTab" class="tab" onclick="internetMod.openSocial()">Social Network</td>' +
+        '<td id="exitTab" class="tabX" onclick="internetMod.exit()"> </td> </tr> </table>' +
         '<div class="content">' +
         //Email Website
         '<div id="emailSITE">' +
@@ -31,7 +31,8 @@ var internetMod = {};
         '<div class="viewport">' +
         '<table class="inNav">' +
         '<tr>' +
-        '<td id="iCompanyName" class"forGenrl"></td> <td>Media</td> <td>Companies</td> <td>Fans</td>' +
+        // Finsh these tabs
+        '<td id="allEmailsTab" class"forGenrl">All (12)</td> <td id="unreadEmailsTab">Unopened (1)</td> <td>Opened (4)</td> <td>Trash (63)</td>' +
         '</tr> </table>' +
         '<div id="emailMain" class="emailMain"></div> </div> </div>' +
         // News Website
@@ -82,7 +83,7 @@ var internetMod = {};
         '<div class="widget">' +
         '<div class="widget-form">' +
         '<div class="postNewMSG" id="postNewMSG" onclick="internetMod.UI_showNewMSG()">Post a New Message</div> </div> <div class="widget-conversation">' +
-        '<ul id="conversation"> </ul> </div> </div> </div> </div>' +
+        '<ul id="socialPlayerFeed"> </ul> </div> </div> </div> </div>' +
         '<div id="newMsgUI">' +
         '<div id="newMsgBulk">' +
         '<div id="msgPreviewBulk">' +
@@ -94,7 +95,7 @@ var internetMod = {};
         '<div id="newMSGBlock"><span id="newMSGString"><span id="msgPrt1"></span> <span id="msgPrt2"></span> <span id="msgPrt3"></span></span></div>' +
         '</div>' +
         '<div id="newMsgOptions">' +
-        '<li id="announce" class="msgOption" onclick="internetMod.msgOption_Announce()">Announce' +
+        '<li id="socialMsgAnnounce" class="msgOption">Announce' +
         '<li class="announceChild">"Totally stoked to announce a brand new"</li>' +
         '<li class="announceChild">"Announcement time! It is official: work has started on a brand new"</li>' +
         '<li class="announceChild">"Working away at a brand new"' +
@@ -125,11 +126,26 @@ var internetMod = {};
         // Loading Div
         '<div id="loaders"></div> </div></div></div>' +
         // Email Notifications
-        '<div id="internetNotifs" onclick="internetMod.emailNotifOPEN()">' +
+        '<div id="emailsNotifs" onclick="internetMod.emailNotifOPEN()">' +
         '<img class="iNotifs" src="./mods/The_Internet_Mod/img/mail-Icon.png"><div id="iNotifs">0</div></img></div>' +
-        '</div>');
+        '</div>' +
+        // Artcie Notifications
+         '<div id="articleNotifsContainer"><div id="notifSlide" style="width: 60px; border-radius: 50px;" onclick="internetMod.articleNotifOnClick()">' +
+         '<div id="articleNotifs">' +
+         '<img id="aNotif" class="aNotifs" src="./mods/The_Internet_Mod/Img/news-Icon.png"></img>' +
+         '</div>' +
+         '<div id="notifArticleInfo">' +
+         '<div id="notifArticleHeader">Ninvento Announces Another Console</div>' +
+         '<hr style="padding: 0px; margin: 0px;">' +
+         '<div id="notifArticleText">Today, Ninvento officially announced a new console.</div>' +
+         '</div> <div id="notifArticleCloseOut" onclick="internetMod.dismissArticleNotif()">' +
+         '<div class="innerRedCloseOut"></div>' +
+         '</div></div></div>');
     $("#internetContainer").hide();
-    $("#internetNotifs").hide();
+    $("#emailsNotifs").hide();
+    $('#articleNotifsContainer').hide();
+    $('#notifArticleInfo').hide();
+    $('#notifArticleCloseOut').hide();
     $("#emailSITE").hide();
     $("#newsSITE").hide();
     $("#newsGames").hide();

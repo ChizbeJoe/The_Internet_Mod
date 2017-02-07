@@ -10,7 +10,8 @@ var content = $(".announceChild3");
 		$("#internetModGenreChooser").hide();
 		$("#internetModPlatformChooser").hide();
 
-		content = $("#internetModAnnouncerContent");
+		// prob shouldnt be global so i made it a var
+		var content = $("#internetModAnnouncerContent");
 
 		var template = $("#gameDefinitionContentTemplate").clone();
 		template.find("#gameTitle").remove();
@@ -230,7 +231,7 @@ var content = $(".announceChild3");
 
 
 		if (platformName && platformId) {
-			var pickplatformButton = $(".pickPlatformButton");
+			var pickplatformButton = $("#internetModAnnouncerContent").find(".pickPlatformButton");
 			pickplatformButton.get(0).innerText = platformName;
 			pickplatformButton.removeClass("selectorButtonEmpty");
 

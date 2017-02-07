@@ -40,7 +40,7 @@ var Article_ninventoAnnounceTES = function() {
         id: "ninventoAnnounceTES", // must be unique
         category: "platforms",
         header: "Ninvento's Own Console in the Works!",
-        text: 'Ninvento has wowed us before with hits like <i>Nario Bruhs</i> and <i>Dinkey King</i>, but after months of various rumours, the Japanese company just confirmed something even bigger: its very own home gaming console! The console will feature cartridge based games and a uniquely designed controller. While it would be a truly remarkable feat, many industry experts doubt that home gaming consoles will take off. A console or two have faired well, but various others have crashed and burned, which sets a bad precedent for consoles down the road.<br><br>What will come of future consoles? How can this problem be solved? To answer these questions, we contacted Market Analyst Richard Bryers.<br<br>According to Bryers, "consoles are steadily performaning worse in the market. Something drastic needs to come along if this downward trend is to change." <img class="imageInArticle" src="./mods/The_Internet_Mod/Img/consoleMarketBar.png" style="float: right !important; width: 300px; margin: 10px 0 0 10px;"></img> Additionally, Bryers said that consoles just "lack the whole," meaning all fail to fully deliver in every area: "Whether it be Afary struggling with controllers or other companies struggling with pricing, there is always something wrong with the console." We are eager to see what Ninvento will deliver and how it will perform in a genrally unstable market.',
+        text: 'Ninvento has wowed us before with hits like <i>Nario Bruhs</i> and <i>Dinkey King</i>, but after months of various rumours, the Japanese company just confirmed something even bigger: its very own home gaming console! The console will feature cartridge based games and a uniquely designed controller. While it would be a truly remarkable feat, many industry experts doubt that home gaming consoles will take off. A console or two have faired well, but various others have crashed and burned, which sets a bad precedent for consoles down the road.<br><br>What will come of future consoles? How can this problem be solved? To answer these questions, we contacted Market Analyst Richard Bryers.<br><br>According to Bryers, "consoles are steadily performaning worse in the market. Something drastic needs to come along if this downward trend is to change." <img class="imageInArticle" src="./mods/The_Internet_Mod/Img/consoleMarketBar.png" style="float: right !important; width: 300px; margin: 10px 0 0 10px;"></img> Additionally, Bryers said that consoles just "lack the whole," meaning all fail to fully deliver in every area: "Whether it be Afary struggling with controllers or other companies struggling with pricing, there is always something wrong with the console."<br><br>We are eager to see what Ninvento will deliver and how it will perform in a genrally unstable market.',
         date: "1/10/2",
         imageURL: "./images/platforms/TES.png"
     });
@@ -135,10 +135,10 @@ Article_announcePlaySystem();
 var Article_announceTES64 = function() {
     internetMod.AddNewsArticle({
         id: "announceTES64", // must be unique
-        category: "8/12/1",
+        category: "platforms",
         header: "Ninvento Ready to WOW Again!",
         text: "Ninvento announced their next generation console called <i>TES 64</i> today. Expected to be released relatively soon, it is the world's first gaming console to support 64-bit processors for graphics and audio. Ninvento said this will allow never-before-seen 3D realism.<br><br>Apparently, a graphics company known as Vilicon Graphics, Inc. was looking for a video game partner in order to showcase new graphics technology. This technology is what Ninvento will be using for their new and improved graphics.<br><br>In recent years, the <i>Super TES</i> has lost much of the market share to more modern consoles. Market experts said that the hardware of the <i>TES 64</i> is surely impressive, but expressed their surprise that it still uses ROM cartridges instead of the much cheaper and higher capacity CD-ROM format. Nevertheless, the <i>TES 64</i> seems like an impressive console, and Ninvento has said that it plans to aggressively price it against Vonny's <i>Playsystem</i>.",
-        date: "1/3/3",
+        date: "8/12/1",
         imageURL: "./images/platforms/superb/TES 64.png"
     });
 };
@@ -440,34 +440,48 @@ Article_announcePS5();
 
 // Dynamic Article
 internetMod.emailGameInterview = function() {
-    var randomIdNumber = Math.floor(1E4 * Math.random());
-    var idNumberString = randomIdNumber.toString();
     var d = GameManager.company.getDate(GameManager.company.currentWeek);
     var currentGameDate = d.year + "/" + d.month + "/" + d.week;
-    var randomImage = ["./mods/The_Internet_Mod/Img/gameInterview1.jpg", "./mods/The_Internet_Mod/Img/gameInterview2.png"]
+    var randomImage = ["./mods/The_Internet_Mod/Img/gameInterview1.jpg", "./mods/The_Internet_Mod/Img/gameInterview2.png"].pickRandom();
     var yourPlayerName = GameManager.company.staff.first().name;
-
+    if (GameManager.company.staff.first().sex = "female") {
+        var yourPlayerGender = "She";
+    } else {
+        var yourPlayerGender = "He";
+    }
     var msgMakerSyn = ["Maker", "Developer", "Creator"].pickRandom();
     var playerNameSyn = [yourPlayerName, "The Head of {0}".format(GameManager.company.name), "The CEO of {0}".format(GameManager.company.name), "The {0} of '{1}'".format(msgMakerSyn, GameManager.company.getBestSeller().title), GameManager.company.name].pickRandom();
-    var playerNameLowCase = [yourPlayerName, "the head of {0}".format(GameManager.company.name), "the CEO of {0}".format(GameManager.company.name), "the {0} of '{1}'".format(msgMakerSyn.toLowerCase(), GameManager.company.getBestSeller().title), GameManager.company.name].pickRandom();
+    var playerNameLowCase = [yourPlayerName, "the head of {0}".format(GameManager.company.name), "the CEO of {0}".format(GameManager.company.name), "the {0} of '{1}'".format(msgMakerSyn.toLowerCase(), GameManager.company.getBestSeller().title)].pickRandom();
 
     // News Article Header
     var hdr = ["An Interview With {0}".format(playerNameSyn), "We Sat Down With {0}".format(playerNameSyn), "{0} Answers Our Calls".format(playerNameSyn), "An Evening With {0}".format(playerNameSyn), "Exclusive Interview With {0}!".format(playerNameSyn), "{0} Drops Some Next-Game Hints".format(playerNameSyn), "{0} Provides New Details About The Coming Game".format(playerNameSyn)].pickRandom();
 
     var msgGamelinkSyn = ["we", "we here at Gamelink"].pickRandom();
-    var articlePart1Syn = ["managed to contact", "contacted", "managed to land an interview with", "interviewed", "talked to", "conducted an interview with", "managed to conduct an interview with"].pickRandom();
-    var articlePart1 = ["Recently, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn), "Last week, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn), "It's happened! Last week, {0} {1}.".format(msgGamelinkSyn, articlePart1Syn)].pickRandom();
+    var articlePart1Syn = ["managed to contact", "contacted", "managed to land an interview with", "interviewed", "talked to", "conducted an interview with", "managed to conduct an interview with", "landed an interview with"].pickRandom();
+    var articlePart1 = ["Recently, {0} {1} {2}.".format(msgGamelinkSyn, articlePart1Syn, playerNameLowCase), "Last week, {0} {1} {2}.".format(msgGamelinkSyn, articlePart1Syn, playerNameLowCase), "It's happened! Last week, {0} {1} {2}.".format(msgGamelinkSyn, articlePart1Syn, playerNameLowCase), "Not too long ago, {0} {1} {2}.".format(msgGamelinkSyn, articlePart1Syn, playerNameLowCase)].pickRandom();
 
-    var articlePart2 = [];
+    if (dataStore.data.interviewTookConvincing != true) {
+        var tookConvincingAll = "";
+    } else {
+        var tookConvincingPart1 = ["It took some convincing, but", "Even though it required some convincing,", "Requiring some convincing,", "At first skeptical,", "Intially unsure,"].pickRandom();
+        var tookConvincingPart2 = ["{0} soon decided to answer {1}".format(yourPlayerName, msgQuestionSyn), "{0} eventually agreed to answer {1}".format(yourPlayerName, msgQuestionSyn)].pickRandom();
+        var tookConvincingAll = tookConvincingPart1 + " " + tookConvincingPart2 + ".";
+    }
+    var articlePart2 = tookConvincingAll;
 
-    var articleText = articlePart1 + "<br><br>" + articlePart2;
+    var ifQuestion_gameName = (dataStore.data.gameNameGiven != true) ? "" : "'" + currentGame.title + "'";
 
-internetMod.AddNewsArticle({
-    id: "emailGameInterview" + idNumberString, // must be unique
-    category: "games",
-    header: hdr,
-    text: articleText,
-    date: currentGameDate,
-    imageURL: randomImage
-});
+    var ifQuestion_gameTopicGenre;
+    var articlePart3 = ["{0} that the company is currently working on a new {1} game {2}".format(yourPlayerName, ifQuestion_gameTopicGenre, ifQuestion_gameName)].pickRandom();
+
+    var articleText = articlePart1 + articlePart2 + "<br><br>" + articlePart3;
+
+    internetMod.AddNewsArticle({
+        id: "gameLinkGameInterview" + internetMod.getRandomNumber(1E5), // must be unique
+        category: "games",
+        header: hdr,
+        text: articleText,
+        date: currentGameDate,
+        imageURL: randomImage
+    });
 };

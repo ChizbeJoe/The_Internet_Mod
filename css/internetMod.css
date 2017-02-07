@@ -10,76 +10,11 @@
     pointer-events: none;
 }
 
-#internetNotifs {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(#f2f2f2, #e5eef3);
-    border-radius: 50%;
-    padding: 10px;
-    text-align: center;
-    line-height: 160%;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
-    font-size: 20pt;
-    position: absolute;
-    top: 90px;
-    right: 10px;
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    /* iOS Safari */
-    -webkit-user-select: none;
-    /* Chrome/Safari/Opera */
-    -khtml-user-select: none;
-    /* Konqueror */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* Internet Explorer/Edge */
-    user-select: none;
-}
-
-#internetNotifs:hover {
-    -ms-transition-duration: 0.1s;
-    -ms-transform: scale(1.1);
-    -webkit-transition-duration: 0.1s;
-    -webkit-transform: scale(1.1);
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.50);
-}
-
-#internetNotifs:active {
-    -ms-transition-duration: 0.1s;
-    -ms-transform: scale(0.95);
-    -webkit-transition-duration: 0.1s;
-    -webkit-transform: scale(0.95);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.50);
-}
-
-.iNotifs {
-    width: 55px;
-    height: 55px;
-    /*  background: linear-gradient(to bottom, #8dd4fd 0%, #5cbdf2 40%, #0599ef 100%); */
-    border-radius: 50%;
-    margin: -15px;
-}
-
-#iNotifs {
-    width: 20px;
-    height: 20px;
-    background: #fd9a06;
-    border-radius: 50%;
-    margin: -45px 28px;
-    text-align: center;
-    line-height: 119%;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
-    font-size: 12pt;
-    font-weight: bold;
-    color: #000000;
-    position: absolute;
-}
-
 #internetContainer {
   width: 100%;
   height: 100%;
   position: relative;
+  z-index: 2;
 }
 
 #internet {
@@ -1536,6 +1471,229 @@ li.flutterPost {
 .messageTop {
     width: 100%;
     height: 55px;
+}
+
+
+/* Notification Buttons */
+#emailsNotifs {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(#f2f2f2, #e5eef3);
+    border-radius: 50%;
+    padding: 10px;
+    text-align: center;
+    line-height: 160%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
+    font-size: 20pt;
+    position: absolute;
+    bottom: 150px;
+    left: 10px;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Chrome/Safari/Opera */
+    -khtml-user-select: none;
+    /* Konqueror */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    z-index: 1;
+}
+
+#emailsNotifs:hover {
+    -ms-transition-duration: 0.1s;
+    -ms-transform: scale(1.1);
+    -webkit-transition-duration: 0.1s;
+    -webkit-transform: scale(1.1);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.50);
+}
+
+#emailsNotifs:active {
+    -ms-transition-duration: 0.1s;
+    -ms-transform: scale(0.95);
+    -webkit-transition-duration: 0.1s;
+    -webkit-transform: scale(0.95);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.50);
+}
+
+.iNotifs {
+    width: 55px;
+    height: 55px;
+    /*  background: linear-gradient(to bottom, #8dd4fd 0%, #5cbdf2 40%, #0599ef 100%); */
+    border-radius: 50%;
+    margin: -15px;
+}
+
+#iNotifs {
+    width: 20px;
+    height: 20px;
+    background: #fd9a06;
+    border-radius: 50%;
+    margin: -45px 28px;
+    text-align: center;
+    line-height: 119%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
+    font-size: 12pt;
+    font-weight: bold;
+    color: #000000;
+    position: absolute;
+}
+
+#articleNotifsContainer {
+  position: absolute;
+  bottom: 80px;
+  left: 10px;
+  z-index: 1;
+}
+
+#articleNotifs {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(#f2f2f2, #e5eef3);
+  border-radius: 50%;
+  padding: 10px;
+  text-align: center;
+  line-height: 160%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
+  font-size: 20pt;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+  /* Konqueror */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  float: left;
+}
+
+#articleNotifs:hover {
+  -ms-transition-duration: 0.1s;
+  -ms-transform: scale(1.1);
+  -webkit-transition-duration: 0.1s;
+  -webkit-transform: scale(1.1);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.50);
+}
+
+#articleNotifs:active {
+  -ms-transition-duration: 0.1s;
+  -ms-transform: scale(0.95);
+  -webkit-transition-duration: 0.1s;
+  -webkit-transform: scale(0.95);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.50);
+}
+
+.aNotifs {
+  width: 55px;
+  height: 55px;
+  /*  background: linear-gradient(to bottom, #8dd4fd 0%, #5cbdf2 40%, #0599ef 100%); */
+  border-radius: 50%;
+  margin: -8px;
+}
+
+#aNotifs {
+  width: 20px;
+  height: 20px;
+  background: #fd9a06;
+  border-radius: 50%;
+  margin: -45px 28px;
+  text-align: center;
+  line-height: 119%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
+  position: absolute;
+}
+
+#notifSlide {
+  width: 270px;
+  height: 60px;
+  background: linear-gradient(#f2f2f2, #e5eef3);
+  text-align: left;
+  line-height: 160%;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+  /* Konqueror */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  white-space: nowrap;
+}
+
+#notifArticleInfo {
+  height: calc(100% - 10px);
+  width: calc(100% - 70px);
+  padding: 5px;
+  float: left;
+}
+
+#notifArticleHeader {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+#notifArticleText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-size: 9pt;
+}
+
+#notifArticleCloseOut {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(#f2f2f2, #e5eef3);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.50);
+  border-radius: 50%;
+  right: 0;
+  top: 0;
+  margin-top: -6px;
+  margin-right: -4px;
+  position: absolute;
+}
+
+#notifArticleCloseOut:hover {
+  -ms-transition-duration: 0.1s;
+  -ms-transform: scale(1.2);
+  -webkit-transition-duration: 0.1s;
+  -webkit-transform: scale(1.2);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.50);
+}
+
+#notifArticleCloseOut:active {
+  -ms-transition-duration: 0.1s;
+  -ms-transform: scale(0.9);
+  -webkit-transition-duration: 0.1s;
+  -webkit-transform: scale(0.9);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.50);
+}
+
+.innerRedCloseOut {
+  background: linear-gradient(to bottom, #f82f18 0%, #e10909 100%);
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  margin: 1px;
+  color: white;
+  font-size: 12px;
+  line-height: 99%;
+  text-align: center;
 }
 
 
